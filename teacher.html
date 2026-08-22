@@ -914,61 +914,129 @@ supabaseClient
 
 
 generateButton.addEventListener(
-
     "click",
+    generateGoal
+);
 
-    function() {
+
+async function generateGoal() {
+
+    if (words.length === 0) {
+
+        alert(
+            "Сначала дождитесь ответов участников 🙂"
+        );
+
+        return;
+    }
 
 
-        /*
-           Пока слов нет —
-           не генерируем цель.
-        */
+    // -----------------------------------------
+    // Блокируем кнопку
+    // -----------------------------------------
 
-        if (words.length === 0) {
+    generateButton.disabled = true;
 
-            alert(
-                "Сначала дождитесь ответов участников 🙂"
+    generateButton.textContent =
+        "🤖 AI формулирует цель...";
+
+
+    try {
+
+        // -------------------------------------
+        // Собираем только слова
+        // -------------------------------------
+
+        const wordsList =
+            words.map(
+                item => item.word
             );
 
-            return;
+
+        // -------------------------------------
+        // Отправляем их в нашу Edge Function
+        // -------------------------------------
+
+        const response =
+            await fetch(
+
+                "https://wbvvhlrrutmjawrwzwhk.supabase.co/functions/v1/generate-goal-ai",
+
+                {
+
+                    method: "POST",
+
+                    headers: {
+
+                        "Content-Type":
+                            "application/json",
+
+                        "apikey":
+                            SUPABASE_KEY
+
+                    },
+
+                    body:
+                        JSON.stringify({
+
+                            words:
+                                wordsList
+
+                        })
+
+                }
+
+            );
+
+
+        // -------------------------------------
+        // Проверяем ответ
+        // -------------------------------------
+
+        const data =
+            await response.json();
+
+
+        if (!response.ok) {
+
+            console.error(data);
+
+            throw new Error(
+                "Ошибка генерации"
+            );
 
         }
 
 
-        /*
-           На этом этапе мы пока
-           НЕ подключаем настоящий AI.
-
-           Просто показываем
-           тестовую цель.
-        */
-
+        // -------------------------------------
+        // Получаем цель
+        // -------------------------------------
 
         const generatedGoal =
+            data.goal;
 
-            "Сегодня мы научимся создавать алгоритмы ветвления, понимать условия и использовать их для принятия решений в программе.";
 
-
-        /*
-           Скрываем слова.
-        */
+        // -------------------------------------
+        // Прячем слова
+        // -------------------------------------
 
         wordsContainer.style.display =
             "none";
 
 
-        /*
-           Скрываем кнопку.
-        */
-
         generateButton.style.display =
             "none";
 
 
-        /*
-           Показываем цель.
-        */
+        document.querySelector(
+            ".subtitle"
+        ).style.display =
+            "none";
+
+
+        // -------------------------------------
+        // Показываем цель
+        // -------------------------------------
 
         goal.style.display =
             "block";
@@ -977,10 +1045,27 @@ generateButton.addEventListener(
         goalText.textContent =
             generatedGoal;
 
+
+    } catch (error) {
+
+        console.error(error);
+
+
+        alert(
+            "Не удалось сгенерировать цель. Проверьте подключение к AI."
+        );
+
+
+        generateButton.disabled =
+            false;
+
+
+        generateButton.textContent =
+            "✨ Сгенерировать цель урока";
+
     }
 
-);
-
+}
 
 
 /* ==========================================
