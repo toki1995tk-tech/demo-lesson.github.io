@@ -1,0 +1,1000 @@
+<!DOCTYPE html>
+<html lang="ru">
+
+<head>
+
+    <meta charset="UTF-8">
+
+    <meta
+        name="viewport"
+        content="width=device-width, initial-scale=1.0"
+    >
+
+    <title>Teacher Dashboard</title>
+
+
+    <!--
+        Подключаем библиотеку Supabase.
+        Она нужна, чтобы teacher.html
+        мог получать данные из нашей базы.
+    -->
+
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+
+
+    <style>
+
+        /* =====================================
+           ОБЩИЕ НАСТРОЙКИ
+           ===================================== */
+
+        * {
+            box-sizing: border-box;
+        }
+
+
+        body {
+
+            margin: 0;
+
+            min-height: 100vh;
+
+            font-family:
+                Arial,
+                sans-serif;
+
+            background:
+                radial-gradient(
+                    circle at 20% 20%,
+                    #4f46e5,
+                    transparent 30%
+                ),
+
+                radial-gradient(
+                    circle at 80% 80%,
+                    #06b6d4,
+                    transparent 30%
+                ),
+
+                #0f172a;
+
+            color: white;
+
+            padding: 50px;
+
+        }
+
+
+        /* =====================================
+           ОСНОВНОЙ КОНТЕЙНЕР
+           ===================================== */
+
+        .container {
+
+            max-width: 1200px;
+
+            margin: 0 auto;
+
+            text-align: center;
+
+        }
+
+
+        /* =====================================
+           ВЕРХНИЙ МАЛЕНЬКИЙ ЗАГОЛОВОК
+           ===================================== */
+
+        .badge {
+
+            display: inline-block;
+
+            padding:
+                10px 18px;
+
+            border-radius:
+                50px;
+
+            background:
+                rgba(255,255,255,0.12);
+
+            border:
+                1px solid
+                rgba(255,255,255,0.2);
+
+            font-size:
+                14px;
+
+            font-weight:
+                bold;
+
+            margin-bottom:
+                20px;
+
+        }
+
+
+        /* =====================================
+           ЗАГОЛОВОК
+           ===================================== */
+
+        h1 {
+
+            margin: 0;
+
+            font-size:
+                52px;
+
+            line-height:
+                1.1;
+
+        }
+
+
+        /* =====================================
+           ПОДЗАГОЛОВОК
+           ===================================== */
+
+        .subtitle {
+
+            margin-top:
+                15px;
+
+            font-size:
+                20px;
+
+            opacity:
+                0.7;
+
+        }
+
+
+        /* =====================================
+           ОБЛАСТЬ СО СЛОВАМИ
+           ===================================== */
+
+        .words {
+
+            margin-top:
+                60px;
+
+            min-height:
+                250px;
+
+            display:
+                flex;
+
+            flex-wrap:
+                wrap;
+
+            justify-content:
+                center;
+
+            align-items:
+                center;
+
+            gap:
+                16px;
+
+        }
+
+
+        /* =====================================
+           ОДНО СЛОВО
+           ===================================== */
+
+        .word {
+
+            padding:
+                16px 24px;
+
+            border-radius:
+                18px;
+
+            background:
+                rgba(255,255,255,0.12);
+
+            border:
+                1px solid
+                rgba(255,255,255,0.25);
+
+            backdrop-filter:
+                blur(12px);
+
+            font-size:
+                22px;
+
+            cursor:
+                pointer;
+
+            animation:
+                appear 0.4s ease;
+
+            transition:
+                0.2s;
+
+        }
+
+
+        /* Наводим мышку */
+
+        .word:hover {
+
+            background:
+                rgba(239,68,68,0.75);
+
+            transform:
+                translateY(-4px)
+                scale(1.03);
+
+        }
+
+
+        /* Маленький крестик */
+
+        .word::after {
+
+            content:
+                " ×";
+
+            opacity:
+                0.4;
+
+        }
+
+
+        /* =====================================
+           ЕСЛИ ПОКА НЕТ СЛОВ
+           ===================================== */
+
+        .empty {
+
+            font-size:
+                20px;
+
+            opacity:
+                0.5;
+
+        }
+
+
+        /* =====================================
+           КНОПКА ЦЕЛИ
+           ===================================== */
+
+        .generate {
+
+            margin-top:
+                30px;
+
+            padding:
+                18px 30px;
+
+            border:
+                none;
+
+            border-radius:
+                18px;
+
+            background:
+                white;
+
+            color:
+                #4338ca;
+
+            font-size:
+                18px;
+
+            font-weight:
+                bold;
+
+            cursor:
+                pointer;
+
+            transition:
+                0.2s;
+
+        }
+
+
+        .generate:hover {
+
+            transform:
+                translateY(-3px)
+                scale(1.02);
+
+        }
+
+
+        /* =====================================
+           БЛОК С ЦЕЛЬЮ
+           ===================================== */
+
+        .goal {
+
+            display:
+                none;
+
+            max-width:
+                900px;
+
+            margin:
+                70px auto 0;
+
+            animation:
+                goalAppear 0.7s ease;
+
+        }
+
+
+        .goal-title {
+
+            font-size:
+                16px;
+
+            letter-spacing:
+                3px;
+
+            opacity:
+                0.6;
+
+            margin-bottom:
+                25px;
+
+        }
+
+
+        .goal-text {
+
+            font-size:
+                44px;
+
+            line-height:
+                1.25;
+
+            font-weight:
+                bold;
+
+        }
+
+
+        /* =====================================
+           АНИМАЦИЯ ПОЯВЛЕНИЯ СЛОВ
+           ===================================== */
+
+        @keyframes appear {
+
+            from {
+
+                opacity:
+                    0;
+
+                transform:
+                    scale(0.7);
+
+            }
+
+            to {
+
+                opacity:
+                    1;
+
+                transform:
+                    scale(1);
+
+            }
+
+        }
+
+
+        /* =====================================
+           АНИМАЦИЯ ПОЯВЛЕНИЯ ЦЕЛИ
+           ===================================== */
+
+        @keyframes goalAppear {
+
+            from {
+
+                opacity:
+                    0;
+
+                transform:
+                    translateY(30px)
+                    scale(0.95);
+
+            }
+
+            to {
+
+                opacity:
+                    1;
+
+                transform:
+                    translateY(0)
+                    scale(1);
+
+            }
+
+        }
+
+
+    </style>
+
+</head>
+
+
+<body>
+
+
+<div class="container">
+
+
+    <!-- =====================================
+         ВЕРХ
+         ===================================== -->
+
+    <div class="badge">
+
+        🎓 ДЕМО-УРОК · 7 КЛАСС
+
+    </div>
+
+
+    <h1>
+
+        Алгоритмы ветвления
+
+    </h1>
+
+
+    <div class="subtitle">
+
+        С каким словом у вас ассоциируется эта тема?
+
+    </div>
+
+
+
+    <!-- =====================================
+         СЮДА БУДУТ ПОЯВЛЯТЬСЯ СЛОВА
+         ===================================== -->
+
+    <div
+        id="words"
+        class="words"
+    >
+
+        <div
+            id="empty"
+            class="empty"
+        >
+
+            Ожидаем ответы участников...
+
+        </div>
+
+    </div>
+
+
+
+    <!-- =====================================
+         КНОПКА
+         ===================================== -->
+
+    <button
+        id="generateButton"
+        class="generate"
+    >
+
+        ✨ Сгенерировать цель урока
+
+    </button>
+
+
+
+    <!-- =====================================
+         БУДУЩАЯ ЦЕЛЬ
+         ===================================== -->
+
+    <div
+        id="goal"
+        class="goal"
+    >
+
+        <div class="goal-title">
+
+            🎯 ЦЕЛЬ НАШЕГО УРОКА
+
+        </div>
+
+
+        <div
+            id="goalText"
+            class="goal-text"
+        >
+
+        </div>
+
+    </div>
+
+
+</div>
+
+
+
+<script>
+
+
+/* ==========================================
+   ШАГ 1.
+   ДАННЫЕ SUPABASE
+   ========================================== */
+
+
+/*
+   Здесь нужно использовать ТОЧНО ТЕ ЖЕ
+   значения, которые мы уже вставляли
+   в entry.html.
+*/
+
+
+const SUPABASE_URL =
+    "https://wbvvhlrrutmjawrwzwhk.supabase.co";
+
+
+const SUPABASE_KEY =
+    "sb_publishable_QJsp3Dn1V4bxHP1DmPLlLA_coWw9tDX";
+
+
+
+/* ==========================================
+   ШАГ 2.
+   СОЗДАЁМ ПОДКЛЮЧЕНИЕ
+   ========================================== */
+
+
+const supabaseClient =
+    window.supabase.createClient(
+        SUPABASE_URL,
+        SUPABASE_KEY
+    );
+
+
+
+/* ==========================================
+   ШАГ 3.
+   НАХОДИМ ЭЛЕМЕНТЫ СТРАНИЦЫ
+   ========================================== */
+
+
+const wordsContainer =
+    document.getElementById(
+        "words"
+    );
+
+
+const emptyMessage =
+    document.getElementById(
+        "empty"
+    );
+
+
+const generateButton =
+    document.getElementById(
+        "generateButton"
+    );
+
+
+const goal =
+    document.getElementById(
+        "goal"
+    );
+
+
+const goalText =
+    document.getElementById(
+        "goalText"
+    );
+
+
+
+/* ==========================================
+   ШАГ 4.
+   СОЗДАЁМ МАССИВ СЛОВ
+   ========================================== */
+
+
+let words = [];
+
+
+
+/* ==========================================
+   ШАГ 5.
+   ЗАГРУЖАЕМ СЛОВА ИЗ SUPABASE
+   ========================================== */
+
+
+async function loadWords() {
+
+
+    const { data, error } =
+
+        await supabaseClient
+
+            .from("words")
+
+            .select("*")
+
+            .order(
+                "created_at",
+                {
+                    ascending: true
+                }
+            );
+
+
+    if (error) {
+
+        console.error(
+            "Ошибка загрузки:",
+            error
+        );
+
+        return;
+
+    }
+
+
+    words = data || [];
+
+
+    renderWords();
+
+}
+
+
+
+/* ==========================================
+   ШАГ 6.
+   ПОКАЗЫВАЕМ СЛОВА НА ЭКРАНЕ
+   ========================================== */
+
+
+function renderWords() {
+
+
+    /*
+       Очищаем контейнер.
+    */
+
+    wordsContainer.innerHTML = "";
+
+
+    /*
+       Если слов нет —
+       показываем сообщение.
+    */
+
+    if (words.length === 0) {
+
+        wordsContainer.appendChild(
+            emptyMessage
+        );
+
+        return;
+
+    }
+
+
+    /*
+       Для каждого слова
+       создаём отдельную карточку.
+    */
+
+    words.forEach(
+        item => {
+
+
+            const wordElement =
+                document.createElement(
+                    "div"
+                );
+
+
+            wordElement.className =
+                "word";
+
+
+            wordElement.textContent =
+                item.word;
+
+
+            /*
+               При наведении можно будет
+               увидеть подсказку.
+            */
+
+            wordElement.title =
+                "Нажмите, чтобы удалить";
+
+
+            /*
+               При клике удаляем слово.
+            */
+
+            wordElement.addEventListener(
+                "click",
+                function() {
+
+                    deleteWord(
+                        item.id
+                    );
+
+                }
+            );
+
+
+            wordsContainer.appendChild(
+                wordElement
+            );
+
+
+        }
+    );
+
+}
+
+
+
+/* ==========================================
+   ШАГ 7.
+   УДАЛЕНИЕ СЛОВА
+   ========================================== */
+
+
+async function deleteWord(id) {
+
+
+    const { error } =
+
+        await supabaseClient
+
+            .from("words")
+
+            .delete()
+
+            .eq(
+                "id",
+                id
+            );
+
+
+    if (error) {
+
+        console.error(
+            "Ошибка удаления:",
+            error
+        );
+
+        return;
+
+    }
+
+
+    /*
+       Убираем слово
+       из нашего локального массива.
+    */
+
+    words =
+        words.filter(
+            item =>
+                item.id !== id
+        );
+
+
+    renderWords();
+
+}
+
+
+
+/* ==========================================
+   ШАГ 8.
+   REALTIME
+   ========================================== */
+
+
+/*
+   Вот ЭТОТ блок отвечает
+   за магию:
+
+   телефон отправил слово
+        ↓
+   Supabase
+        ↓
+   teacher.html получает его
+        ↓
+   слово появляется
+   без обновления страницы
+*/
+
+
+supabaseClient
+
+    .channel(
+        "words-realtime"
+    )
+
+    .on(
+
+        "postgres_changes",
+
+        {
+            event: "INSERT",
+
+            schema: "public",
+
+            table: "words"
+
+        },
+
+        function(payload) {
+
+
+            console.log(
+                "Новое слово:",
+                payload.new
+            );
+
+
+            /*
+               Добавляем новое слово
+               в наш массив.
+            */
+
+            words.push(
+                payload.new
+            );
+
+
+            /*
+               Перерисовываем экран.
+            */
+
+            renderWords();
+
+        }
+
+    )
+
+    .on(
+
+        "postgres_changes",
+
+        {
+            event: "DELETE",
+
+            schema: "public",
+
+            table: "words"
+
+        },
+
+        function(payload) {
+
+
+            /*
+               Если слово удалили,
+               убираем его и у других
+               подключённых экранов.
+            */
+
+            words =
+                words.filter(
+                    item =>
+                        item.id !==
+                        payload.old.id
+                );
+
+
+            renderWords();
+
+        }
+
+    )
+
+    .subscribe();
+
+
+
+/* ==========================================
+   ШАГ 9.
+   КНОПКА «СГЕНЕРИРОВАТЬ ЦЕЛЬ»
+   ========================================== */
+
+
+generateButton.addEventListener(
+
+    "click",
+
+    function() {
+
+
+        /*
+           Пока слов нет —
+           не генерируем цель.
+        */
+
+        if (words.length === 0) {
+
+            alert(
+                "Сначала дождитесь ответов участников 🙂"
+            );
+
+            return;
+
+        }
+
+
+        /*
+           На этом этапе мы пока
+           НЕ подключаем настоящий AI.
+
+           Просто показываем
+           тестовую цель.
+        */
+
+
+        const generatedGoal =
+
+            "Сегодня мы научимся создавать алгоритмы ветвления, понимать условия и использовать их для принятия решений в программе.";
+
+
+        /*
+           Скрываем слова.
+        */
+
+        wordsContainer.style.display =
+            "none";
+
+
+        /*
+           Скрываем кнопку.
+        */
+
+        generateButton.style.display =
+            "none";
+
+
+        /*
+           Показываем цель.
+        */
+
+        goal.style.display =
+            "block";
+
+
+        goalText.textContent =
+            generatedGoal;
+
+    }
+
+);
+
+
+
+/* ==========================================
+   ШАГ 10.
+   ЗАПУСКАЕМ ЗАГРУЗКУ
+   ========================================== */
+
+
+loadWords();
+
+
+</script>
+
+
+</body>
+
+</html>
