@@ -958,35 +958,38 @@ async function generateGoal() {
         // -------------------------------------
 
         const response =
-            await fetch(
+    await fetch(
 
-                "https://wbvvhlrrutmjawrwzwhk.supabase.co/functions/v1/generate-goal-ai",
+        "https://wbvvhlrrutmjawrwzwhk.supabase.co/functions/v1/generate-goal-ai",
 
-                {
+        {
 
-                    method: "POST",
+            method: "POST",
 
-                    headers: {
+            headers: {
 
-                        "Content-Type":
-                            "application/json",
+                "Content-Type":
+                    "application/json",
 
-                        "apikey":
-                            SUPABASE_KEY
+                "apikey":
+                    SUPABASE_KEY,
 
-                    },
+                "Authorization":
+                    "Bearer " + SUPABASE_KEY
 
-                    body:
-                        JSON.stringify({
+            },
 
-                            words:
-                                wordsList
+            body:
+                JSON.stringify({
 
-                        })
+                    words:
+                        wordsList
 
-                }
+                })
 
-            );
+        }
+
+    );
 
 
         // -------------------------------------
