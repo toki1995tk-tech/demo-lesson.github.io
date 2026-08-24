@@ -494,6 +494,34 @@
 @media(max-width:900px){.task2-workspace{grid-template-columns:1fr}}
 @media(max-width:560px){.task2-builder-area{padding:14px}.task2-bank{grid-template-columns:1fr}.task2-code-builder{font-size:12px;padding:12px}.task2-drop{min-width:145px}.task2-drop.text-drop{min-width:190px}}
 
+
+#task3{display:none}#task3.active{display:block}
+.fix-intro{margin-bottom:16px;padding:16px 18px;border-radius:16px;background:linear-gradient(135deg,#f2f8f1,#edf5ee);border:1px solid rgba(64,112,76,.12);color:#4f6555;line-height:1.5}
+.round-tabs{display:flex;gap:8px;margin:0 0 16px;flex-wrap:wrap}.round-tab{border:1px solid #cbd9ce;background:#fff;color:#4b6251;padding:11px 18px;border-radius:12px;font-weight:800;cursor:pointer}.round-tab.active{background:#315d40;color:#fff;border-color:#315d40}
+.round-panel{display:none}.round-panel.active{display:block}.fix-layout{display:grid;grid-template-columns:1fr 1fr;gap:18px}
+.fix-scene-card,.fix-code-card{border-radius:22px;overflow:hidden;box-shadow:0 14px 38px rgba(48,76,55,.12)}.fix-scene-card{background:#f7fbf6;padding:18px}.fix-code-card{background:#18231e;color:#edf7ef}
+.fix-round-title{font-size:21px;font-weight:900;color:#315b40;margin-bottom:7px}.fix-round-subtitle{color:#66796b;font-size:14px;margin-bottom:14px}
+.fix-scene{position:relative;height:350px;border-radius:18px;overflow:hidden;background:linear-gradient(#dff2dc 0 42%,#9dca8c 42% 100%);border:1px solid rgba(58,100,65,.1)}
+.fix-sun{position:absolute;right:20px;top:15px;font-size:32px;z-index:2}.fix-trees{position:absolute;inset:0;pointer-events:none;z-index:1}.fix-tree{position:absolute;font-size:40px}
+.fix-habitats{position:absolute;top:35px;left:10%;right:10%;display:flex;justify-content:space-between;z-index:3}.fix-habitat{text-align:center;width:28%}.fix-habitat-icon{font-size:48px}.fix-habitat-name{font-weight:800;color:#315b40}.fix-road{height:120px;width:8px;margin:6px auto 0;border-radius:8px;background:#d4b88b}
+.fix-character{position:absolute;bottom:68px;left:50%;transform:translateX(-50%);font-size:62px;z-index:5;filter:drop-shadow(0 7px 5px rgba(0,0,0,.12))}
+.fix-scene-caption{position:absolute;left:15px;right:15px;bottom:15px;z-index:6;padding:10px 13px;border-radius:11px;background:rgba(255,255,255,.88);color:#405545;font-weight:700;text-align:center;font-size:13px}
+.fix-code-head{padding:16px 20px;background:#213128;display:flex;justify-content:space-between;align-items:center}.fix-code-title{font-weight:900}.fix-code-body{padding:18px}
+.fix-goal{padding:12px 14px;border-radius:12px;background:rgba(255,255,255,.055);color:#bdcbbf;line-height:1.45;margin-bottom:14px;font-size:14px}
+.fix-code{padding:16px;border-radius:14px;background:#101712;border:1px solid rgba(255,255,255,.08);font-family:"SFMono-Regular",Consolas,"Liberation Mono",monospace;font-size:14px;line-height:1.7}
+.fix-line{min-height:35px;display:flex;align-items:center;gap:5px;flex-wrap:wrap}.fix-keyword{color:#c792ea;font-weight:900}.fix-var{color:#82aaff}.fix-string{color:#c3e88d}.fix-op{color:#89ddff}
+.fix-replace{min-width:160px;min-height:32px;padding:3px 8px;border:2px dashed #667b6d;border-radius:7px;display:inline-flex;align-items:center;color:#718477;cursor:pointer}.fix-replace.wrong-block{border-color:#d47777;color:#f2b2b2;background:rgba(212,119,119,.09)}.fix-replace.fixed-block{border-style:solid;border-color:#6ca579;color:#d1ecd5;background:rgba(108,165,121,.12)}
+.fix-bank-title{margin:16px 0 8px;color:#90a497;text-transform:uppercase;letter-spacing:1px;font-size:10px;font-weight:900}.fix-bank{display:flex;flex-wrap:wrap;gap:8px}
+.fix-option{padding:9px 11px;border-radius:10px;background:#26372c;border:1px solid rgba(255,255,255,.08);color:#dce9df;cursor:pointer;font-family:inherit;font-size:12px}.fix-option.selected{outline:2px solid #72b27e}
+.fix-actions{display:flex;gap:9px;margin-top:15px}.fix-run,.fix-reset{border-radius:10px;padding:11px 14px;font-weight:800;cursor:pointer}.fix-run{flex:1;border:0;background:#5c9a69;color:#fff}.fix-reset{border:1px solid rgba(255,255,255,.12);background:#24352b;color:#c8d6cc}
+.fix-result{margin-top:13px;padding:12px 14px;border-radius:12px;background:#202f27;border-left:4px solid #697c6e;color:#e6f1e8;font-weight:800}.fix-result.correct{background:#20382a;border-left-color:#72b27e}.fix-result.wrong{background:#3a2525;border-left-color:#df7070}
+@media(max-width:900px){.fix-layout{grid-template-columns:1fr}}
+
+
+/* FINAL TASK 3 VISIBILITY FIX */
+#task3 { display: none; }
+#task3.active { display: block !important; }
+
 </style>
 </head>
 
@@ -724,13 +752,72 @@
         </div>
     </section>
 
-    <!-- ЗАДАНИЕ 3 -->
-    <section class="placeholder" id="task3">
-        <h2>Задание 3</h2>
-        <p>Здесь появится следующее интерактивное задание.</p>
-    </section>
-
 </div>
+
+
+
+    <!-- ЗАДАНИЕ 3 -->
+    <section id="task3">
+      <div class="fix-intro"><b>🛠️ Почини алгоритм</b><br>Код уже написан, но не соответствует условию. Найди неправильный блок, замени его и проверь результат. Пройди три раунда — от простого к сложному.</div>
+      <div class="round-tabs">
+        <button class="round-tab active" data-round="1">Раунд 1</button>
+        <button class="round-tab" data-round="2">Раунд 2</button>
+        <button class="round-tab" data-round="3">Раунд 3 • БОСС</button>
+      </div>
+
+      <div class="round-panel active" id="round1">
+        <div class="fix-layout">
+          <div class="fix-scene-card"><div class="fix-round-title">🟢 Раунд 1 — одна ошибка</div><div class="fix-round-subtitle">Замени только неправильный результат.</div>
+            <div class="fix-scene"><div class="fix-sun">☀️</div><div class="fix-trees"><div class="fix-tree" style="left:4%;top:26%">🌲</div><div class="fix-tree" style="left:87%;top:25%">🌳</div></div>
+              <div class="fix-habitats"><div class="fix-habitat"><div class="fix-habitat-icon">🕳️</div><div class="fix-habitat-name">Нора</div><div class="fix-road"></div></div><div class="fix-habitat"><div class="fix-habitat-icon">🪵</div><div class="fix-habitat-name">Берлога</div><div class="fix-road"></div></div><div class="fix-habitat"><div class="fix-habitat-icon">🪺</div><div class="fix-habitat-name">Гнездо</div><div class="fix-road"></div></div></div>
+              <div class="fix-character">🐦</div><div class="fix-scene-caption">Птица должна жить в гнезде.</div>
+            </div>
+          </div>
+          <div class="fix-code-card"><div class="fix-code-head"><div class="fix-code-title">💻 Python</div><div class="dots"><span class="dot"></span><span class="dot"></span><span class="dot"></span></div></div><div class="fix-code-body">
+            <div class="fix-goal"><b>🎯 Условие:</b> если объект — птица, программа должна сообщить, что птица живёт в гнезде.</div>
+            <div class="fix-code"><div class="fix-line"><span class="fix-var">object</span><span class="fix-op">=</span><span class="fix-string">"птица"</span></div><div class="fix-line"><span class="fix-keyword">if</span> object <span class="fix-op">==</span> <span class="fix-string">"птица"</span>:</div><div class="fix-line">&nbsp;&nbsp;&nbsp;&nbsp;<span class="fix-var">print</span>(<span class="fix-string">"Птица живёт в <span id="r1slot" class="fix-replace wrong-block">норе</span>."</span>)</div></div>
+            <div class="fix-bank-title">Выбери замену</div><div class="fix-bank"><button class="fix-option r1" data-value="норе">норе</button><button class="fix-option r1" data-value="берлоге">берлоге</button><button class="fix-option r1" data-value="гнезде">гнезде</button></div>
+            <div class="fix-actions"><button class="fix-reset" data-reset="1">↺ Сбросить</button><button class="fix-run" data-run="1">▶ Проверить</button></div><div class="fix-result" id="r1result">Выбери правильную замену.</div>
+          </div></div>
+        </div>
+      </div>
+
+      <div class="round-panel" id="round2">
+        <div class="fix-layout">
+          <div class="fix-scene-card"><div class="fix-round-title">🟡 Раунд 2 — две ошибки</div><div class="fix-round-subtitle">Найди две несоответствующие части алгоритма.</div>
+            <div class="fix-scene"><div class="fix-sun">🌤️</div><div class="fix-trees"><div class="fix-tree" style="left:5%;top:25%">🌳</div><div class="fix-tree" style="left:86%;top:28%">🌲</div></div>
+              <div class="fix-habitats"><div class="fix-habitat"><div class="fix-habitat-icon">🕳️</div><div class="fix-habitat-name">Нора</div><div class="fix-road"></div></div><div class="fix-habitat"><div class="fix-habitat-icon">🪵</div><div class="fix-habitat-name">Берлога</div><div class="fix-road"></div></div><div class="fix-habitat"><div class="fix-habitat-icon">🪺</div><div class="fix-habitat-name">Гнездо</div><div class="fix-road"></div></div></div>
+              <div class="fix-character">🐻</div><div class="fix-scene-caption">Каждый должен попасть в своё жилище.</div>
+            </div>
+          </div>
+          <div class="fix-code-card"><div class="fix-code-head"><div class="fix-code-title">💻 Python</div><div class="dots"><span class="dot"></span><span class="dot"></span><span class="dot"></span></div></div><div class="fix-code-body">
+            <div class="fix-goal"><b>🎯 Условие:</b> заяц → нора, медведь → берлога, птица → гнездо.</div>
+            <div class="fix-code"><div class="fix-line"><span class="fix-var">object</span><span class="fix-op">=</span><span class="fix-string">"медведь"</span></div><div class="fix-line"><span class="fix-keyword">if</span> object <span class="fix-op">==</span> <span class="fix-string">"медведь"</span>:</div><div class="fix-line">&nbsp;&nbsp;&nbsp;&nbsp;<span class="fix-var">print</span>(<span class="fix-string">"Заяц живёт в норе."</span>)</div><div class="fix-line"><span class="fix-keyword">elif</span> object <span class="fix-op">==</span> <span class="fix-string">"птица"</span>:</div><div class="fix-line">&nbsp;&nbsp;&nbsp;&nbsp;<span class="fix-var">print</span>(<span class="fix-string">"Птица живёт в гнезде."</span>)</div><div class="fix-line"><span class="fix-keyword">else</span>:</div><div class="fix-line">&nbsp;&nbsp;&nbsp;&nbsp;<span class="fix-var">print</span>(<span class="fix-string">"Медведь живёт в берлоге."</span>)</div></div>
+            <div class="fix-bank-title">Найди две ошибки</div><div class="fix-bank"><button class="fix-option r2choice" data-value="condition">Первое условие</button><button class="fix-option r2choice" data-value="print">Первый print</button><button class="fix-option r2choice" data-value="nothing">Ошибок больше нет</button></div>
+            <div class="fix-bank-title">Выбери две замены</div><div class="fix-bank"><button class="fix-option r2answer" data-value="condition">object == "заяц"</button><button class="fix-option r2answer" data-value="print">"Медведь живёт в берлоге."</button></div>
+            <div class="fix-actions"><button class="fix-reset" data-reset="2">↺ Сбросить</button><button class="fix-run" data-run="2">▶ Проверить</button></div><div class="fix-result" id="r2result">Найди две ошибки и выбери правильные замены.</div>
+          </div></div>
+        </div>
+      </div>
+
+      <div class="round-panel" id="round3">
+        <div class="fix-layout">
+          <div class="fix-scene-card"><div class="fix-round-title">🔴 Раунд 3 — БОСС</div><div class="fix-round-subtitle">Проверь всю логику алгоритма.</div>
+            <div class="fix-scene"><div class="fix-sun">🌧️</div><div class="fix-trees"><div class="fix-tree" style="left:4%;top:25%">🌲</div><div class="fix-tree" style="left:87%;top:25%">🌳</div></div>
+              <div class="fix-habitats"><div class="fix-habitat"><div class="fix-habitat-icon">🕳️</div><div class="fix-habitat-name">Нора</div><div class="fix-road"></div></div><div class="fix-habitat"><div class="fix-habitat-icon">🪵</div><div class="fix-habitat-name">Берлога</div><div class="fix-road"></div></div><div class="fix-habitat"><div class="fix-habitat-icon">🪺</div><div class="fix-habitat-name">Гнездо</div><div class="fix-road"></div></div></div>
+              <div class="fix-character">🐰</div><div class="fix-scene-caption">🌧️ Начался дождь! Каждый должен найти своё укрытие.</div>
+            </div>
+          </div>
+          <div class="fix-code-card"><div class="fix-code-head"><div class="fix-code-title">💻 Python</div><div class="dots"><span class="dot"></span><span class="dot"></span><span class="dot"></span></div></div><div class="fix-code-body">
+            <div class="fix-goal"><b>🎯 Условие:</b> заяц → нора, медведь → берлога, птица → гнездо.</div>
+            <div class="fix-code"><div class="fix-line"><span class="fix-var">object</span><span class="fix-op">=</span><span class="fix-string">"птица"</span></div><div class="fix-line"><span class="fix-keyword">if</span> object <span class="fix-op">==</span> <span class="fix-string">"заяц"</span>:</div><div class="fix-line">&nbsp;&nbsp;&nbsp;&nbsp;<span class="fix-var">print</span>(<span class="fix-string">"Заяц идёт в нору."</span>)</div><div class="fix-line"><span class="fix-keyword">elif</span> object <span class="fix-op">==</span> <span class="fix-string">"медведь"</span>:</div><div class="fix-line">&nbsp;&nbsp;&nbsp;&nbsp;<span class="fix-var">print</span>(<span class="fix-string">"Медведь идёт в гнездо."</span>)</div><div class="fix-line"><span class="fix-keyword">else</span>:</div><div class="fix-line">&nbsp;&nbsp;&nbsp;&nbsp;<span class="fix-var">print</span>(<span class="fix-string">"Птица идёт в берлогу."</span>)</div></div>
+            <div class="fix-bank-title">Выбери неправильные результаты</div><div class="fix-bank"><button class="fix-option r3choice" data-value="elif">❌ Медведь → гнездо</button><button class="fix-option r3choice" data-value="else">❌ Птица → берлога</button><button class="fix-option r3choice" data-value="if">Условие if</button></div>
+            <div class="fix-bank-title">Выбери исправления</div><div class="fix-bank"><button class="fix-option r3answer" data-value="elif">Медведь идёт в берлогу.</button><button class="fix-option r3answer" data-value="else">Птица идёт в гнездо.</button></div>
+            <div class="fix-actions"><button class="fix-reset" data-reset="3">↺ Сбросить</button><button class="fix-run" data-run="3">▶ Проверить</button></div><div class="fix-result" id="r3result">Почини логику так, чтобы все три животных получили правильное укрытие.</div>
+          </div></div>
+        </div>
+      </div>
+    </section>
 
 
 <script>
@@ -1174,7 +1261,87 @@
             );
         });
     });
+
+/* TASK 3 */
+(function(){
+  const tabs=document.querySelectorAll(".round-tab");
+  const panels=document.querySelectorAll(".round-panel");
+  tabs.forEach(t=>t.addEventListener("click",()=>{
+    tabs.forEach(x=>x.classList.remove("active")); t.classList.add("active");
+    panels.forEach(p=>p.classList.toggle("active",p.id==="round"+t.dataset.round));
+  }));
+
+  let r1=null;
+  document.querySelectorAll(".r1").forEach(b=>b.addEventListener("click",()=>{
+    document.querySelectorAll(".r1").forEach(x=>x.classList.remove("selected")); b.classList.add("selected"); r1=b.dataset.value;
+  }));
+  document.querySelector('[data-run="1"]').addEventListener("click",()=>{
+    const r=document.getElementById("r1result");
+    if(r1==="гнезде"){r.className="fix-result correct";r.textContent="🎉 Отлично! Птица живёт в гнезде. Алгоритм исправлен."}
+    else{r.className="fix-result wrong";r.textContent="❌ Неверно. Птица должна жить в гнезде."}
+  });
+  document.querySelector('[data-reset="1"]').addEventListener("click",()=>{
+    r1=null;document.querySelectorAll(".r1").forEach(x=>x.classList.remove("selected"));
+    const r=document.getElementById("r1result");r.className="fix-result";r.textContent="Выбери правильную замену.";
+  });
+
+  const toggleSet=(selector)=>{
+    const set=new Set();
+    document.querySelectorAll(selector).forEach(b=>b.addEventListener("click",()=>{
+      b.classList.toggle("selected"); b.classList.contains("selected")?set.add(b.dataset.value):set.delete(b.dataset.value);
+    }));
+    return set;
+  };
+  const r2c=toggleSet(".r2choice"),r2a=toggleSet(".r2answer");
+  document.querySelector('[data-run="2"]').addEventListener("click",()=>{
+    const ok=r2c.size===2&&r2c.has("condition")&&r2c.has("print")&&r2a.size===2&&r2a.has("condition")&&r2a.has("print");
+    const r=document.getElementById("r2result");
+    r.className="fix-result "+(ok?"correct":"wrong");
+    r.textContent=ok?"🎉 Отлично! Ты нашёл обе ошибки и выбрал правильные замены.":"❌ Нужно найти именно две ошибки и выбрать две соответствующие замены.";
+  });
+  document.querySelector('[data-reset="2"]').addEventListener("click",()=>{
+    document.querySelectorAll(".r2choice,.r2answer").forEach(x=>x.classList.remove("selected"));
+    const r=document.getElementById("r2result");r.className="fix-result";r.textContent="Найди две ошибки и выбери правильные замены.";
+  });
+
+  const r3c=toggleSet(".r3choice"),r3a=toggleSet(".r3answer");
+  document.querySelector('[data-run="3"]').addEventListener("click",()=>{
+    const ok=r3c.size===2&&r3c.has("elif")&&r3c.has("else")&&r3a.size===2&&r3a.has("elif")&&r3a.has("else");
+    const r=document.getElementById("r3result");
+    r.className="fix-result "+(ok?"correct":"wrong");
+    r.textContent=ok?"🏆 БОСС ПОБЕЖДЁН! Медведь идёт в берлогу, птица — в гнездо.":"❌ Проверь логику. Условие if уже правильное — исправить нужно результаты для медведя и птицы.";
+  });
+  document.querySelector('[data-reset="3"]').addEventListener("click",()=>{
+    document.querySelectorAll(".r3choice,.r3answer").forEach(x=>x.classList.remove("selected"));
+    const r=document.getElementById("r3result");r.className="fix-result";r.textContent="Почини логику так, чтобы все три животных получили правильное укрытие.";
+  });
+})();
+
 </script>
 
+<script>
+
+/* FINAL TASK 3 NAVIGATION FIX */
+(function () {
+  function showTask3() {
+    document.querySelectorAll('section[id^="task"]').forEach(function (s) {
+      s.classList.remove('active');
+      if (s.id === 'task3') s.style.display = 'block';
+      else s.style.display = 'none';
+    });
+    var t3 = document.getElementById('task3');
+    if (t3) {
+      t3.classList.add('active');
+      t3.style.display = 'block';
+      t3.scrollIntoView({behavior:'smooth', block:'start'});
+    }
+  }
+
+  document.querySelectorAll('[data-task="task3"], [data-task="3"]').forEach(function (b) {
+    b.addEventListener('click', showTask3);
+  });
+})();
+
+</script>
 </body>
 </html>
