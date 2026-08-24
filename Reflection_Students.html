@@ -1,0 +1,107 @@
+<!doctype html>
+<html lang="ru">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Итоги урока — рефлексия</title>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<style>
+*{box-sizing:border-box}body{margin:0;font-family:Arial,sans-serif;background:linear-gradient(135deg,#eef8f2,#f5f1ff,#fff8ed);color:#263238}
+.wrap{max-width:900px;margin:auto;padding:25px 16px 50px}.card{background:#fff;border-radius:26px;padding:28px;margin-bottom:20px;box-shadow:0 15px 45px #00000016}
+h1{font-size:clamp(28px,5vw,44px);margin:0 0 10px}h2{margin:0 0 10px}.sub{color:#687381;line-height:1.5}
+input,textarea{width:100%;padding:15px;border:2px solid #e1e5eb;border-radius:15px;font-size:17px;outline:0;margin-top:8px}
+textarea{min-height:120px;resize:vertical}button{border:0;border-radius:15px;padding:15px 18px;font-size:16px;font-weight:700;cursor:pointer}
+.primary{width:100%;margin-top:14px;background:#707cf4;color:white}.next{width:100%;margin-top:16px;background:#263238;color:#fff}
+.hidden{display:none!important}.progress{display:flex;gap:7px;margin-bottom:22px}.bar{height:7px;flex:1;background:#e5e8ee;border-radius:99px}.active{background:#7c87f5}.done{background:#64b785}
+.badge{display:inline-block;padding:7px 12px;border-radius:99px;background:#eef0ff;color:#5965d7;font-weight:700;font-size:13px}
+.q{font-size:23px;font-weight:800;line-height:1.35;margin:14px 0}.options{display:grid;gap:11px}.opt{text-align:left;background:#fff;border:2px solid #e1e5eb;color:#263238}.opt:hover:not(:disabled){border-color:#909af4}.opt.correct{border-color:#55b77d;background:#eaf8f0;color:#17653a}.opt.wrong{border-color:#e46b70;background:#fff0f0;color:#8b2529}.feedback{margin-top:14px;padding:12px;border-radius:13px;font-weight:700}.ok{background:#eaf8f0;color:#17653a}.no{background:#fff0f0;color:#8b2529}
+.score{text-align:center;font-size:70px;font-weight:900;margin:15px}.green{color:#2e9b62}.yellow{color:#d49a2a}.red{color:#d95459}
+.likes{display:grid;grid-template-columns:1fr 1fr;gap:12px}.like{background:#fff;border:2px solid #e1e5eb}.like.y{border-color:#55b77d;background:#eaf8f0}.like.n{border-color:#e46b70;background:#fff0f0}
+@media(max-width:600px){.card{padding:21px}.likes{grid-template-columns:1fr}}
+</style>
+</head>
+<body><div class="wrap">
+
+<section class="card" id="nameScreen">
+<div style="font-size:45px">🌿</div><h1>Подведём итоги урока</h1>
+<p class="sub">Ответьте на 3 вопроса, а затем оцените сегодняшний урок.</p>
+<b>Укажите своё имя</b><input id="name" maxlength="80" placeholder="Например, Анна">
+<button class="primary" id="start">Начать рефлексию →</button><p id="nameErr" class="sub"></p>
+</section>
+
+<section class="card hidden" id="quiz">
+<div class="progress"><div class="bar" id="b1"></div><div class="bar" id="b2"></div><div class="bar" id="b3"></div></div>
+<span class="badge" id="num"></span><div class="q" id="question"></div><div class="options" id="options"></div><div id="feedback"></div>
+<button class="next hidden" id="next">Следующий вопрос →</button>
+</section>
+
+<section class="card hidden" id="result">
+<div style="text-align:center"><div>Ваш результат</div><div id="score" class="score"></div><p id="msg" class="sub"></p></div>
+<h2>☀️ Как вам сегодняшний урок?</h2><p class="sub">Выберите один вариант.</p>
+<div class="likes"><button class="like" id="yes">😊 Да, понравился</button><button class="like" id="no">😕 Нет, не понравился</button></div>
+<br><b>Пожелания или комментарии</b><textarea id="comment" maxlength="1000" placeholder="Напишите здесь..."></textarea>
+<button class="primary" id="send">Отправить отзыв</button><p id="sendErr" class="sub"></p>
+</section>
+
+<section class="card hidden" id="done"><div style="text-align:center;padding:25px"><div style="font-size:70px">🎉</div><h1>Спасибо!</h1><p class="sub">Ваш результат и отзыв сохранены.</p></div></section>
+</div>
+
+<script>
+/* ====== ВСТАВЬ СЮДА ДАННЫЕ ИЗ SUPABASE ====== */
+const SUPABASE_URL="ВСТАВЬ_СЮДА_PROJECT_URL";
+const SUPABASE_KEY="ВСТАВЬ_СЮДА_PUBLISHABLE_ИЛИ_ANON_KEY";
+const db=supabase.createClient(SUPABASE_URL,SUPABASE_KEY);
+
+/* ====== 3 ВОПРОСА ====== */
+const qs=[
+{text:"Что такое алгоритм ветвления?",a:[
+["Алгоритм, в котором команды всегда идут в одном порядке",0],
+["Алгоритм, в котором дальнейшие действия зависят от условия",1],
+["Набор случайных команд программы",0]]},
+{text:"Как правильно записывается условие в Python?",a:[
+['if object == "медведь":\n    print("Медведь в берлоге")',1],
+['if object = "медведь":\n    print("Медведь в берлоге")',0],
+['if object == "медведь"\n    print("Медведь в берлоге")',0]]},
+{text:"Какой вариант правильно использует конструкцию if → elif → else?",a:[
+['if object == "заяц":\n    print("Нора")\nelse object == "медведь":\n    print("Берлога")',0],
+['if object == "заяц":\n    print("Нора")\nelif object == "медведь":\n    print("Берлога")\nelse:\n    print("Гнездо")',1],
+['if object == "заяц":\n    print("Нора")\nelse:\n    object == "медведь"\n    print("Берлога")',0]]}
+];
+
+let i=0,score=0,id=null,liked=null,ans=["","",""];
+const $=x=>document.getElementById(x);
+function show(x){$(x).classList.remove("hidden")}function hide(x){$(x).classList.add("hidden")}
+function esc(s){return s.replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#039;"}[c]))}
+async function update(o){if(!id)return;let r=await db.from("reflection_results").update(o).eq("id",id);if(r.error)console.error(r.error)}
+function render(){
+["b1","b2","b3"].forEach((x,n)=>$(x).className="bar "+(n<i?"done ":"")+(n===i?"active":""));
+$("num").textContent=`Вопрос ${i+1} из 3`;$("question").textContent=qs[i].text;$("feedback").innerHTML="";$("next").classList.add("hidden");
+$("next").textContent=i===2?"Посмотреть результат →":"Следующий вопрос →";
+$("options").innerHTML="";
+qs[i].a.forEach((x,n)=>{let b=document.createElement("button");b.className="opt";b.innerHTML=`<b>${String.fromCharCode(65+n)}.</b> ${esc(x[0]).replace(/\n/g,"<br>")}`;b.onclick=()=>answer(n,b);$("options").appendChild(b)})
+}
+async function answer(n,btn){
+let all=[...document.querySelectorAll(".opt")];if(all.some(x=>x.disabled))return;all.forEach(x=>x.disabled=true);
+ans[i]=String.fromCharCode(65+n);let good=qs[i].a[n][1];
+if(good){score++;btn.classList.add("correct");$("feedback").innerHTML='<div class="feedback ok">✅ Правильно!</div>'}
+else{btn.classList.add("wrong");all[qs[i].a.findIndex(x=>x[1])].classList.add("correct");$("feedback").innerHTML='<div class="feedback no">❌ Неверно. Правильный ответ подсвечен зелёным.</div>'}
+await update({correct_answers:score,q1_answer:ans[0]||null,q2_answer:ans[1]||null,q3_answer:ans[2]||null});
+$("next").classList.remove("hidden")
+}
+$("start").onclick=async()=>{
+let name=$("name").value.trim();if(!name){$("nameErr").textContent="Пожалуйста, укажите имя.";return}
+$("start").disabled=true;$("start").textContent="Сохраняем…";
+let r=await db.from("reflection_results").insert({name,correct_answers:0}).select("id").single();
+if(r.error){console.error(r.error);$("nameErr").textContent="Ошибка подключения к Supabase. Проверь URL, ключ и таблицу."; $("start").disabled=false;$("start").textContent="Начать рефлексию →";return}
+id=r.data.id;hide("nameScreen");show("quiz");render()
+};
+$("next").onclick=()=>{if(i<2){i++;render()}else{hide("quiz");show("result");$("score").textContent=score+" / 3";$("score").className="score "+(score===3?"green":score===2?"yellow":"red");$("msg").textContent=score===3?"Отличный результат! 🌟":score===2?"Почти получилось! 👍":"Есть что ещё потренировать 💪"}};
+$("yes").onclick=()=>{liked=true;$("yes").className="like y";$("no").className="like"};
+$("no").onclick=()=>{liked=false;$("no").className="like n";$("yes").className="like"};
+$("send").onclick=async()=>{
+if(liked===null){$("sendErr").textContent="Сначала выберите, понравился ли вам урок.";return}
+$("send").disabled=true;$("send").textContent="Отправляем…";
+await update({lesson_liked:liked,comment:$("comment").value.trim()});
+hide("result");show("done")
+};
+</script></body></html>
