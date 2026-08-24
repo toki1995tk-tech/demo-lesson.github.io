@@ -1,0 +1,1180 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Практические задания — Алгоритмы ветвления</title>
+
+<style>
+    * {
+        box-sizing: border-box;
+    }
+
+    body {
+        margin: 0;
+        min-height: 100vh;
+        font-family: Arial, Helvetica, sans-serif;
+        background:
+            radial-gradient(circle at 15% 15%, rgba(255,255,255,.55), transparent 28%),
+            linear-gradient(135deg, #dff3e5 0%, #f7f3df 48%, #d7ead8 100%);
+        color: #20342a;
+    }
+
+    .page {
+        width: min(1400px, 94%);
+        margin: 0 auto;
+        padding: 28px 0 40px;
+    }
+
+    .header {
+        text-align: center;
+        margin-bottom: 22px;
+    }
+
+    .header h1 {
+        margin: 0;
+        font-size: clamp(28px, 4vw, 46px);
+        color: #214d36;
+        letter-spacing: -1px;
+    }
+
+    .header p {
+        margin: 8px 0 0;
+        color: #607567;
+        font-size: 17px;
+    }
+
+    .tabs {
+        display: flex;
+        justify-content: center;
+        gap: 10px;
+        margin: 24px 0;
+        flex-wrap: wrap;
+    }
+
+    .tab {
+        border: 0;
+        padding: 12px 25px;
+        border-radius: 999px;
+        background: rgba(255,255,255,.75);
+        color: #486354;
+        font-weight: 700;
+        font-size: 16px;
+        cursor: pointer;
+        box-shadow: 0 5px 18px rgba(45,78,57,.10);
+        transition: .2s ease;
+    }
+
+    .tab:hover {
+        transform: translateY(-2px);
+    }
+
+    .tab.active {
+        background: #2f6b48;
+        color: white;
+        box-shadow: 0 8px 22px rgba(47,107,72,.28);
+    }
+
+    .workspace {
+        display: grid;
+        grid-template-columns: 1.05fr .95fr;
+        gap: 18px;
+    }
+
+    .panel {
+        border-radius: 24px;
+        background: rgba(255,255,255,.82);
+        box-shadow: 0 16px 45px rgba(44,73,53,.14);
+        border: 1px solid rgba(255,255,255,.8);
+        overflow: hidden;
+    }
+
+    /* LEFT SIDE */
+    .forest-panel {
+        min-height: 650px;
+        position: relative;
+        padding: 24px;
+        background:
+            linear-gradient(to bottom, rgba(217,239,217,.92), rgba(233,225,190,.92));
+    }
+
+    .section-title {
+        text-align: center;
+        font-size: 19px;
+        font-weight: 800;
+        color: #315b40;
+        margin-bottom: 14px;
+    }
+
+    .forest-scene {
+        position: relative;
+        height: 455px;
+        border-radius: 22px;
+        overflow: hidden;
+        background:
+            linear-gradient(to bottom, #bfe3ef 0 32%, #8fc486 32% 100%);
+        border: 2px solid rgba(53,96,61,.18);
+    }
+
+    .sun {
+        position: absolute;
+        top: 25px;
+        right: 42px;
+        font-size: 54px;
+        opacity: .9;
+    }
+
+    .tree {
+        position: absolute;
+        font-size: 62px;
+        user-select: none;
+        pointer-events: none;
+    }
+
+    .tree.t1 { left: 12px; top: 88px; }
+    .tree.t2 { left: 105px; top: 50px; }
+    .tree.t3 { right: 100px; top: 62px; }
+    .tree.t4 { right: 10px; top: 105px; }
+    .tree.t5 { left: 45px; bottom: 50px; font-size: 48px; }
+    .tree.t6 { right: 32px; bottom: 55px; font-size: 48px; }
+
+    .habitats {
+        position: absolute;
+        top: 125px;
+        left: 8%;
+        right: 8%;
+        display: grid;
+        grid-template-columns: repeat(3, 1fr);
+        gap: 12px;
+    }
+
+    .habitat {
+        text-align: center;
+        position: relative;
+        z-index: 2;
+    }
+
+    .habitat-icon {
+        font-size: 54px;
+        filter: drop-shadow(0 5px 3px rgba(0,0,0,.12));
+    }
+
+    .habitat-name {
+        margin-top: 3px;
+        font-weight: 800;
+        color: #38553e;
+        font-size: 14px;
+    }
+
+    .road {
+        height: 115px;
+        width: 4px;
+        background: repeating-linear-gradient(
+            to bottom,
+            #d7c89d 0 10px,
+            #b9a878 10px 20px
+        );
+        margin: 8px auto 0;
+        border-radius: 8px;
+        opacity: .9;
+    }
+
+    .platform {
+        position: absolute;
+        z-index: 5;
+        left: 50%;
+        bottom: 58px;
+        transform: translateX(-50%);
+        width: 46%;
+        min-width: 230px;
+        height: 75px;
+        border-radius: 20px;
+        background: linear-gradient(#a77a48, #80562f);
+        border: 4px solid #674523;
+        box-shadow: inset 0 7px 0 rgba(255,255,255,.12),
+                    0 12px 20px rgba(62,50,30,.22);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        color: #fff7df;
+        font-weight: 800;
+        letter-spacing: .4px;
+        transition: .25s ease;
+    }
+
+    .platform.over {
+        transform: translateX(-50%) scale(1.04);
+        box-shadow: 0 0 0 5px rgba(255,255,255,.45),
+                    0 0 28px rgba(255,210,92,.75);
+    }
+
+    .platform.has-object {
+        background: linear-gradient(#9b7040, #6f4929);
+    }
+
+    .animals {
+        position: absolute;
+        z-index: 10;
+        bottom: 5px;
+        left: 50%;
+        transform: translateX(-50%);
+        width: 88%;
+        display: flex;
+        justify-content: center;
+        gap: 35px;
+    }
+
+    .animal {
+        width: 82px;
+        height: 82px;
+        border-radius: 20px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 51px;
+        cursor: grab;
+        user-select: none;
+        touch-action: none;
+        background: rgba(255,255,255,.84);
+        border: 2px solid rgba(53,87,60,.18);
+        box-shadow: 0 8px 17px rgba(48,72,51,.18);
+        transition: transform .18s ease, opacity .18s ease, box-shadow .18s ease;
+    }
+
+    .animal:hover {
+        transform: translateY(-5px) scale(1.04);
+    }
+
+    .animal.dragging {
+        cursor: grabbing;
+        transform: scale(1.12);
+        box-shadow: 0 18px 30px rgba(35,58,41,.28);
+        opacity: .86;
+    }
+
+    .animal.hidden {
+        opacity: .25;
+    }
+
+    .hint {
+        text-align: center;
+        margin-top: 13px;
+        color: #687a6d;
+        font-size: 14px;
+    }
+
+    .selected {
+        margin: 15px auto 0;
+        width: fit-content;
+        padding: 9px 18px;
+        border-radius: 999px;
+        background: #eef7ee;
+        color: #315b40;
+        font-weight: 700;
+    }
+
+    /* RIGHT SIDE */
+    .code-panel {
+        min-height: 650px;
+        background: #18231e;
+        color: #e9f5ed;
+        display: flex;
+        flex-direction: column;
+    }
+
+    .code-header {
+        padding: 18px 22px;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        background: #213128;
+        border-bottom: 1px solid rgba(255,255,255,.08);
+    }
+
+    .code-title {
+        font-weight: 800;
+        font-size: 18px;
+    }
+
+    .dots {
+        display: flex;
+        gap: 6px;
+    }
+
+    .dot {
+        width: 11px;
+        height: 11px;
+        border-radius: 50%;
+        background: #718278;
+    }
+
+    .code-area {
+        padding: 26px 24px;
+        flex: 1;
+        display: flex;
+        flex-direction: column;
+    }
+
+    .code-block {
+        margin: 0;
+        padding: 20px;
+        border-radius: 16px;
+        background: #111914;
+        border: 1px solid rgba(255,255,255,.07);
+        min-height: 300px;
+        overflow-x: auto;
+        font-family: "SFMono-Regular", Consolas, "Liberation Mono", monospace;
+        font-size: 16px;
+        line-height: 1.75;
+        white-space: pre-wrap;
+    }
+
+    .code-line {
+        display: block;
+        transition: background .25s ease;
+    }
+
+    .code-line.highlight {
+        background: rgba(152, 211, 163, .13);
+        border-radius: 6px;
+    }
+
+    .keyword { color: #c792ea; }
+    .variable { color: #82aaff; }
+    .string { color: #c3e88d; }
+    .operator { color: #89ddff; }
+    .comment { color: #6e806f; }
+
+    .run-row {
+        margin-top: 18px;
+        display: flex;
+        gap: 12px;
+        align-items: center;
+    }
+
+    .run-btn {
+        border: 0;
+        border-radius: 12px;
+        padding: 13px 22px;
+        background: #72b27e;
+        color: #102116;
+        font-weight: 900;
+        font-size: 15px;
+        cursor: pointer;
+        transition: .2s ease;
+    }
+
+    .run-btn:hover {
+        transform: translateY(-2px);
+        background: #86c891;
+    }
+
+    .run-btn:active {
+        transform: translateY(0);
+    }
+
+    .result {
+        margin-top: 16px;
+        padding: 17px 18px;
+        border-radius: 14px;
+        background: #202f27;
+        border-left: 4px solid #72b27e;
+        min-height: 62px;
+    }
+
+    .result-label {
+        color: #8fa597;
+        font-size: 12px;
+        text-transform: uppercase;
+        letter-spacing: 1px;
+        margin-bottom: 5px;
+    }
+
+    .result-text {
+        font-size: 18px;
+        font-weight: 700;
+    }
+
+    .explanation {
+        margin-top: 17px;
+        padding: 14px 16px;
+        border-radius: 12px;
+        background: rgba(255,255,255,.045);
+        color: #b8c8bd;
+        font-size: 14px;
+        line-height: 1.5;
+    }
+
+    .placeholder {
+        display: none;
+        text-align: center;
+        padding: 80px 25px;
+        color: #708075;
+    }
+
+    .placeholder.active {
+        display: block;
+    }
+
+    @media (max-width: 900px) {
+        .workspace {
+            grid-template-columns: 1fr;
+        }
+
+        .forest-panel,
+        .code-panel {
+            min-height: auto;
+        }
+
+        .forest-scene {
+            height: 480px;
+        }
+    }
+
+    @media (max-width: 560px) {
+        .page {
+            width: 96%;
+            padding-top: 18px;
+        }
+
+        .forest-panel {
+            padding: 12px;
+        }
+
+        .habitats {
+            left: 3%;
+            right: 3%;
+        }
+
+        .platform {
+            width: 58%;
+            min-width: 180px;
+        }
+
+        .animals {
+            gap: 10px;
+        }
+
+        .animal {
+            width: 70px;
+            height: 70px;
+            font-size: 43px;
+        }
+
+        .code-block {
+            font-size: 13px;
+            padding: 14px;
+        }
+    }
+
+/* TASK 2 */
+#task2{display:none}
+#task2.active{display:block}
+.task2-workspace{display:grid;grid-template-columns:1.05fr .95fr;gap:18px}
+.task2-code-panel{min-height:650px;background:#18231e;color:#e9f5ed;border-radius:24px;overflow:hidden;box-shadow:0 16px 45px rgba(44,73,53,.14)}
+.task2-code-header{padding:18px 22px;display:flex;align-items:center;justify-content:space-between;background:#213128;border-bottom:1px solid rgba(255,255,255,.08)}
+.task2-code-title{font-weight:800;font-size:18px}
+.task2-builder-area{padding:22px}
+.task2-instruction{margin-bottom:14px;padding:13px 15px;border-radius:12px;background:rgba(255,255,255,.05);color:#b8c8bd;font-size:14px;line-height:1.45}
+.task2-code-builder{padding:18px;border-radius:16px;background:#111914;border:1px solid rgba(255,255,255,.07);font-family:"SFMono-Regular",Consolas,"Liberation Mono",monospace;font-size:14px;line-height:1.6}
+.task2-code-row{min-height:50px;display:flex;align-items:center;gap:6px;flex-wrap:wrap}
+.task2-indent{width:22px;flex:0 0 22px}
+.task2-keyword{color:#c792ea;font-weight:900}.task2-variable{color:#82aaff}.task2-operator,.task2-colon{color:#89ddff}
+.task2-drop{min-width:190px;min-height:35px;padding:4px 9px;border:2px dashed #52675a;border-radius:8px;display:inline-flex;align-items:center;color:#6f8376;background:rgba(255,255,255,.025);transition:.18s ease}
+.task2-drop.text-drop{min-width:255px}.task2-drop.over{border-color:#72b27e;background:rgba(114,178,126,.12)}.task2-drop.filled{border-style:solid;border-color:#567560;background:#223228;color:#cde8d2}
+.task2-placed{width:100%;cursor:pointer;color:#cde8d2}
+.task2-bank-title{margin:18px 0 8px;color:#8fa597;font-size:11px;text-transform:uppercase;letter-spacing:1px;font-weight:900}
+.task2-bank{display:grid;grid-template-columns:repeat(3,1fr);gap:8px}
+.task2-block{min-height:48px;padding:9px 10px;border-radius:11px;background:#24342a;border:1px solid rgba(255,255,255,.08);color:#dce9df;display:flex;align-items:center;gap:7px;cursor:grab;user-select:none;transition:.18s ease;font-size:12px}
+.task2-block:hover{transform:translateY(-2px);background:#2c4132;border-color:rgba(114,178,126,.35)}.task2-block.dragging{opacity:.45}.task2-handle{color:#74867a;font-weight:900}
+.task2-actions{display:flex;gap:10px;margin-top:16px}.task2-reset{border:1px solid rgba(255,255,255,.12);border-radius:10px;padding:11px 14px;background:#24352b;color:#c7d5cb;cursor:pointer;font-weight:700}.task2-run{flex:1}
+.task2-output{margin-top:13px;min-height:68px;padding:13px 15px;border-radius:13px;background:#202f27;border-left:4px solid #65796b}.task2-output.correct{border-left-color:#72b27e;background:#20352a}.task2-output.wrong{border-left-color:#df7070;background:#3b2525}
+.task2-output-label{display:block;color:#8fa597;font-size:11px;text-transform:uppercase;letter-spacing:1px;margin-bottom:5px}.task2-output-text{color:#e8f4eb;font-size:16px;font-weight:700}
+.task2-scene-title{text-align:center;font-size:19px;font-weight:800;color:#315b40;margin-bottom:14px}.task2-mission{margin-top:13px;padding:13px 15px;border-radius:12px;background:#eef7ee;color:#536759;font-size:14px;line-height:1.45}.task2-mission b{color:#2f6b48}
+@media(max-width:900px){.task2-workspace{grid-template-columns:1fr}}
+@media(max-width:560px){.task2-builder-area{padding:14px}.task2-bank{grid-template-columns:1fr}.task2-code-builder{font-size:12px;padding:12px}.task2-drop{min-width:145px}.task2-drop.text-drop{min-width:190px}}
+
+</style>
+</head>
+
+<body>
+
+<div class="page">
+
+    <header class="header">
+        <h1>Практические задания</h1>
+        <p>Алгоритмы ветвления • 7 класс</p>
+    </header>
+
+    <nav class="tabs">
+        <button class="tab active" data-task="1">Задание 1</button>
+        <button class="tab" data-task="2">Задание 2</button>
+        <button class="tab" data-task="3">Задание 3</button>
+    </nav>
+
+    <section id="task1">
+        <div class="workspace">
+
+            <!-- ЛЕВАЯ ЧАСТЬ -->
+            <div class="panel forest-panel">
+                <div class="section-title">
+                    Перемести животное на площадку
+                </div>
+
+                <div class="forest-scene" id="forestScene">
+
+                    <div class="sun">☀️</div>
+
+                    <div class="tree t1">🌲</div>
+                    <div class="tree t2">🌳</div>
+                    <div class="tree t3">🌲</div>
+                    <div class="tree t4">🌳</div>
+                    <div class="tree t5">🌿</div>
+                    <div class="tree t6">🌿</div>
+
+                    <div class="habitats">
+
+                        <div class="habitat">
+                            <div class="habitat-icon">🕳️</div>
+                            <div class="habitat-name">Нора</div>
+                            <div class="road"></div>
+                        </div>
+
+                        <div class="habitat">
+                            <div class="habitat-icon">🪵</div>
+                            <div class="habitat-name">Берлога</div>
+                            <div class="road"></div>
+                        </div>
+
+                        <div class="habitat">
+                            <div class="habitat-icon">🪺</div>
+                            <div class="habitat-name">Гнездо</div>
+                            <div class="road"></div>
+                        </div>
+
+                    </div>
+
+                    <div class="platform" id="platform">
+                        Перетащи сюда животное
+                    </div>
+
+                    <div class="animals">
+
+                        <div class="animal"
+                             draggable="false"
+                             data-animal="rabbit"
+                             title="Заяц">
+                            🐰
+                        </div>
+
+                        <div class="animal"
+                             draggable="false"
+                             data-animal="bear"
+                             title="Медведь">
+                            🐻
+                        </div>
+
+                        <div class="animal"
+                             draggable="false"
+                             data-animal="bird"
+                             title="Птица">
+                            🐦
+                        </div>
+
+                    </div>
+
+                </div>
+
+                <div class="hint">
+                    💡 Возьми объект мышкой и перетащи его на площадку
+                </div>
+
+                <div class="selected" id="selectedLabel">
+                    Объект пока не выбран
+                </div>
+            </div>
+
+
+            <!-- ПРАВАЯ ЧАСТЬ -->
+            <div class="panel code-panel">
+
+                <div class="code-header">
+                    <div class="code-title">💻 Python • алгоритм</div>
+
+                    <div class="dots">
+                        <span class="dot"></span>
+                        <span class="dot"></span>
+                        <span class="dot"></span>
+                    </div>
+                </div>
+
+                <div class="code-area">
+
+                    <pre class="code-block" id="codeBlock">
+<span class="comment"># Сначала выбери объект слева</span>
+<span id="codeContent"></span>
+                    </pre>
+
+                    <div class="run-row">
+                        <button class="run-btn" id="runBtn">
+                            ▶ Запустить
+                        </button>
+                    </div>
+
+                    <div class="result">
+                        <div class="result-label">Результат программы</div>
+                        <div class="result-text" id="resultText">
+                            Здесь появится результат
+                        </div>
+                    </div>
+
+                    <div class="explanation" id="explanation">
+                        Когда ты переместишь объект, значение
+                        <b>object</b> и порядок условий изменятся автоматически.
+                    </div>
+
+                </div>
+            </div>
+
+        </div>
+    </section>
+
+
+    <!-- ЗАДАНИЕ 2 -->
+    <section id="task2">
+        <div class="task2-workspace">
+
+            <div class="panel forest-panel">
+                <div class="task2-scene-title">🐰 Помоги зайцу прийти к птичке</div>
+
+                <div class="forest-scene" id="forestScene2">
+                    <div class="sun">☀️</div>
+                    <div class="tree t1">🌲</div><div class="tree t2">🌳</div>
+                    <div class="tree t3">🌲</div><div class="tree t4">🌳</div>
+                    <div class="tree t5">🌿</div><div class="tree t6">🌿</div>
+
+                    <div class="habitats">
+                        <div class="habitat"><div class="habitat-icon">🕳️</div><div class="habitat-name">Нора</div><div class="road"></div></div>
+                        <div class="habitat"><div class="habitat-icon">🪵</div><div class="habitat-name">Берлога</div><div class="road"></div></div>
+                        <div class="habitat"><div class="habitat-icon">🪺</div><div class="habitat-name">Гнездо</div><div class="road"></div></div>
+                    </div>
+
+                    <div class="platform" id="platform2">🐰 Заяц</div>
+
+                    <div class="animals" id="animals2">
+                        <div class="animal" data-animal="rabbit" title="Заяц">🐰</div>
+                        <div class="animal" data-animal="bear" title="Медведь">🐻</div>
+                        <div class="animal" data-animal="bird" title="Птица">🐦</div>
+                    </div>
+                </div>
+
+                <div class="hint">💡 Здесь всё работает так же, как в первом задании: перетащи объект на площадку.</div>
+                <div class="selected" id="selectedLabel2">🐰 Сейчас выбран объект: <b>заяц</b></div>
+                <div class="task2-mission"><b>🎯 Твоя задача:</b> собери алгоритм так, чтобы выбранный объект <b>заяц</b> пришёл именно к <b>гнезду</b>.</div>
+            </div>
+
+            <div class="task2-code-panel">
+                <div class="task2-code-header">
+                    <div class="task2-code-title">💻 Python • собери алгоритм</div>
+                    <div class="dots"><span class="dot"></span><span class="dot"></span><span class="dot"></span></div>
+                </div>
+
+                <div class="task2-builder-area">
+                    <div class="task2-instruction">Перетащи готовые блоки в пустые места. <b>object</b> задаётся автоматически при выборе объекта слева.</div>
+
+                    <div class="task2-code-builder">
+                        <div class="task2-code-row"><span class="task2-variable">object</span><span class="task2-operator">=</span><span id="objectValue2" class="string">"заяц"</span></div>
+                        <div class="task2-code-row"></div>
+
+                        <div class="task2-code-row"><span class="task2-keyword">if</span><div class="task2-drop condition-drop" data-slot="if-condition">перетащи условие</div><span class="task2-colon">:</span></div>
+                        <div class="task2-code-row"><span class="task2-indent"></span><span class="task2-variable">print</span><span>(</span><div class="task2-drop text-drop" data-slot="if-print">перетащи текст</div><span>)</span></div>
+
+                        <div class="task2-code-row"><span class="task2-keyword">elif</span><div class="task2-drop condition-drop" data-slot="elif-condition">перетащи условие</div><span class="task2-colon">:</span></div>
+                        <div class="task2-code-row"><span class="task2-indent"></span><span class="task2-variable">print</span><span>(</span><div class="task2-drop text-drop" data-slot="elif-print">перетащи текст</div><span>)</span></div>
+
+                        <div class="task2-code-row"><span class="task2-keyword">else</span><span class="task2-colon">:</span></div>
+                        <div class="task2-code-row"><span class="task2-indent"></span><span class="task2-variable">print</span><span>(</span><div class="task2-drop text-drop" data-slot="else-print">перетащи текст</div><span>)</span></div>
+                    </div>
+
+                    <div class="task2-bank-title">Условия</div>
+                    <div class="task2-bank">
+                        <div class="task2-block" draggable="true" data-type="condition" data-value="object == 'заяц'"><span class="task2-handle">⋮⋮</span><code>object == "заяц"</code></div>
+                        <div class="task2-block" draggable="true" data-type="condition" data-value="object == 'медведь'"><span class="task2-handle">⋮⋮</span><code>object == "медведь"</code></div>
+                        <div class="task2-block" draggable="true" data-type="condition" data-value="object == 'птица'"><span class="task2-handle">⋮⋮</span><code>object == "птица"</code></div>
+                    </div>
+
+                    <div class="task2-bank-title">Что выведет программа?</div>
+                    <div class="task2-bank">
+                        <div class="task2-block" draggable="true" data-type="text" data-value="Заяц пришёл к гнезду."><span class="task2-handle">⋮⋮</span><span>«Заяц пришёл к гнезду.»</span></div>
+                        <div class="task2-block" draggable="true" data-type="text" data-value="Заяц пришёл к берлоге."><span class="task2-handle">⋮⋮</span><span>«Заяц пришёл к берлоге.»</span></div>
+                        <div class="task2-block" draggable="true" data-type="text" data-value="Заяц пришёл к норе."><span class="task2-handle">⋮⋮</span><span>«Заяц пришёл к норе.»</span></div>
+                    </div>
+
+                    <div class="task2-actions">
+                        <button class="task2-reset" id="resetTask2">↺ Сбросить</button>
+                        <button class="run-btn task2-run" id="runTask2">▶ Запустить алгоритм</button>
+                    </div>
+
+                    <div class="task2-output" id="task2Output">
+                        <span class="task2-output-label">Результат программы</span>
+                        <span class="task2-output-text" id="task2OutputText">Собери алгоритм и запусти программу</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- ЗАДАНИЕ 3 -->
+    <section class="placeholder" id="task3">
+        <h2>Задание 3</h2>
+        <p>Здесь появится следующее интерактивное задание.</p>
+    </section>
+
+</div>
+
+
+<script>
+    const animals = {
+        rabbit: {
+            name: "заяц",
+            emoji: "🐰",
+            home: "норе",
+            message: "Заяц живёт в норе."
+        },
+
+        bear: {
+            name: "медведь",
+            emoji: "🐻",
+            home: "берлоге",
+            message: "Медведь живёт в берлоге."
+        },
+
+        bird: {
+            name: "птица",
+            emoji: "🐦",
+            home: "гнезде",
+            message: "Птица живёт в гнезде."
+        }
+    };
+
+    let selectedAnimal = null;
+
+    const platform = document.getElementById("platform");
+    const selectedLabel = document.getElementById("selectedLabel");
+    const codeContent = document.getElementById("codeContent");
+    const resultText = document.getElementById("resultText");
+    const explanation = document.getElementById("explanation");
+
+    const animalElements = document.querySelectorAll(".animal");
+
+    /*
+     * Для каждого выбранного животного задаём порядок:
+     * выбранный объект → первый IF,
+     * второй объект → ELIF,
+     * третий → ELSE.
+     */
+    const conditionOrder = {
+        rabbit: ["rabbit", "bear", "bird"],
+        bear: ["bear", "rabbit", "bird"],
+        bird: ["bird", "bear", "rabbit"]
+    };
+
+    function escapeHtml(text) {
+        return text
+            .replaceAll("&", "&amp;")
+            .replaceAll("<", "&lt;")
+            .replaceAll(">", "&gt;")
+            .replaceAll('"', "&quot;");
+    }
+
+    function makeCode(animalKey) {
+        if (!animalKey) {
+            codeContent.innerHTML = "";
+            return;
+        }
+
+        const order = conditionOrder[animalKey];
+
+        const first = animals[order[0]];
+        const second = animals[order[1]];
+        const third = animals[order[2]];
+
+        codeContent.innerHTML = `
+<span class="code-line"><span class="variable">object</span> <span class="operator">=</span> <span class="string">"${first.name}"</span></span>
+<span class="code-line"></span>
+<span class="code-line highlight"><span class="keyword">if</span> <span class="variable">object</span> <span class="operator">==</span> <span class="string">"${first.name}"</span>:</span>
+<span class="code-line">    <span class="variable">print</span>(<span class="string">"${first.message}"</span>)</span>
+<span class="code-line"></span>
+<span class="code-line"><span class="keyword">elif</span> <span class="variable">object</span> <span class="operator">==</span> <span class="string">"${second.name}"</span>:</span>
+<span class="code-line">    <span class="variable">print</span>(<span class="string">"${second.message}"</span>)</span>
+<span class="code-line"></span>
+<span class="code-line"><span class="keyword">else</span>:</span>
+<span class="code-line">    <span class="variable">print</span>(<span class="string">"${third.message}"</span>)</span>
+        `;
+
+        explanation.innerHTML =
+            `Сейчас <b>object</b> = <b>"${first.name}"</b>. ` +
+            `Поэтому проверка для ${first.emoji} ${first.name} стоит первой — в блоке <b>if</b>.`;
+    }
+
+    function selectAnimal(animalKey) {
+        selectedAnimal = animalKey;
+
+        const animal = animals[animalKey];
+
+        selectedLabel.innerHTML =
+            `${animal.emoji} Выбран объект: <b>${animal.name}</b>`;
+
+        platform.classList.add("has-object");
+        platform.innerHTML =
+            `${animal.emoji} ${animal.name}`;
+
+        animalElements.forEach(el => {
+            if (el.dataset.animal === animalKey) {
+                el.classList.add("hidden");
+            } else {
+                el.classList.remove("hidden");
+            }
+        });
+
+        makeCode(animalKey);
+
+        resultText.textContent = "Нажми «Запустить»";
+    }
+
+    /*
+     * Универсальная механика перетаскивания.
+     * Работает и мышью, и на сенсорном экране.
+     */
+    animalElements.forEach(animalEl => {
+
+        animalEl.addEventListener("pointerdown", (event) => {
+
+            const animalKey = animalEl.dataset.animal;
+
+            animalEl.classList.add("dragging");
+            animalEl.setPointerCapture(event.pointerId);
+
+            const moveHandler = (moveEvent) => {
+                const rect = animalEl.getBoundingClientRect();
+
+                animalEl.style.position = "fixed";
+                animalEl.style.left =
+                    (moveEvent.clientX - rect.width / 2) + "px";
+                animalEl.style.top =
+                    (moveEvent.clientY - rect.height / 2) + "px";
+                animalEl.style.zIndex = "1000";
+
+                const platformRect = platform.getBoundingClientRect();
+
+                const x = moveEvent.clientX;
+                const y = moveEvent.clientY;
+
+                const inside =
+                    x >= platformRect.left &&
+                    x <= platformRect.right &&
+                    y >= platformRect.top &&
+                    y <= platformRect.bottom;
+
+                if (inside) {
+                    platform.classList.add("over");
+                } else {
+                    platform.classList.remove("over");
+                }
+            };
+
+            const upHandler = (upEvent) => {
+
+                animalEl.removeEventListener("pointermove", moveHandler);
+                animalEl.removeEventListener("pointerup", upHandler);
+
+                animalEl.classList.remove("dragging");
+                platform.classList.remove("over");
+
+                const platformRect = platform.getBoundingClientRect();
+
+                const x = upEvent.clientX;
+                const y = upEvent.clientY;
+
+                const inside =
+                    x >= platformRect.left &&
+                    x <= platformRect.right &&
+                    y >= platformRect.top &&
+                    y <= platformRect.bottom;
+
+                animalEl.style.position = "";
+                animalEl.style.left = "";
+                animalEl.style.top = "";
+                animalEl.style.zIndex = "";
+
+                if (inside) {
+                    selectAnimal(animalKey);
+                }
+            };
+
+            animalEl.addEventListener("pointermove", moveHandler);
+            animalEl.addEventListener("pointerup", upHandler);
+        });
+    });
+
+
+    /*
+     * Кнопка запуска.
+     */
+    document.getElementById("runBtn").addEventListener("click", () => {
+
+        if (!selectedAnimal) {
+            resultText.textContent =
+                "Сначала выбери животное.";
+            return;
+        }
+
+        const animal = animals[selectedAnimal];
+
+        resultText.textContent = "Выполняем программу…";
+
+        setTimeout(() => {
+            resultText.textContent = animal.message;
+        }, 450);
+    });
+
+
+
+    /* TASK 2 */
+    const animals2 = {
+        rabbit:{name:"заяц",emoji:"🐰"},
+        bear:{name:"медведь",emoji:"🐻"},
+        bird:{name:"птица",emoji:"🐦"}
+    };
+
+    let selectedAnimal2 = "rabbit";
+    let draggedBlock2 = null;
+
+    const platform2 = document.getElementById("platform2");
+    const selectedLabel2 = document.getElementById("selectedLabel2");
+    const objectValue2 = document.getElementById("objectValue2");
+    const animalElements2 = document.querySelectorAll("#animals2 .animal");
+    const slots2 = document.querySelectorAll("#task2 .task2-drop");
+    const blocks2 = document.querySelectorAll("#task2 .task2-block");
+    const task2Output = document.getElementById("task2Output");
+    const task2OutputText = document.getElementById("task2OutputText");
+
+    function setSelectedAnimal2(key){
+        selectedAnimal2 = key;
+        const a = animals2[key];
+
+        selectedLabel2.innerHTML = `${a.emoji} Сейчас выбран объект: <b>${a.name}</b>`;
+        platform2.classList.add("has-object");
+        platform2.innerHTML = `${a.emoji} ${a.name}`;
+        objectValue2.textContent = `"${a.name}"`;
+
+        animalElements2.forEach(el => {
+            el.classList.toggle("hidden", el.dataset.animal === key);
+        });
+
+        task2Output.classList.remove("correct","wrong");
+        task2OutputText.textContent = "Объект выбран. Теперь собери алгоритм.";
+    }
+
+    animalElements2.forEach(el => {
+        el.addEventListener("pointerdown", event => {
+            const key = el.dataset.animal;
+            el.classList.add("dragging");
+            el.setPointerCapture(event.pointerId);
+
+            const move = e => {
+                const r = el.getBoundingClientRect();
+                el.style.position = "fixed";
+                el.style.left = (e.clientX-r.width/2)+"px";
+                el.style.top = (e.clientY-r.height/2)+"px";
+                el.style.zIndex = "1000";
+
+                const p = platform2.getBoundingClientRect();
+                platform2.classList.toggle("over",
+                    e.clientX>=p.left && e.clientX<=p.right &&
+                    e.clientY>=p.top && e.clientY<=p.bottom);
+            };
+
+            const up = e => {
+                el.removeEventListener("pointermove",move);
+                el.removeEventListener("pointerup",up);
+                el.classList.remove("dragging");
+
+                const p = platform2.getBoundingClientRect();
+                const inside =
+                    e.clientX>=p.left && e.clientX<=p.right &&
+                    e.clientY>=p.top && e.clientY<=p.bottom;
+
+                el.style.position="";
+                el.style.left="";
+                el.style.top="";
+                el.style.zIndex="";
+                platform2.classList.remove("over");
+
+                if(inside) setSelectedAnimal2(key);
+            };
+
+            el.addEventListener("pointermove",move);
+            el.addEventListener("pointerup",up);
+        });
+
+        el.addEventListener("click",() => setSelectedAnimal2(el.dataset.animal));
+    });
+
+    function validSlot(slot,block){
+        if(!block) return false;
+        const isCondition = slot.dataset.slot.includes("condition");
+        const isText = slot.dataset.slot.includes("print");
+        return (isCondition && block.dataset.type==="condition") ||
+               (isText && block.dataset.type==="text");
+    }
+
+    function clearSlot(slot){
+        slot.classList.remove("filled");
+        slot.textContent = slot.dataset.slot.includes("condition")
+            ? "перетащи условие" : "перетащи текст";
+    }
+
+    function placeBlock(slot,block){
+        slot.innerHTML="";
+        const placed=document.createElement("div");
+        placed.className="task2-placed";
+        placed.textContent=block.dataset.type==="condition"
+            ? block.dataset.value
+            : `"${block.dataset.value}"`;
+        placed.title="Нажми, чтобы убрать блок";
+        placed.addEventListener("click",e=>{
+            e.stopPropagation();
+            clearSlot(slot);
+        });
+        slot.appendChild(placed);
+        slot.classList.add("filled");
+        task2Output.classList.remove("correct","wrong");
+        task2OutputText.textContent="Блок установлен. Продолжай сборку.";
+    }
+
+    blocks2.forEach(block=>{
+        block.addEventListener("dragstart",e=>{
+            draggedBlock2=block;
+            block.classList.add("dragging");
+            e.dataTransfer.effectAllowed="copy";
+            e.dataTransfer.setData("text/plain",block.dataset.value);
+        });
+        block.addEventListener("dragend",()=>{
+            block.classList.remove("dragging");
+            draggedBlock2=null;
+        });
+        block.addEventListener("click",()=>{
+            if(window.matchMedia("(pointer: coarse)").matches){
+                blocks2.forEach(b=>b.style.outline="");
+                block.style.outline="2px solid #72b27e";
+                draggedBlock2=block;
+            }
+        });
+    });
+
+    slots2.forEach(slot=>{
+        slot.addEventListener("dragover",e=>{
+            e.preventDefault();
+            if(validSlot(slot,draggedBlock2)) slot.classList.add("over");
+        });
+        slot.addEventListener("dragleave",()=>slot.classList.remove("over"));
+        slot.addEventListener("drop",e=>{
+            e.preventDefault();
+            slot.classList.remove("over");
+            if(validSlot(slot,draggedBlock2)) placeBlock(slot,draggedBlock2);
+        });
+        slot.addEventListener("click",()=>{
+            if(draggedBlock2 && window.matchMedia("(pointer: coarse)").matches && validSlot(slot,draggedBlock2)){
+                placeBlock(slot,draggedBlock2);
+                draggedBlock2.style.outline="";
+                draggedBlock2=null;
+            }
+        });
+    });
+
+    document.getElementById("resetTask2").addEventListener("click",()=>{
+        slots2.forEach(clearSlot);
+        setSelectedAnimal2("rabbit");
+        task2Output.classList.remove("correct","wrong");
+        task2OutputText.textContent="Собери алгоритм и запусти программу.";
+    });
+
+    document.getElementById("runTask2").addEventListener("click",()=>{
+        const v={};
+        slots2.forEach(slot=>{
+            const p=slot.querySelector(".task2-placed");
+            v[slot.dataset.slot]=p ? p.textContent.trim() : null;
+        });
+
+        const required=["if-condition","if-print","elif-condition","elif-print","else-print"];
+        if(!required.every(k=>v[k]!==null)){
+            task2Output.classList.remove("correct");
+            task2Output.classList.add("wrong");
+            task2OutputText.textContent="❌ Алгоритм не собран полностью.";
+            return;
+        }
+
+        const current=animals2[selectedAnimal2].name;
+        const ifCond=v["if-condition"];
+        const ifPrint=v["if-print"];
+        const elifCond=v["elif-condition"];
+        const elifPrint=v["elif-print"];
+        const elsePrint=v["else-print"];
+
+        let result;
+        if(ifCond===`object == '${current}'`) result=ifPrint;
+        else if(elifCond===`object == '${current}'`) result=elifPrint;
+        else result=elsePrint;
+
+        const correct =
+            current==="заяц" &&
+            ifCond==="object == 'заяц'" &&
+            ifPrint==="\"Заяц пришёл к гнезду.\"";
+
+        task2Output.classList.toggle("correct",correct);
+        task2Output.classList.toggle("wrong",!correct);
+
+        if(correct){
+            task2OutputText.textContent="🎉 Заяц пришёл к гнезду.";
+        }else{
+            task2OutputText.textContent="❌ "+result+" — Неправильно, попробуй ещё раз.";
+        }
+    });
+
+    setSelectedAnimal2("rabbit");
+
+
+    /*
+     * Переключение заданий.
+     */
+    document.querySelectorAll(".tab").forEach(tab => {
+
+        tab.addEventListener("click", () => {
+
+            const task = tab.dataset.task;
+
+            document.querySelectorAll(".tab").forEach(t => {
+                t.classList.remove("active");
+            });
+
+            tab.classList.add("active");
+
+            document.getElementById("task1").style.display =
+                task === "1" ? "block" : "none";
+
+            document.getElementById("task2").classList.toggle(
+                "active",
+                task === "2"
+            );
+
+            document.getElementById("task3").classList.toggle(
+                "active",
+                task === "3"
+            );
+        });
+    });
+</script>
+
+</body>
+</html>
