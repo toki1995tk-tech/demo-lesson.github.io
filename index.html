@@ -25,12 +25,17 @@
 <body class="presenter-page">
 
 
-    <main class="presenter-screen">
+    <!-- =====================================================
+         ОСНОВНОЙ ЭКРАН ГОЛОСОВАНИЯ
+         ===================================================== -->
+
+    <main
+        id="votingScreen"
+        class="presenter-screen"
+    >
 
 
-        <!-- =================================================
-             HEADER
-             ================================================= -->
+        <!-- HEADER -->
 
         <header class="presenter-header">
 
@@ -59,10 +64,18 @@
 
 
                 <button
+                    id="testFinalButton"
+                    class="test-final-button"
+                    type="button"
+                >
+                    ▶ Тест финала
+                </button>
+
+
+                <button
                     id="resetVotingButton"
                     class="reset-voting-button"
                     type="button"
-                    title="Очистить результаты и начать новое голосование"
                 >
                     ↻ Начать заново
                 </button>
@@ -80,9 +93,7 @@
 
 
 
-        <!-- =================================================
-             TITLE
-             ================================================= -->
+        <!-- TITLE -->
 
         <section class="presenter-title-block">
 
@@ -101,30 +112,23 @@
 
 
 
-        <!-- =================================================
-             VISIONS
-             ================================================= -->
+        <!-- VISIONS -->
 
         <section class="presenter-grid">
 
 
-            <!-- =============================================
-                 VISION 1
-                 ============================================= -->
+            <!-- VISION 1 -->
 
             <article
                 class="presenter-card"
                 id="card1"
             >
 
-
                 <div class="percentage-row">
-
 
                     <span>
                         Видение 01
                     </span>
-
 
                     <strong
                         id="percent1"
@@ -132,7 +136,6 @@
                     >
                         0%
                     </strong>
-
 
                 </div>
 
@@ -152,28 +155,22 @@
                     class="presenter-vision-text"
                 ></div>
 
-
             </article>
 
 
 
-            <!-- =============================================
-                 VISION 2
-                 ============================================= -->
+            <!-- VISION 2 -->
 
             <article
                 class="presenter-card"
                 id="card2"
             >
 
-
                 <div class="percentage-row">
-
 
                     <span>
                         Видение 02
                     </span>
-
 
                     <strong
                         id="percent2"
@@ -181,7 +178,6 @@
                     >
                         0%
                     </strong>
-
 
                 </div>
 
@@ -201,28 +197,22 @@
                     class="presenter-vision-text"
                 ></div>
 
-
             </article>
 
 
 
-            <!-- =============================================
-                 VISION 3
-                 ============================================= -->
+            <!-- VISION 3 -->
 
             <article
                 class="presenter-card"
                 id="card3"
             >
 
-
                 <div class="percentage-row">
-
 
                     <span>
                         Видение 03
                     </span>
-
 
                     <strong
                         id="percent3"
@@ -230,7 +220,6 @@
                     >
                         0%
                     </strong>
-
 
                 </div>
 
@@ -250,84 +239,84 @@
                     class="presenter-vision-text"
                 ></div>
 
+            </article>
+
+
+
+            <!-- CUSTOM -->
+
+            <article
+                class="
+                    presenter-card
+                    custom-presenter-card
+                "
+                id="cardCustom"
+            >
+
+                <div class="percentage-row">
+
+                    <span id="customTitle">
+                        Своё видение
+                    </span>
+
+                    <strong
+                        id="percentCustom"
+                        data-value="0"
+                    >
+                        0%
+                    </strong>
+
+                </div>
+
+
+                <div class="progress-track">
+
+                    <div
+                        id="barCustom"
+                        class="progress-bar"
+                    ></div>
+
+                </div>
+
+
+                <div class="presenter-vision-text">
+
+                    Если предложенные варианты
+                    не отражают вашу идею,
+                    сформулируйте собственное
+                    видение будущего школы.
+
+                </div>
 
             </article>
 
 
 
-            <!-- =============================================
-                 CUSTOM VISION
-                 ============================================= -->
+            <!-- QR -->
 
-            <article
-    class="
-        presenter-card
-        custom-presenter-card
-    "
-    id="cardCustom"
->
+            <div class="presenter-qr-card">
 
-    <div class="percentage-row">
+                <img
+                    src="future-school-vote-qr.png"
+                    alt="QR-код для голосования"
+                    class="presenter-qr-image"
+                >
 
-        <span id="customTitle">
-            Своё видение
-        </span>
+                <div class="presenter-qr-text">
+                    Сканируйте и голосуйте
+                </div>
 
-        <strong
-            id="percentCustom"
-            data-value="0"
-        >
-            0%
-        </strong>
-
-    </div>
-
-    <div class="progress-track">
-
-        <div
-            id="barCustom"
-            class="progress-bar"
-        ></div>
-
-    </div>
-
-    <div class="presenter-vision-text">
-
-        Если предложенные варианты
-        не отражают вашу идею,
-        сформулируйте собственное
-        видение будущего школы.
-
-    </div>
-
-</article>
+            </div>
 
 
-<div class="presenter-qr-card">
-
-    <img
-        src="future-school-vote-qr.png"
-        alt="QR-код для голосования"
-        class="presenter-qr-image"
-    >
-
-    <div class="presenter-qr-text">
-        Сканируйте и голосуйте
-    </div>
-
-</div>
         </section>
 
 
 
-        <!-- =================================================
-             BOTTOM PANEL
-             ================================================= -->
+        <!-- FOOTER -->
 
         <footer class="presenter-footer">
 
-
-            <!-- PARTICIPANTS -->
 
             <div class="live-statistics">
 
@@ -365,28 +354,17 @@
 
 
 
-            <!-- TIMER -->
-
             <div class="presenter-timer-block">
-
 
                 <span id="timerLabel">
                     Ожидаем первого участника
                 </span>
 
-
                 <strong id="presenterTimer">
                     05:00
                 </strong>
 
-
             </div>
-
-
-
-            <!-- QR PLACEHOLDER -->
-
-          
 
 
         </footer>
@@ -397,11 +375,106 @@
 
 
     <!-- =====================================================
-         FINISH SOUND
-
-         Файл находится прямо в MAIN,
-         поэтому путь именно такой.
+         ФИНАЛЬНАЯ СЦЕНА
          ===================================================== -->
+
+    <section
+        id="finalScene"
+        class="final-scene hidden"
+    >
+
+
+        <!-- маленькая верхняя надпись -->
+
+        <div
+            id="finalVisionLabel"
+            class="final-vision-label"
+        >
+            ВЫБРАННОЕ ВИДЕНИЕ
+        </div>
+
+
+        <!-- сюда JS добавит парящие слова -->
+
+        <div
+            id="keywordCloud"
+            class="keyword-cloud"
+        ></div>
+
+
+
+        <!-- итоговая миссия -->
+
+        <div
+            id="missionResult"
+            class="mission-result"
+        >
+
+
+            <div class="mission-eyebrow">
+                НАША МИССИЯ
+            </div>
+
+
+            <div
+                id="finalMissionText"
+                class="final-mission-text"
+            ></div>
+
+
+            <div class="mission-slogan">
+                Your future starts here
+            </div>
+
+
+        </div>
+
+
+        <!-- если ничья -->
+
+        <div
+            id="tieResult"
+            class="tie-result hidden"
+        >
+
+            <div class="tie-title">
+                Голоса разделились
+            </div>
+
+            <div class="tie-description">
+                Два или несколько видений набрали одинаковое количество голосов.
+            </div>
+
+        </div>
+
+
+        <!-- временный финал custom -->
+
+        <div
+            id="customWinnerResult"
+            class="custom-winner-result hidden"
+        >
+
+            <div class="mission-eyebrow">
+                ПОБЕДИЛО
+            </div>
+
+            <div class="custom-winner-title">
+                Своё видение
+            </div>
+
+            <div class="custom-winner-description">
+                Следующим этапом здесь появятся идеи участников и миссия, сформированная искусственным интеллектом.
+            </div>
+
+        </div>
+
+
+    </section>
+
+
+
+    <!-- SOUND -->
 
     <audio
         id="finishSound"
@@ -411,17 +484,13 @@
 
 
 
-    <!-- =====================================================
-         SUPABASE
-         ===================================================== -->
+    <!-- SUPABASE -->
 
     <script
         src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"
     ></script>
 
-
     <script src="js/config.js"></script>
-
 
     <script src="js/presenter.js"></script>
 
