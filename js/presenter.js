@@ -1,63 +1,138 @@
 // ==========================================================
-// FUTURE SCHOOL — PRESENTER SCREEN
+// INTERNATIONAL FUTURE SCHOOL
+// PRESENTER SCREEN
 // ==========================================================
 
+
 let currentEvent = null;
+
 let timerInterval = null;
 
-const schoolName = document.getElementById('schoolName');
-const schoolSlogan = document.getElementById('schoolSlogan');
-const pageTitle = document.getElementById('pageTitle');
-
-const vision1Text = document.getElementById('vision1Text');
-const vision2Text = document.getElementById('vision2Text');
-const vision3Text = document.getElementById('vision3Text');
-const customTitle = document.getElementById('customTitle');
-
-const percent1 = document.getElementById('percent1');
-const percent2 = document.getElementById('percent2');
-const percent3 = document.getElementById('percent3');
-const percentCustom = document.getElementById('percentCustom');
-
-const bar1 = document.getElementById('bar1');
-const bar2 = document.getElementById('bar2');
-const bar3 = document.getElementById('bar3');
-const barCustom = document.getElementById('barCustom');
-
-const joinedCount = document.getElementById('joinedCount');
-const votedCount = document.getElementById('votedCount');
-
-const presenterTimer = document.getElementById('presenterTimer');
-const timerLabel = document.getElementById('timerLabel');
-
-const finishSound = document.getElementById('finishSound');
-
 let soundPlayed = false;
+
+
+// ==========================================================
+// ELEMENTS
+// ==========================================================
+
+const schoolName =
+    document.getElementById('schoolName');
+
+
+const schoolSlogan =
+    document.getElementById('schoolSlogan');
+
+
+const pageTitle =
+    document.getElementById('pageTitle');
+
+
+const vision1Text =
+    document.getElementById('vision1Text');
+
+
+const vision2Text =
+    document.getElementById('vision2Text');
+
+
+const vision3Text =
+    document.getElementById('vision3Text');
+
+
+const customTitle =
+    document.getElementById('customTitle');
+
+
+const percent1 =
+    document.getElementById('percent1');
+
+
+const percent2 =
+    document.getElementById('percent2');
+
+
+const percent3 =
+    document.getElementById('percent3');
+
+
+const percentCustom =
+    document.getElementById('percentCustom');
+
+
+const bar1 =
+    document.getElementById('bar1');
+
+
+const bar2 =
+    document.getElementById('bar2');
+
+
+const bar3 =
+    document.getElementById('bar3');
+
+
+const barCustom =
+    document.getElementById('barCustom');
+
+
+const joinedCount =
+    document.getElementById('joinedCount');
+
+
+const votedCount =
+    document.getElementById('votedCount');
+
+
+const presenterTimer =
+    document.getElementById('presenterTimer');
+
+
+const timerLabel =
+    document.getElementById('timerLabel');
+
+
+const finishSound =
+    document.getElementById('finishSound');
+
+
+const resetVotingButton =
+    document.getElementById('resetVotingButton');
+
 
 
 // ==========================================================
 // START
 // ==========================================================
 
-document.addEventListener('DOMContentLoaded', async () => {
+document.addEventListener(
+    'DOMContentLoaded',
+    async () => {
 
-    try {
+        try {
 
-        await loadEvent();
+            await loadEvent();
 
-        await loadStats();
+            await loadStats();
 
-        startTimer();
+            setupResetButton();
 
-        subscribeToRealtime();
+            subscribeToRealtime();
 
-    } catch (error) {
+            startTimer();
 
-        console.error(error);
+        }
+        catch (error) {
+
+            console.error(
+                'Presenter start error:',
+                error
+            );
+
+        }
 
     }
+);
 
-});
 
 
 // ==========================================================
@@ -66,21 +141,31 @@ document.addEventListener('DOMContentLoaded', async () => {
 
 async function loadEvent() {
 
-    const { data, error } = await supabaseClient
-        .from('vision_event')
-        .select('*')
-        .eq('event_key', EVENT_KEY)
-        .single();
+    const { data, error } =
+        await supabaseClient
+            .from('vision_event')
+            .select('*')
+            .eq(
+                'event_key',
+                EVENT_KEY
+            )
+            .single();
+
 
     if (error) {
+
         throw error;
+
     }
 
+
     currentEvent = data;
+
 
     renderEvent();
 
 }
+
 
 
 // ==========================================================
@@ -89,23 +174,34 @@ async function loadEvent() {
 
 function renderEvent() {
 
+    if (!currentEvent) {
+        return;
+    }
+
+
     schoolName.textContent =
         currentEvent.school_name;
+
 
     schoolSlogan.textContent =
         currentEvent.slogan;
 
+
     pageTitle.textContent =
         currentEvent.page_title;
+
 
     vision1Text.textContent =
         currentEvent.vision_1;
 
+
     vision2Text.textContent =
         currentEvent.vision_2;
 
+
     vision3Text.textContent =
         currentEvent.vision_3;
+
 
     customTitle.textContent =
         currentEvent.custom_title;
@@ -113,39 +209,69 @@ function renderEvent() {
 }
 
 
+
 // ==========================================================
-// LOAD STATS
+// LOAD STATISTICS
 // ==========================================================
 
 async function loadStats() {
 
+    if (!currentEvent) {
+        return;
+    }
+
+
     const [
         sessionsResult,
         votesResult
-    ] = await Promise.all([
+    ] =
+        await Promise.all([
 
-        supabaseClient
-            .from('vision_sessions')
-            .select('id', {
-                count: 'exact',
-                head: true
-            })
-            .eq('event_id', currentEvent.id),
 
-        supabaseClient
-            .from('vision_votes')
-            .select('choice')
-            .eq('event_id', currentEvent.id)
+            supabaseClient
+                .from('vision_sessions')
+                .select(
+                    'id',
+                    {
+                        count: 'exact',
+                        head: true
+                    }
+                )
+                .eq(
+                    'event_id',
+                    currentEvent.id
+                ),
 
-    ]);
+
+            supabaseClient
+                .from('vision_votes')
+                .select('choice')
+                .eq(
+                    'event_id',
+                    currentEvent.id
+                )
+
+
+        ]);
 
 
     if (sessionsResult.error) {
-        console.error(sessionsResult.error);
+
+        console.error(
+            'Sessions error:',
+            sessionsResult.error
+        );
+
     }
 
+
     if (votesResult.error) {
-        console.error(votesResult.error);
+
+        console.error(
+            'Votes error:',
+            votesResult.error
+        );
+
     }
 
 
@@ -166,36 +292,46 @@ async function loadStats() {
 }
 
 
+
 // ==========================================================
 // CALCULATE PERCENTAGES
 // ==========================================================
 
 function calculatePercentages(votes) {
 
-    const total = votes.length;
+    const total =
+        votes.length;
 
 
     const counts = {
+
         vision_1: 0,
+
         vision_2: 0,
+
         vision_3: 0,
+
         custom: 0
+
     };
 
 
-    votes.forEach(vote => {
+    votes.forEach(
+        vote => {
 
-        if (
-            counts.hasOwnProperty(
-                vote.choice
-            )
-        ) {
+            if (
+                Object.prototype.hasOwnProperty.call(
+                    counts,
+                    vote.choice
+                )
+            ) {
 
-            counts[vote.choice]++;
+                counts[vote.choice]++;
+
+            }
 
         }
-
-    });
+    );
 
 
     if (total === 0) {
@@ -206,11 +342,13 @@ function calculatePercentages(votes) {
             0
         );
 
+
         updatePercentage(
             percent2,
             bar2,
             0
         );
+
 
         updatePercentage(
             percent3,
@@ -218,65 +356,84 @@ function calculatePercentages(votes) {
             0
         );
 
+
         updatePercentage(
             percentCustom,
             barCustom,
             0
         );
 
+
         return;
 
     }
 
 
-    updatePercentage(
-        percent1,
-        bar1,
+    const value1 =
         Math.round(
             counts.vision_1 /
             total *
             100
-        )
+        );
+
+
+    const value2 =
+        Math.round(
+            counts.vision_2 /
+            total *
+            100
+        );
+
+
+    const value3 =
+        Math.round(
+            counts.vision_3 /
+            total *
+            100
+        );
+
+
+    const valueCustom =
+        Math.round(
+            counts.custom /
+            total *
+            100
+        );
+
+
+    updatePercentage(
+        percent1,
+        bar1,
+        value1
     );
 
 
     updatePercentage(
         percent2,
         bar2,
-        Math.round(
-            counts.vision_2 /
-            total *
-            100
-        )
+        value2
     );
 
 
     updatePercentage(
         percent3,
         bar3,
-        Math.round(
-            counts.vision_3 /
-            total *
-            100
-        )
+        value3
     );
 
 
     updatePercentage(
         percentCustom,
         barCustom,
-        Math.round(
-            counts.custom /
-            total *
-            100
-        )
+        valueCustom
     );
 
 }
 
 
+
 // ==========================================================
-// ANIMATE PERCENTAGE
+// UPDATE PERCENTAGE
 // ==========================================================
 
 function updatePercentage(
@@ -309,8 +466,9 @@ function updatePercentage(
 }
 
 
+
 // ==========================================================
-// NUMBER ANIMATION
+// ANIMATE NUMBER
 // ==========================================================
 
 function animateNumber(
@@ -319,7 +477,9 @@ function animateNumber(
     to
 ) {
 
-    const duration = 500;
+    const duration =
+        450;
+
 
     const start =
         performance.now();
@@ -361,13 +521,24 @@ function animateNumber(
 }
 
 
+
 // ==========================================================
 // TIMER
 // ==========================================================
 
 function startTimer() {
 
+    if (timerInterval) {
+
+        clearInterval(
+            timerInterval
+        );
+
+    }
+
+
     updateTimer();
+
 
     timerInterval =
         setInterval(
@@ -378,21 +549,42 @@ function startTimer() {
 }
 
 
+
+// ==========================================================
+// UPDATE TIMER
+// ==========================================================
+
 function updateTimer() {
 
-    if (
-        !currentEvent ||
-        !currentEvent.started_at
-    ) {
+    if (!currentEvent) {
+        return;
+    }
+
+
+    /*
+        Никто ещё не вошёл.
+
+        Показываем полные 5 минут,
+        но отсчёт пока НЕ идёт.
+    */
+
+    if (!currentEvent.started_at) {
 
         presenterTimer.textContent =
             formatSeconds(
-                currentEvent?.duration_seconds ||
+                currentEvent.duration_seconds ||
                 300
             );
 
+
         timerLabel.textContent =
             'Ожидаем первого участника';
+
+
+        presenterTimer.classList.remove(
+            'timer-warning'
+        );
+
 
         return;
 
@@ -405,41 +597,65 @@ function updateTimer() {
         ).getTime();
 
 
+    const duration =
+        currentEvent.duration_seconds *
+        1000;
+
+
     const end =
         start +
-        (
-            currentEvent.duration_seconds *
-            1000
-        );
+        duration;
+
+
+    const now =
+        Date.now();
 
 
     const remaining =
         Math.max(
             0,
             Math.ceil(
-                (end - Date.now()) /
+                (end - now) /
                 1000
             )
         );
 
 
     presenterTimer.textContent =
-        formatSeconds(remaining);
+        formatSeconds(
+            remaining
+        );
 
 
-    timerLabel.textContent =
+    if (remaining > 0) {
+
+        timerLabel.textContent =
+            'До завершения голосования';
+
+    }
+    else {
+
+        timerLabel.textContent =
+            'Голосование завершено';
+
+    }
+
+
+    /*
+        Последние десять секунд.
+    */
+
+    if (
+        remaining <= 10 &&
         remaining > 0
-            ? 'До завершения голосования'
-            : 'Голосование завершено';
-
-
-    if (remaining <= 10) {
+    ) {
 
         presenterTimer.classList.add(
             'timer-warning'
         );
 
-    } else {
+    }
+    else {
 
         presenterTimer.classList.remove(
             'timer-warning'
@@ -448,12 +664,18 @@ function updateTimer() {
     }
 
 
+    /*
+        Когда время закончилось,
+        один раз воспроизводим звук.
+    */
+
     if (
         remaining <= 0 &&
         !soundPlayed
     ) {
 
         soundPlayed = true;
+
 
         playFinishSound();
 
@@ -462,42 +684,20 @@ function updateTimer() {
 }
 
 
-// ==========================================================
-// SOUND
-// ==========================================================
-
-function playFinishSound() {
-
-    if (!finishSound) {
-        return;
-    }
-
-    finishSound.currentTime = 0;
-
-    finishSound
-        .play()
-        .catch(error => {
-
-            console.warn(
-                'Браузер заблокировал автоматический звук:',
-                error
-            );
-
-        });
-
-}
-
 
 // ==========================================================
-// FORMAT TIME
+// FORMAT TIMER
 // ==========================================================
 
-function formatSeconds(totalSeconds) {
+function formatSeconds(
+    totalSeconds
+) {
 
     const minutes =
         Math.floor(
             totalSeconds / 60
         );
+
 
     const seconds =
         totalSeconds % 60;
@@ -516,89 +716,332 @@ function formatSeconds(totalSeconds) {
 }
 
 
+
+// ==========================================================
+// FINISH SOUND
+// ==========================================================
+
+function playFinishSound() {
+
+    if (!finishSound) {
+
+        return;
+
+    }
+
+
+    finishSound.currentTime =
+        0;
+
+
+    finishSound
+        .play()
+        .catch(
+            error => {
+
+                console.warn(
+                    'Автоматический звук заблокирован браузером:',
+                    error
+                );
+
+            }
+        );
+
+}
+
+
+
+// ==========================================================
+// RESET BUTTON
+// ==========================================================
+
+function setupResetButton() {
+
+    if (!resetVotingButton) {
+        return;
+    }
+
+
+    resetVotingButton.addEventListener(
+        'click',
+        resetVoting
+    );
+
+}
+
+
+
+// ==========================================================
+// RESET VOTING
+// ==========================================================
+
+async function resetVoting() {
+
+    const confirmed =
+        confirm(
+            'Начать новое голосование?\n\n' +
+            'Все предыдущие тестовые голоса ' +
+            'и подключения будут удалены.'
+        );
+
+
+    if (!confirmed) {
+        return;
+    }
+
+
+    resetVotingButton.disabled =
+        true;
+
+
+    resetVotingButton.textContent =
+        'Сбрасываем...';
+
+
+    try {
+
+
+        const { error } =
+            await supabaseClient.rpc(
+                'reset_vision_voting',
+                {
+                    p_event_key:
+                        EVENT_KEY
+                }
+            );
+
+
+        if (error) {
+
+            throw error;
+
+        }
+
+
+        /*
+            Новый раунд:
+            разрешаем снова сыграть
+            звук завершения.
+        */
+
+        soundPlayed =
+            false;
+
+
+        /*
+            Снова читаем мероприятие.
+        */
+
+        await loadEvent();
+
+
+        /*
+            Сразу обновляем статистику.
+        */
+
+        await loadStats();
+
+
+        /*
+            Перезапускаем отображение таймера.
+
+            В этот момент он будет показывать 05:00,
+            но отсчёт начнётся только после того,
+            как первый человек откроет vote.html.
+        */
+
+        startTimer();
+
+
+        resetVotingButton.textContent =
+            '✓ Готово';
+
+
+        setTimeout(
+            () => {
+
+                resetVotingButton.textContent =
+                    '↻ Начать заново';
+
+
+                resetVotingButton.disabled =
+                    false;
+
+            },
+            1200
+        );
+
+
+    }
+    catch (error) {
+
+
+        console.error(
+            'Reset voting error:',
+            error
+        );
+
+
+        alert(
+            'Не удалось сбросить голосование.\n' +
+            'Проверьте Supabase.'
+        );
+
+
+        resetVotingButton.textContent =
+            '↻ Начать заново';
+
+
+        resetVotingButton.disabled =
+            false;
+
+    }
+
+}
+
+
+
 // ==========================================================
 // REALTIME
 // ==========================================================
 
 function subscribeToRealtime() {
 
+    if (!currentEvent) {
+        return;
+    }
+
+
     supabaseClient
+
         .channel(
             `presenter-${currentEvent.id}`
         )
 
-        // --------------------------------------------------
-        // EVENT
-        // --------------------------------------------------
+
+        /*
+            Изменилось само мероприятие:
+            например первый человек вошёл,
+            и Supabase записал started_at.
+        */
 
         .on(
+
             'postgres_changes',
+
             {
+
                 event: 'UPDATE',
+
                 schema: 'public',
+
                 table: 'vision_event',
+
                 filter:
                     `id=eq.${currentEvent.id}`
+
             },
+
             payload => {
+
 
                 currentEvent =
                     payload.new;
 
+
                 renderEvent();
 
+
+                /*
+                    Если начался новый раунд,
+                    разрешаем звук снова.
+                */
+
+                if (
+                    currentEvent.status ===
+                    'open'
+                ) {
+
+                    soundPlayed =
+                        false;
+
+                }
+
             }
+
         )
 
-        // --------------------------------------------------
-        // SESSIONS
-        // --------------------------------------------------
+
+        /*
+            Новый человек открыл страницу.
+        */
 
         .on(
+
             'postgres_changes',
+
             {
+
                 event: 'INSERT',
+
                 schema: 'public',
+
                 table: 'vision_sessions',
+
                 filter:
                     `event_id=eq.${currentEvent.id}`
+
             },
+
             async () => {
+
 
                 await loadStats();
 
-                /*
-                    После первого участника
-                    trigger меняет started_at.
 
-                    На всякий случай перечитываем
-                    событие.
+                /*
+                    Первый человек запускает trigger,
+                    поэтому перечитываем event,
+                    чтобы получить started_at.
                 */
 
                 await loadEvent();
 
             }
+
         )
 
-        // --------------------------------------------------
-        // VOTES
-        // --------------------------------------------------
+
+        /*
+            Новый голос.
+        */
 
         .on(
+
             'postgres_changes',
+
             {
+
                 event: 'INSERT',
+
                 schema: 'public',
+
                 table: 'vision_votes',
+
                 filter:
                     `event_id=eq.${currentEvent.id}`
+
             },
+
             async () => {
+
 
                 await loadStats();
 
             }
+
         )
+
 
         .subscribe();
 
