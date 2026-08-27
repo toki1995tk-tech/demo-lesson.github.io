@@ -14,19 +14,766 @@
         International Future School — Vision
     </title>
 
+
+    <!-- ОСНОВНЫЕ СТИЛИ -->
     <link
         rel="stylesheet"
         href="css/styles.css"
     >
 
+
+    <!-- =====================================================
+         ФИНАЛЬНАЯ АНИМАЦИЯ
+         Намеренно находится прямо в index.html,
+         чтобы браузер точно применил эти стили.
+         ===================================================== -->
+
+    <style>
+
+        /* =================================================
+           ПЛАВНО УБИРАЕМ ЭКРАН ГОЛОСОВАНИЯ
+           ================================================= */
+
+        #votingScreen {
+
+            transition:
+                opacity 0.9s ease,
+                transform 0.9s ease,
+                filter 0.9s ease;
+
+        }
+
+
+        #votingScreen.voting-screen-exit {
+
+            opacity: 0;
+
+            transform:
+                scale(0.97);
+
+            filter:
+                blur(12px);
+
+        }
+
+
+
+        /* =================================================
+           ВЕСЬ ФИНАЛЬНЫЙ ЭКРАН
+           ================================================= */
+
+        #finalScene {
+
+            position: fixed;
+
+            inset: 0;
+
+            z-index: 9999;
+
+            width: 100vw;
+
+            height: 100vh;
+
+            overflow: hidden;
+
+            display: flex;
+
+            align-items: center;
+
+            justify-content: center;
+
+            background:
+
+                radial-gradient(
+                    circle at 50% 45%,
+                    rgba(255,255,255,1) 0%,
+                    rgba(246,248,252,0.98) 45%,
+                    rgba(233,238,247,1) 100%
+                );
+
+            opacity: 0;
+
+            transition:
+                opacity 1s ease;
+
+        }
+
+
+        #finalScene.hidden {
+
+            display: none !important;
+
+        }
+
+
+        #finalScene.final-scene-visible {
+
+            opacity: 1;
+
+        }
+
+
+
+        /* МЯГКОЕ СВЕЧЕНИЕ В ЦЕНТРЕ */
+
+        #finalScene::before {
+
+            content: "";
+
+            position: absolute;
+
+            left: 50%;
+
+            top: 50%;
+
+            width: 760px;
+
+            height: 760px;
+
+            transform:
+                translate(-50%, -50%);
+
+            border-radius: 50%;
+
+            background:
+
+                radial-gradient(
+                    circle,
+                    rgba(91, 120, 190, 0.16),
+                    rgba(91, 120, 190, 0.05) 45%,
+                    transparent 72%
+                );
+
+            filter:
+                blur(18px);
+
+            pointer-events: none;
+
+        }
+
+
+
+        /* =================================================
+           НАЗВАНИЕ ПОБЕДИВШЕГО ВИДЕНИЯ
+           ================================================= */
+
+        #finalVisionLabel {
+
+            position: absolute;
+
+            z-index: 20;
+
+            top: 7vh;
+
+            left: 50%;
+
+            transform:
+                translateX(-50%);
+
+            white-space: nowrap;
+
+            font-size:
+                clamp(
+                    12px,
+                    1vw,
+                    16px
+                );
+
+            font-weight: 900;
+
+            letter-spacing: 0.28em;
+
+            color:
+                rgba(23,32,51,0.42);
+
+        }
+
+
+
+        /* =================================================
+           ОБЛАКО СЛОВ
+           ================================================= */
+
+        #keywordCloud {
+
+            position: absolute;
+
+            z-index: 5;
+
+            inset: 0;
+
+            width: 100%;
+
+            height: 100%;
+
+            overflow: hidden;
+
+        }
+
+
+
+        /* КАЖДОЕ СЛОВО */
+
+        .floating-keyword {
+
+            position: absolute;
+
+            display: block;
+
+            white-space: nowrap;
+
+            padding:
+                15px
+                24px;
+
+            border-radius:
+                999px;
+
+            background:
+                rgba(
+                    255,
+                    255,
+                    255,
+                    0.78
+                );
+
+            border:
+                1px solid
+                rgba(
+                    23,
+                    32,
+                    51,
+                    0.08
+                );
+
+            box-shadow:
+                0
+                18px
+                55px
+                rgba(
+                    42,
+                    58,
+                    95,
+                    0.10
+                );
+
+            backdrop-filter:
+                blur(12px);
+
+            color:
+                #172033;
+
+            font-size:
+                clamp(
+                    25px,
+                    2.7vw,
+                    46px
+                );
+
+            font-weight:
+                700;
+
+            letter-spacing:
+                -0.035em;
+
+
+            /*
+                Исходное состояние:
+                маленькое и невидимое.
+            */
+
+            opacity: 0;
+
+            transform:
+                translate(-50%, -50%)
+                scale(0.45);
+
+            transition:
+
+                left
+                1.25s
+                cubic-bezier(
+                    0.22,
+                    1,
+                    0.36,
+                    1
+                ),
+
+                top
+                1.25s
+                cubic-bezier(
+                    0.22,
+                    1,
+                    0.36,
+                    1
+                ),
+
+                transform
+                1.25s
+                cubic-bezier(
+                    0.22,
+                    1,
+                    0.36,
+                    1
+                ),
+
+                opacity
+                0.65s
+                ease;
+
+        }
+
+
+
+        /* СЛОВО ПОЯВЛЯЕТСЯ */
+
+        .floating-keyword.keyword-visible {
+
+            opacity: 1;
+
+            transform:
+                translate(-50%, -50%)
+                scale(1);
+
+            animation:
+                futureFloat
+                3.2s
+                ease-in-out
+                var(--delay)
+                infinite
+                alternate;
+
+        }
+
+
+
+        /* САМО ПАРЕНИЕ */
+
+        @keyframes futureFloat {
+
+            0% {
+
+                margin-left: 0;
+
+                margin-top: 0;
+
+            }
+
+
+            100% {
+
+                margin-left:
+                    var(--float-x);
+
+                margin-top:
+                    var(--float-y);
+
+            }
+
+        }
+
+
+
+        /* =================================================
+           СЛОВА НАЧИНАЮТ СОБИРАТЬСЯ
+           ================================================= */
+
+        .floating-keyword.keyword-assemble {
+
+            animation:
+                none !important;
+
+            left:
+                50% !important;
+
+            top:
+                48% !important;
+
+            margin:
+                0 !important;
+
+            transform:
+                translate(-50%, -50%)
+                scale(0.72);
+
+            box-shadow:
+                0
+                8px
+                25px
+                rgba(
+                    42,
+                    58,
+                    95,
+                    0.05
+                );
+
+        }
+
+
+
+        /* ПОСЛЕДНЕЕ РАСТВОРЕНИЕ */
+
+        .floating-keyword.keyword-disappear {
+
+            opacity:
+                0 !important;
+
+            transform:
+                translate(-50%, -50%)
+                scale(0.25) !important;
+
+            filter:
+                blur(8px);
+
+        }
+
+
+
+        /* =================================================
+           БЛОК МИССИИ
+           ================================================= */
+
+        #missionResult {
+
+            position: relative;
+
+            z-index: 30;
+
+            width:
+                min(
+                    1120px,
+                    calc(100vw - 120px)
+                );
+
+            margin:
+                0 auto;
+
+            padding:
+                40px;
+
+            text-align:
+                center;
+
+            opacity:
+                0;
+
+            transform:
+                translateY(45px)
+                scale(0.94);
+
+            filter:
+                blur(10px);
+
+            transition:
+                opacity 1.2s ease,
+                transform 1.2s
+                cubic-bezier(
+                    0.22,
+                    1,
+                    0.36,
+                    1
+                ),
+                filter 1.2s ease;
+
+            pointer-events:
+                none;
+
+        }
+
+
+
+        #missionResult.mission-visible {
+
+            opacity:
+                1;
+
+            transform:
+                translateY(0)
+                scale(1);
+
+            filter:
+                blur(0);
+
+        }
+
+
+
+        /* НАША МИССИЯ */
+
+        .mission-eyebrow {
+
+            margin-bottom:
+                28px;
+
+            font-size:
+                clamp(
+                    13px,
+                    1.2vw,
+                    18px
+                );
+
+            font-weight:
+                900;
+
+            letter-spacing:
+                0.3em;
+
+            color:
+                rgba(
+                    23,
+                    32,
+                    51,
+                    0.42
+                );
+
+        }
+
+
+
+        /* САМА ФРАЗА */
+
+        #finalMissionText {
+
+            max-width:
+                1100px;
+
+            margin:
+                0 auto;
+
+            font-size:
+                clamp(
+                    42px,
+                    5.2vw,
+                    78px
+                );
+
+            line-height:
+                1.1;
+
+            font-weight:
+                800;
+
+            letter-spacing:
+                -0.045em;
+
+            color:
+                #172033;
+
+        }
+
+
+
+        /* YOUR FUTURE STARTS HERE */
+
+        .mission-slogan {
+
+            margin-top:
+                36px;
+
+            font-size:
+                clamp(
+                    17px,
+                    1.5vw,
+                    24px
+                );
+
+            font-style:
+                italic;
+
+            color:
+                rgba(
+                    23,
+                    32,
+                    51,
+                    0.46
+                );
+
+        }
+
+
+
+        /* =================================================
+           НИЧЬЯ
+           ================================================= */
+
+        #tieResult {
+
+            position:
+                relative;
+
+            z-index:
+                40;
+
+            width:
+                min(
+                    900px,
+                    calc(100vw - 100px)
+                );
+
+            text-align:
+                center;
+
+            opacity:
+                0;
+
+            transform:
+                translateY(35px);
+
+            transition:
+                all 0.9s ease;
+
+        }
+
+
+        #tieResult.tie-visible {
+
+            opacity:
+                1;
+
+            transform:
+                translateY(0);
+
+        }
+
+
+        .tie-title {
+
+            font-size:
+                clamp(
+                    48px,
+                    6vw,
+                    88px
+                );
+
+            font-weight:
+                800;
+
+            letter-spacing:
+                -0.05em;
+
+        }
+
+
+        .tie-description {
+
+            margin:
+                25px
+                auto
+                0;
+
+            max-width:
+                700px;
+
+            font-size:
+                20px;
+
+            line-height:
+                1.5;
+
+            opacity:
+                0.58;
+
+        }
+
+
+
+        /* =================================================
+           ПОБЕДА "СВОЁ ВИДЕНИЕ"
+           ================================================= */
+
+        #customWinnerResult {
+
+            position:
+                relative;
+
+            z-index:
+                40;
+
+            width:
+                min(
+                    950px,
+                    calc(100vw - 100px)
+                );
+
+            text-align:
+                center;
+
+            opacity:
+                0;
+
+            transform:
+                translateY(35px);
+
+            transition:
+                all
+                0.9s
+                ease;
+
+        }
+
+
+        #customWinnerResult.custom-winner-visible {
+
+            opacity:
+                1;
+
+            transform:
+                translateY(0);
+
+        }
+
+
+        .custom-winner-title {
+
+            font-size:
+                clamp(
+                    52px,
+                    6vw,
+                    90px
+                );
+
+            font-weight:
+                800;
+
+            letter-spacing:
+                -0.055em;
+
+        }
+
+
+        .custom-winner-description {
+
+            max-width:
+                760px;
+
+            margin:
+                26px
+                auto
+                0;
+
+            font-size:
+                20px;
+
+            line-height:
+                1.5;
+
+            opacity:
+                0.58;
+
+        }
+
+
+    </style>
+
 </head>
+
 
 
 <body class="presenter-page">
 
 
     <!-- =====================================================
-         ОСНОВНОЙ ЭКРАН ГОЛОСОВАНИЯ
+         ГЛАВНЫЙ ЭКРАН
          ===================================================== -->
 
     <main
@@ -34,8 +781,6 @@
         class="presenter-screen"
     >
 
-
-        <!-- HEADER -->
 
         <header class="presenter-header">
 
@@ -58,6 +803,7 @@
                 </div>
 
             </div>
+
 
 
             <div class="presenter-controls">
@@ -93,26 +839,19 @@
 
 
 
-        <!-- TITLE -->
-
         <section class="presenter-title-block">
-
 
             <div class="eyebrow">
                 OUR VISION
             </div>
 
-
             <h1 id="pageTitle">
                 Выбираем наше видение будущего
             </h1>
 
-
         </section>
 
 
-
-        <!-- VISIONS -->
 
         <section class="presenter-grid">
 
@@ -313,8 +1052,6 @@
 
 
 
-        <!-- FOOTER -->
-
         <footer class="presenter-footer">
 
 
@@ -375,7 +1112,7 @@
 
 
     <!-- =====================================================
-         ФИНАЛЬНАЯ СЦЕНА
+         ФИНАЛ
          ===================================================== -->
 
     <section
@@ -383,8 +1120,6 @@
         class="final-scene hidden"
     >
 
-
-        <!-- маленькая верхняя надпись -->
 
         <div
             id="finalVisionLabel"
@@ -394,8 +1129,6 @@
         </div>
 
 
-        <!-- сюда JS добавит парящие слова -->
-
         <div
             id="keywordCloud"
             class="keyword-cloud"
@@ -403,13 +1136,10 @@
 
 
 
-        <!-- итоговая миссия -->
-
         <div
             id="missionResult"
             class="mission-result"
         >
-
 
             <div class="mission-eyebrow">
                 НАША МИССИЯ
@@ -426,11 +1156,9 @@
                 Your future starts here
             </div>
 
-
         </div>
 
 
-        <!-- если ничья -->
 
         <div
             id="tieResult"
@@ -442,13 +1170,12 @@
             </div>
 
             <div class="tie-description">
-                Два или несколько видений набрали одинаковое количество голосов.
+                Несколько видений набрали одинаковое количество голосов.
             </div>
 
         </div>
 
 
-        <!-- временный финал custom -->
 
         <div
             id="customWinnerResult"
@@ -464,7 +1191,7 @@
             </div>
 
             <div class="custom-winner-description">
-                Следующим этапом здесь появятся идеи участников и миссия, сформированная искусственным интеллектом.
+                Здесь появятся идеи участников и миссия, сформированная искусственным интеллектом.
             </div>
 
         </div>
@@ -474,17 +1201,12 @@
 
 
 
-    <!-- SOUND -->
-
     <audio
         id="finishSound"
         src="voting-finish-chime.wav"
         preload="auto"
     ></audio>
 
-
-
-    <!-- SUPABASE -->
 
     <script
         src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"
