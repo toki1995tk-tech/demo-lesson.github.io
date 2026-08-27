@@ -1,6 +1,6 @@
-
 <!DOCTYPE html>
 <html lang="ru">
+
 <head>
 
     <meta charset="UTF-8">
@@ -16,10 +16,11 @@
 
     <link
         rel="stylesheet"
-        href="css/style.css"
+        href="css/styles.css"
     >
 
 </head>
+
 
 <body class="presenter-page">
 
@@ -27,11 +28,12 @@
     <main class="presenter-screen">
 
 
-        <!-- ===================================== -->
-        <!-- HEADER -->
-        <!-- ===================================== -->
+        <!-- =================================================
+             HEADER
+             ================================================= -->
 
         <header class="presenter-header">
+
 
             <div>
 
@@ -41,6 +43,7 @@
                 >
                     International Future School
                 </div>
+
 
                 <div
                     id="schoolSlogan"
@@ -52,49 +55,76 @@
             </div>
 
 
-            <div class="brand-mark">
-                FUTURE
+            <div class="presenter-controls">
+
+
+                <button
+                    id="resetVotingButton"
+                    class="reset-voting-button"
+                    type="button"
+                    title="Очистить результаты и начать новое голосование"
+                >
+                    ↻ Начать заново
+                </button>
+
+
+                <div class="brand-mark">
+                    FUTURE
+                </div>
+
+
             </div>
+
 
         </header>
 
 
-        <!-- ===================================== -->
-        <!-- TITLE -->
-        <!-- ===================================== -->
+
+        <!-- =================================================
+             TITLE
+             ================================================= -->
 
         <section class="presenter-title-block">
+
 
             <div class="eyebrow">
                 OUR VISION
             </div>
 
+
             <h1 id="pageTitle">
                 Выбираем наше видение будущего
             </h1>
 
+
         </section>
 
 
-        <!-- ===================================== -->
-        <!-- VISIONS -->
-        <!-- ===================================== -->
+
+        <!-- =================================================
+             VISIONS
+             ================================================= -->
 
         <section class="presenter-grid">
 
 
-            <!-- VISION 1 -->
+            <!-- =============================================
+                 VISION 1
+                 ============================================= -->
 
             <article
                 class="presenter-card"
                 id="card1"
             >
 
+
                 <div class="percentage-row">
+
 
                     <span>
                         Видение 01
                     </span>
+
 
                     <strong
                         id="percent1"
@@ -102,6 +132,7 @@
                     >
                         0%
                     </strong>
+
 
                 </div>
 
@@ -121,21 +152,28 @@
                     class="presenter-vision-text"
                 ></div>
 
+
             </article>
 
 
-            <!-- VISION 2 -->
+
+            <!-- =============================================
+                 VISION 2
+                 ============================================= -->
 
             <article
                 class="presenter-card"
                 id="card2"
             >
 
+
                 <div class="percentage-row">
+
 
                     <span>
                         Видение 02
                     </span>
+
 
                     <strong
                         id="percent2"
@@ -143,6 +181,7 @@
                     >
                         0%
                     </strong>
+
 
                 </div>
 
@@ -162,21 +201,28 @@
                     class="presenter-vision-text"
                 ></div>
 
+
             </article>
 
 
-            <!-- VISION 3 -->
+
+            <!-- =============================================
+                 VISION 3
+                 ============================================= -->
 
             <article
                 class="presenter-card"
                 id="card3"
             >
 
+
                 <div class="percentage-row">
+
 
                     <span>
                         Видение 03
                     </span>
+
 
                     <strong
                         id="percent3"
@@ -184,6 +230,7 @@
                     >
                         0%
                     </strong>
+
 
                 </div>
 
@@ -203,10 +250,14 @@
                     class="presenter-vision-text"
                 ></div>
 
+
             </article>
 
 
-            <!-- CUSTOM -->
+
+            <!-- =============================================
+                 CUSTOM VISION
+                 ============================================= -->
 
             <article
                 class="
@@ -216,11 +267,14 @@
                 id="cardCustom"
             >
 
+
                 <div class="percentage-row">
+
 
                     <span id="customTitle">
                         Своё видение
                     </span>
+
 
                     <strong
                         id="percentCustom"
@@ -228,6 +282,7 @@
                     >
                         0%
                     </strong>
+
 
                 </div>
 
@@ -244,12 +299,13 @@
 
                 <div class="presenter-vision-text">
 
-                    Предложите собственное
-                    видение будущего школы,
-                    если ни один вариант
-                    не отражает вашу идею.
+                    Если предложенные варианты
+                    не отражают вашу идею,
+                    сформулируйте собственное
+                    видение будущего школы.
 
                 </div>
+
 
             </article>
 
@@ -257,14 +313,15 @@
         </section>
 
 
-        <!-- ===================================== -->
-        <!-- BOTTOM PANEL -->
-        <!-- ===================================== -->
+
+        <!-- =================================================
+             BOTTOM PANEL
+             ================================================= -->
 
         <footer class="presenter-footer">
 
 
-            <!-- COUNTERS -->
+            <!-- PARTICIPANTS -->
 
             <div class="live-statistics">
 
@@ -275,9 +332,7 @@
                         Присоединились
                     </span>
 
-                    <strong
-                        id="joinedCount"
-                    >
+                    <strong id="joinedCount">
                         0
                     </strong>
 
@@ -293,35 +348,40 @@
                         Проголосовали
                     </span>
 
-                    <strong
-                        id="votedCount"
-                    >
+                    <strong id="votedCount">
                         0
                     </strong>
 
                 </div>
 
+
             </div>
+
 
 
             <!-- TIMER -->
 
             <div class="presenter-timer-block">
 
+
                 <span id="timerLabel">
                     Ожидаем первого участника
                 </span>
+
 
                 <strong id="presenterTimer">
                     05:00
                 </strong>
 
+
             </div>
 
 
-            <!-- QR -->
+
+            <!-- QR PLACEHOLDER -->
 
             <div class="qr-placeholder">
+
 
                 <div class="qr-box">
 
@@ -331,9 +391,11 @@
 
                 </div>
 
+
                 <div class="qr-caption">
                     Сканируйте и голосуйте
                 </div>
+
 
             </div>
 
@@ -344,7 +406,13 @@
     </main>
 
 
-    <!-- SOUND -->
+
+    <!-- =====================================================
+         FINISH SOUND
+
+         Файл находится прямо в MAIN,
+         поэтому путь именно такой.
+         ===================================================== -->
 
     <audio
         id="finishSound"
@@ -353,16 +421,22 @@
     ></audio>
 
 
-    <!-- SUPABASE -->
+
+    <!-- =====================================================
+         SUPABASE
+         ===================================================== -->
 
     <script
         src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"
     ></script>
 
+
     <script src="js/config.js"></script>
+
 
     <script src="js/presenter.js"></script>
 
 
 </body>
+
 </html>
