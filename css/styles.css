@@ -1401,3 +1401,14 @@ button {
     }
 
 }
+.qr-image {
+
+    width: 88px;
+
+    height: 88px;
+
+    display: block;
+
+    object-fit: contain;
+
+}
