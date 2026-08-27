@@ -3,6 +3,7 @@
 // PRESENTER SCREEN
 // ==========================================================
 
+
 let currentEvent = null;
 let timerInterval = null;
 let soundPlayed = false;
@@ -33,6 +34,7 @@ const vision3Text =
 const customTitle =
     document.getElementById('customTitle');
 
+
 const percent1 =
     document.getElementById('percent1');
 
@@ -44,6 +46,7 @@ const percent3 =
 
 const percentCustom =
     document.getElementById('percentCustom');
+
 
 const bar1 =
     document.getElementById('bar1');
@@ -57,11 +60,13 @@ const bar3 =
 const barCustom =
     document.getElementById('barCustom');
 
+
 const joinedCount =
     document.getElementById('joinedCount');
 
 const votedCount =
     document.getElementById('votedCount');
+
 
 const presenterTimer =
     document.getElementById('presenterTimer');
@@ -69,8 +74,10 @@ const presenterTimer =
 const timerLabel =
     document.getElementById('timerLabel');
 
+
 const finishSound =
     document.getElementById('finishSound');
+
 
 const resetVotingButton =
     document.getElementById('resetVotingButton');
@@ -128,7 +135,14 @@ async function loadEvent() {
 
 
     if (error) {
+
+        console.error(
+            'Load event error:',
+            error
+        );
+
         throw error;
+
     }
 
 
@@ -153,20 +167,26 @@ function renderEvent() {
     schoolName.textContent =
         currentEvent.school_name;
 
+
     schoolSlogan.textContent =
         currentEvent.slogan;
+
 
     pageTitle.textContent =
         currentEvent.page_title;
 
+
     vision1Text.textContent =
         currentEvent.vision_1;
+
 
     vision2Text.textContent =
         currentEvent.vision_2;
 
+
     vision3Text.textContent =
         currentEvent.vision_3;
+
 
     customTitle.textContent =
         currentEvent.custom_title;
@@ -175,7 +195,7 @@ function renderEvent() {
 
 
 // ==========================================================
-// LOAD STATS
+// LOAD STATISTICS
 // ==========================================================
 
 async function loadStats() {
@@ -185,35 +205,30 @@ async function loadStats() {
     }
 
 
-    const [
-        sessionsResult,
-        votesResult
-    ] =
-        await Promise.all([
+    const sessionsResult =
+        await supabaseClient
+            .from('vision_sessions')
+            .select(
+                'id',
+                {
+                    count: 'exact',
+                    head: true
+                }
+            )
+            .eq(
+                'event_id',
+                currentEvent.id
+            );
 
-            supabaseClient
-                .from('vision_sessions')
-                .select(
-                    'id',
-                    {
-                        count: 'exact',
-                        head: true
-                    }
-                )
-                .eq(
-                    'event_id',
-                    currentEvent.id
-                ),
 
-            supabaseClient
-                .from('vision_votes')
-                .select('choice')
-                .eq(
-                    'event_id',
-                    currentEvent.id
-                )
-
-        ]);
+    const votesResult =
+        await supabaseClient
+            .from('vision_votes')
+            .select('choice')
+            .eq(
+                'event_id',
+                currentEvent.id
+            );
 
 
     if (sessionsResult.error) {
@@ -254,7 +269,7 @@ async function loadStats() {
 
 
 // ==========================================================
-// PERCENTAGES
+// CALCULATE PERCENTAGES
 // ==========================================================
 
 function calculatePercentages(votes) {
@@ -264,10 +279,15 @@ function calculatePercentages(votes) {
 
 
     const counts = {
+
         vision_1: 0,
+
         vision_2: 0,
+
         vision_3: 0,
+
         custom: 0
+
     };
 
 
@@ -291,12 +311,32 @@ function calculatePercentages(votes) {
 
     if (total === 0) {
 
-        updatePercentage(percent1, bar1, 0);
-        updatePercentage(percent2, bar2, 0);
-        updatePercentage(percent3, bar3, 0);
-        updatePercentage(percentCustom, barCustom, 0);
+        updatePercentage(
+            percent1,
+            bar1,
+            0
+        );
+
+        updatePercentage(
+            percent2,
+            bar2,
+            0
+        );
+
+        updatePercentage(
+            percent3,
+            bar3,
+            0
+        );
+
+        updatePercentage(
+            percentCustom,
+            barCustom,
+            0
+        );
 
         return;
+
     }
 
 
@@ -304,7 +344,9 @@ function calculatePercentages(votes) {
         percent1,
         bar1,
         Math.round(
-            counts.vision_1 / total * 100
+            counts.vision_1 /
+            total *
+            100
         )
     );
 
@@ -313,7 +355,9 @@ function calculatePercentages(votes) {
         percent2,
         bar2,
         Math.round(
-            counts.vision_2 / total * 100
+            counts.vision_2 /
+            total *
+            100
         )
     );
 
@@ -322,7 +366,9 @@ function calculatePercentages(votes) {
         percent3,
         bar3,
         Math.round(
-            counts.vision_3 / total * 100
+            counts.vision_3 /
+            total *
+            100
         )
     );
 
@@ -331,7 +377,9 @@ function calculatePercentages(votes) {
         percentCustom,
         barCustom,
         Math.round(
-            counts.custom / total * 100
+            counts.custom /
+            total *
+            100
         )
     );
 
@@ -339,7 +387,7 @@ function calculatePercentages(votes) {
 
 
 // ==========================================================
-// UPDATE PERCENTAGE
+// UPDATE PERCENT
 // ==========================================================
 
 function updatePercentage(
@@ -350,7 +398,8 @@ function updatePercentage(
 
     const current =
         Number(
-            textElement.dataset.value || 0
+            textElement.dataset.value ||
+            0
         );
 
 
@@ -372,7 +421,7 @@ function updatePercentage(
 
 
 // ==========================================================
-// ANIMATE NUMBER
+// ANIMATE PERCENT
 // ==========================================================
 
 function animateNumber(
@@ -413,14 +462,18 @@ function animateNumber(
 
         if (progress < 1) {
 
-            requestAnimationFrame(frame);
+            requestAnimationFrame(
+                frame
+            );
 
         }
 
     }
 
 
-    requestAnimationFrame(frame);
+    requestAnimationFrame(
+        frame
+    );
 
 }
 
@@ -463,11 +516,16 @@ function updateTimer() {
     }
 
 
+    /*
+        Ждём первого участника.
+    */
+
     if (!currentEvent.started_at) {
 
         presenterTimer.textContent =
             formatSeconds(
-                currentEvent.duration_seconds || 300
+                currentEvent.duration_seconds ||
+                300
             );
 
 
@@ -481,6 +539,7 @@ function updateTimer() {
 
 
         return;
+
     }
 
 
@@ -550,7 +609,9 @@ function updateTimer() {
         !soundPlayed
     ) {
 
-        soundPlayed = true;
+        soundPlayed =
+            true;
+
 
         playFinishSound();
 
@@ -560,19 +621,23 @@ function updateTimer() {
 
 
 // ==========================================================
-// FORMAT TIME
+// FORMAT TIMER
 // ==========================================================
 
-function formatSeconds(totalSeconds) {
+function formatSeconds(
+    totalSeconds
+) {
 
     const minutes =
         Math.floor(
-            totalSeconds / 60
+            totalSeconds /
+            60
         );
 
 
     const seconds =
-        totalSeconds % 60;
+        totalSeconds %
+        60;
 
 
     return (
@@ -626,7 +691,13 @@ function playFinishSound() {
 function setupResetButton() {
 
     if (!resetVotingButton) {
+
+        console.error(
+            'Reset button not found'
+        );
+
         return;
+
     }
 
 
@@ -647,12 +718,15 @@ async function resetVoting() {
     const confirmed =
         confirm(
             'Начать голосование заново?\n\n' +
-            'Все предыдущие голоса и подключения будут удалены.'
+            'Все предыдущие тестовые голоса ' +
+            'и подключения будут удалены.'
         );
 
 
     if (!confirmed) {
+
         return;
+
     }
 
 
@@ -666,51 +740,123 @@ async function resetVoting() {
 
     try {
 
-        /*
-            Вызываем специальную функцию
-            в Supabase.
-        */
+        console.log(
+            'Calling reset_vision_voting...'
+        );
 
-        const { error } =
+
+        const {
+            data,
+            error
+        } =
             await supabaseClient.rpc(
                 'reset_vision_voting'
             );
 
 
+        console.log(
+            'Reset result:',
+            data
+        );
+
+
         if (error) {
 
             console.error(
-                'RPC reset error:',
+                'RESET RPC ERROR:',
                 error
             );
 
-            throw error;
+
+            throw new Error(
+                error.message
+            );
 
         }
 
+
+        /*
+            Проверяем ответ самой функции.
+        */
+
+        if (
+            data &&
+            data.ok === false
+        ) {
+
+            throw new Error(
+                data.message ||
+                'Reset failed'
+            );
+
+        }
+
+
+        /*
+            Чистим визуальный интерфейс
+            сразу же.
+        */
+
+        joinedCount.textContent =
+            '0';
+
+
+        votedCount.textContent =
+            '0';
+
+
+        updatePercentage(
+            percent1,
+            bar1,
+            0
+        );
+
+
+        updatePercentage(
+            percent2,
+            bar2,
+            0
+        );
+
+
+        updatePercentage(
+            percent3,
+            bar3,
+            0
+        );
+
+
+        updatePercentage(
+            percentCustom,
+            barCustom,
+            0
+        );
+
+
+        /*
+            Новый раунд —
+            звук можно проиграть снова.
+        */
 
         soundPlayed =
             false;
 
 
         /*
-            Перечитываем базу.
+            Читаем обновлённое мероприятие.
         */
 
         await loadEvent();
 
+
         await loadStats();
 
-
-        /*
-            Перезапускаем отображение таймера.
-        */
 
         startTimer();
 
 
         resetVotingButton.textContent =
-            '✓ Сброшено';
+            '✓ Готово';
 
 
         setTimeout(
@@ -719,25 +865,27 @@ async function resetVoting() {
                 resetVotingButton.textContent =
                     '↻ Начать заново';
 
+
                 resetVotingButton.disabled =
                     false;
 
             },
-            1000
+            1200
         );
 
     }
     catch (error) {
 
         console.error(
-            'Reset voting failed:',
+            'RESET FAILED:',
             error
         );
 
 
         alert(
             'Не удалось сбросить голосование.\n\n' +
-            'Откройте Console браузера — там будет описание ошибки.'
+            'Ошибка: ' +
+            error.message
         );
 
 
@@ -784,6 +932,7 @@ function subscribeToRealtime() {
 
                 currentEvent =
                     payload.new;
+
 
                 renderEvent();
 
