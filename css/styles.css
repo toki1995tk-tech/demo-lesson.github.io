@@ -1028,14 +1028,14 @@ button {
 
     font-size:
         clamp(
-            17px,
-            1.42vw,
-            22px
+            23px,
+            2vw,
+            32px
         );
 
-    line-height: 1.5;
+    line-height: 1.38;
 
-    opacity: 0.82;
+    opacity: 0.88;
 
 }
 
