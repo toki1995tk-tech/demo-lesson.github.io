@@ -1,1 +1,457 @@
 
+* {
+    box-sizing: border-box;
+}
+
+html,
+body {
+    margin: 0;
+    padding: 0;
+    min-height: 100%;
+}
+
+body {
+    font-family:
+        Inter,
+        Arial,
+        Helvetica,
+        sans-serif;
+
+    background:
+        linear-gradient(
+            160deg,
+            #f6f8fc 0%,
+            #eef2f8 100%
+        );
+
+    color: #172033;
+}
+
+button,
+textarea {
+    font: inherit;
+}
+
+.hidden {
+    display: none !important;
+}
+
+
+/* ======================================================
+   PAGE
+   ====================================================== */
+
+.vote-page {
+    min-height: 100vh;
+}
+
+.vote-container {
+    width: min(
+        100% - 32px,
+        760px
+    );
+
+    margin: 0 auto;
+    padding:
+        42px
+        0
+        60px;
+}
+
+
+/* ======================================================
+   HEADER
+   ====================================================== */
+
+.vote-header {
+    text-align: center;
+    margin-bottom: 30px;
+}
+
+.school-name {
+    font-size: 14px;
+    font-weight: 800;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    margin-bottom: 6px;
+}
+
+.school-slogan {
+    font-size: 14px;
+    opacity: 0.65;
+    margin-bottom: 30px;
+}
+
+.vote-header h1 {
+    margin:
+        0
+        auto
+        12px;
+
+    max-width: 600px;
+
+    font-size:
+        clamp(
+            28px,
+            7vw,
+            44px
+        );
+
+    line-height: 1.05;
+}
+
+.vote-description {
+    margin: 0;
+    opacity: 0.65;
+    line-height: 1.5;
+}
+
+
+/* ======================================================
+   CARDS
+   ====================================================== */
+
+.vision-list {
+    display: grid;
+    gap: 14px;
+}
+
+.vision-card {
+    position: relative;
+
+    display: flex;
+    align-items: flex-start;
+    gap: 16px;
+
+    padding: 22px;
+
+    border:
+        2px solid
+        rgba(
+            23,
+            32,
+            51,
+            0.08
+        );
+
+    border-radius: 22px;
+
+    background:
+        rgba(
+            255,
+            255,
+            255,
+            0.86
+        );
+
+    cursor: pointer;
+
+    transition:
+        transform 0.2s ease,
+        border-color 0.2s ease,
+        box-shadow 0.2s ease;
+}
+
+.vision-card:hover {
+    transform:
+        translateY(-2px);
+}
+
+.vision-card.selected {
+    border-color: #172033;
+
+    box-shadow:
+        0
+        14px
+        40px
+        rgba(
+            20,
+            30,
+            55,
+            0.12
+        );
+}
+
+.vision-card input[type="radio"] {
+    position: absolute;
+    opacity: 0;
+    pointer-events: none;
+}
+
+.vision-number {
+    flex:
+        0
+        0
+        48px;
+
+    width: 48px;
+    height: 48px;
+
+    display: grid;
+    place-items: center;
+
+    border-radius: 50%;
+
+    background: #172033;
+    color: white;
+
+    font-size: 13px;
+    font-weight: 800;
+}
+
+.vision-content {
+    flex: 1;
+    min-width: 0;
+}
+
+.vision-title {
+    margin-bottom: 8px;
+
+    font-size: 19px;
+    font-weight: 800;
+}
+
+.vision-text {
+    font-size: 15px;
+    line-height: 1.6;
+    opacity: 0.74;
+}
+
+
+/* ======================================================
+   CUSTOM
+   ====================================================== */
+
+.custom-card {
+    margin-top: 8px;
+}
+
+.custom-input {
+    width: 100%;
+    resize: vertical;
+
+    min-height: 115px;
+
+    margin-top: 16px;
+
+    padding:
+        15px
+        16px;
+
+    border:
+        1px solid
+        rgba(
+            23,
+            32,
+            51,
+            0.15
+        );
+
+    border-radius: 14px;
+
+    background:
+        rgba(
+            255,
+            255,
+            255,
+            0.8
+        );
+
+    outline: none;
+
+    line-height: 1.5;
+}
+
+.custom-input:focus {
+    border-color: #172033;
+}
+
+.character-counter {
+    margin-top: 6px;
+    text-align: right;
+    font-size: 12px;
+    opacity: 0.5;
+}
+
+
+/* ======================================================
+   BUTTON
+   ====================================================== */
+
+.submit-button {
+    width: 100%;
+
+    border: 0;
+    border-radius: 18px;
+
+    margin-top: 22px;
+
+    padding:
+        18px
+        24px;
+
+    background: #172033;
+    color: white;
+
+    font-weight: 800;
+    font-size: 16px;
+
+    cursor: pointer;
+}
+
+.submit-button:disabled {
+    opacity: 0.6;
+    cursor: wait;
+}
+
+
+/* ======================================================
+   ERROR
+   ====================================================== */
+
+.form-error {
+    margin-top: 16px;
+
+    padding:
+        13px
+        16px;
+
+    border-radius: 12px;
+
+    background:
+        #ffe8e8;
+
+    color:
+        #a12525;
+
+    font-size: 14px;
+}
+
+
+/* ======================================================
+   TIMER
+   ====================================================== */
+
+.vote-footer {
+    margin-top: 18px;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+
+    font-size: 13px;
+    opacity: 0.65;
+}
+
+
+/* ======================================================
+   STATES
+   ====================================================== */
+
+.loading-block,
+.success-block,
+.technical-error {
+    margin-top: 60px;
+
+    padding:
+        40px
+        24px;
+
+    border-radius: 24px;
+
+    background: white;
+
+    text-align: center;
+}
+
+.success-icon {
+    width: 74px;
+    height: 74px;
+
+    margin:
+        0
+        auto
+        22px;
+
+    display: grid;
+    place-items: center;
+
+    border-radius: 50%;
+
+    background: #172033;
+    color: white;
+
+    font-size: 34px;
+}
+
+.closed-icon {
+    margin-bottom: 18px;
+
+    font-size: 42px;
+    font-weight: 900;
+}
+
+.success-block h2,
+.technical-error h2 {
+    margin:
+        0
+        0
+        10px;
+
+    font-size: 27px;
+}
+
+.success-block p,
+.technical-error p {
+    margin: 0;
+
+    opacity: 0.65;
+
+    line-height: 1.5;
+}
+
+
+/* ======================================================
+   MOBILE
+   ====================================================== */
+
+@media (
+    max-width: 520px
+) {
+
+    .vote-container {
+        width:
+            min(
+                100% - 22px,
+                760px
+            );
+
+        padding-top: 26px;
+    }
+
+    .vote-header {
+        margin-bottom: 22px;
+    }
+
+    .vision-card {
+        padding:
+            18px
+            16px;
+    }
+
+    .vision-number {
+        flex-basis: 42px;
+        width: 42px;
+        height: 42px;
+    }
+
+    .vision-title {
+        font-size: 17px;
+    }
+
+    .vision-text {
+        font-size: 14px;
+    }
+
+}
