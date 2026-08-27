@@ -1,12 +1,7 @@
 /* ==========================================================
    INTERNATIONAL FUTURE SCHOOL
-   MAIN STYLES
    ========================================================== */
 
-
-/* ==========================================================
-   BASIC
-   ========================================================== */
 
 * {
     box-sizing: border-box;
@@ -37,11 +32,6 @@ textarea {
 }
 
 
-button {
-    -webkit-tap-highlight-color: transparent;
-}
-
-
 .hidden {
     display: none !important;
 }
@@ -49,7 +39,7 @@ button {
 
 
 /* ==========================================================
-   PARTICIPANT / PHONE PAGE
+   PHONE PAGE
    ========================================================== */
 
 .vote-page {
@@ -87,8 +77,6 @@ button {
 
 }
 
-
-/* HEADER */
 
 .vote-header {
 
@@ -143,8 +131,6 @@ button {
 
     line-height: 1.05;
 
-    letter-spacing: -0.035em;
-
 }
 
 
@@ -158,9 +144,6 @@ button {
 
 }
 
-
-
-/* VISION CARDS */
 
 .vision-list {
 
@@ -212,14 +195,6 @@ button {
         transform 0.2s ease,
         border-color 0.2s ease,
         box-shadow 0.2s ease;
-
-}
-
-
-.vision-card:hover {
-
-    transform:
-        translateY(-2px);
 
 }
 
@@ -312,9 +287,6 @@ button {
 }
 
 
-
-/* CUSTOM VISION */
-
 .custom-card {
 
     margin-top: 8px;
@@ -347,26 +319,11 @@ button {
 
     border-radius: 14px;
 
-    background:
-        rgba(
-            255,
-            255,
-            255,
-            0.8
-        );
-
-    color: #172033;
+    background: white;
 
     outline: none;
 
     line-height: 1.5;
-
-}
-
-
-.custom-input:focus {
-
-    border-color: #172033;
 
 }
 
@@ -383,9 +340,6 @@ button {
 
 }
 
-
-
-/* PHONE SUBMIT BUTTON */
 
 .submit-button {
 
@@ -411,32 +365,8 @@ button {
 
     cursor: pointer;
 
-    transition:
-        transform 0.2s ease,
-        opacity 0.2s ease;
-
 }
 
-
-.submit-button:hover {
-
-    transform:
-        translateY(-1px);
-
-}
-
-
-.submit-button:disabled {
-
-    opacity: 0.55;
-
-    cursor: wait;
-
-}
-
-
-
-/* PHONE ERROR */
 
 .form-error {
 
@@ -457,9 +387,6 @@ button {
 }
 
 
-
-/* PHONE TIMER */
-
 .vote-footer {
 
     margin-top: 18px;
@@ -479,16 +406,6 @@ button {
 }
 
 
-.vote-footer strong {
-
-    font-size: 15px;
-
-}
-
-
-
-/* PHONE STATES */
-
 .loading-block,
 .success-block,
 .technical-error {
@@ -504,17 +421,6 @@ button {
     background: white;
 
     text-align: center;
-
-    box-shadow:
-        0
-        20px
-        60px
-        rgba(
-            30,
-            45,
-            80,
-            0.07
-        );
 
 }
 
@@ -556,34 +462,9 @@ button {
 }
 
 
-.success-block h2,
-.technical-error h2 {
-
-    margin:
-        0
-        0
-        10px;
-
-    font-size: 27px;
-
-}
-
-
-.success-block p,
-.technical-error p {
-
-    margin: 0;
-
-    opacity: 0.65;
-
-    line-height: 1.5;
-
-}
-
-
 
 /* ==========================================================
-   PRESENTER / BIG SCREEN
+   PRESENTER SCREEN
    ========================================================== */
 
 .presenter-page {
@@ -625,11 +506,28 @@ button {
 
     flex-direction: column;
 
+    opacity: 1;
+
+    transform: scale(1);
+
+    transition:
+        opacity 0.8s ease,
+        transform 0.8s ease,
+        filter 0.8s ease;
+
 }
 
 
+.presenter-screen.voting-screen-exit {
 
-/* PRESENTER HEADER */
+    opacity: 0;
+
+    transform: scale(0.975);
+
+    filter: blur(10px);
+
+}
+
 
 .presenter-header {
 
@@ -668,50 +566,20 @@ button {
 }
 
 
-
-/* RIGHT CONTROLS */
-
 .presenter-controls {
 
     display: flex;
 
     align-items: center;
 
-    gap: 12px;
+    gap: 10px;
 
 }
 
 
-.brand-mark {
-
-    padding:
-        10px
-        16px;
-
-    border:
-        1px solid
-        rgba(23, 32, 51, 0.12);
-
-    border-radius: 999px;
-
-    background:
-        rgba(
-            255,
-            255,
-            255,
-            0.45
-        );
-
-    font-size: 12px;
-
-    font-weight: 900;
-
-    letter-spacing: 0.16em;
-
-}
-
-
-.reset-voting-button {
+.brand-mark,
+.reset-voting-button,
+.test-final-button {
 
     padding:
         10px
@@ -742,41 +610,37 @@ button {
 
     font-weight: 800;
 
+}
+
+
+.reset-voting-button,
+.test-final-button {
+
     cursor: pointer;
+
+}
+
+
+.test-final-button {
+
+    opacity: 0.48;
+
+}
+
+
+.reset-voting-button {
 
     opacity: 0.72;
 
-    transition:
-        opacity 0.2s ease,
-        transform 0.2s ease,
-        background 0.2s ease;
-
 }
 
 
-.reset-voting-button:hover {
+.brand-mark {
 
-    opacity: 1;
-
-    transform:
-        translateY(-1px);
-
-    background: white;
+    letter-spacing: 0.16em;
 
 }
 
-
-.reset-voting-button:disabled {
-
-    cursor: wait;
-
-    opacity: 0.35;
-
-}
-
-
-
-/* PRESENTER TITLE */
 
 .presenter-title-block {
 
@@ -823,9 +687,6 @@ button {
 }
 
 
-
-/* PRESENTER CARDS */
-
 .presenter-grid {
 
     flex: 1;
@@ -845,16 +706,8 @@ button {
 }
 
 
-.presenter-card {
-
-    position: relative;
-
-    overflow: hidden;
-
-    padding:
-        20px
-        22px
-        22px;
+.presenter-card,
+.presenter-qr-card {
 
     border:
         1px solid
@@ -886,31 +739,15 @@ button {
             0.06
         );
 
-    backdrop-filter:
-        blur(14px);
-
-    transition:
-        transform 0.35s ease,
-        box-shadow 0.35s ease;
-
 }
 
 
-.presenter-card:hover {
+.presenter-card {
 
-    transform:
-        translateY(-3px);
-
-    box-shadow:
-        0
-        24px
-        60px
-        rgba(
-            30,
-            45,
-            80,
-            0.1
-        );
+    padding:
+        20px
+        22px
+        22px;
 
 }
 
@@ -924,9 +761,6 @@ button {
 
 }
 
-
-
-/* PERCENTAGES */
 
 .percentage-row {
 
@@ -967,13 +801,8 @@ button {
             46px
         );
 
-    letter-spacing: -0.05em;
-
 }
 
-
-
-/* PROGRESS BAR */
 
 .progress-track {
 
@@ -1009,20 +838,10 @@ button {
     background: #172033;
 
     transition:
-        width
-        0.6s
-        cubic-bezier(
-            0.2,
-            0.8,
-            0.2,
-            1
-        );
+        width 0.6s ease;
 
 }
 
-
-
-/* PRESENTER VISION TEXT */
 
 .presenter-vision-text {
 
@@ -1040,7 +859,48 @@ button {
 }
 
 
-/* PRESENTER FOOTER */
+.presenter-qr-card {
+
+    grid-column: 3;
+
+    display: flex;
+
+    flex-direction: column;
+
+    align-items: center;
+
+    justify-content: center;
+
+    gap: 9px;
+
+    min-height: 170px;
+
+    padding: 14px;
+
+}
+
+
+.presenter-qr-image {
+
+    width: 140px;
+
+    height: 140px;
+
+    object-fit: contain;
+
+}
+
+
+.presenter-qr-text {
+
+    font-size: 14px;
+
+    font-weight: 800;
+
+    text-align: center;
+
+}
+
 
 .presenter-footer {
 
@@ -1058,8 +918,6 @@ button {
 
 }
 
-
-/* STATS */
 
 .live-statistics {
 
@@ -1096,8 +954,6 @@ button {
 
     font-size: 32px;
 
-    letter-spacing: -0.04em;
-
 }
 
 
@@ -1117,9 +973,6 @@ button {
 
 }
 
-
-
-/* BIG TIMER */
 
 .presenter-timer-block {
 
@@ -1158,11 +1011,6 @@ button {
 
     line-height: 1;
 
-    letter-spacing: -0.07em;
-
-    transition:
-        transform 0.25s ease;
-
 }
 
 
@@ -1174,80 +1022,452 @@ button {
 
 
 
-/* QR PLACEHOLDER */
+/* ==========================================================
+   FINAL SCENE
+   ========================================================== */
 
-.qr-placeholder {
+.final-scene {
 
-    justify-self: end;
+    position: fixed;
+
+    inset: 0;
+
+    overflow: hidden;
 
     display: flex;
 
-    flex-direction: column;
-
     align-items: center;
 
-    gap: 6px;
+    justify-content: center;
+
+    background:
+        radial-gradient(
+            circle at center,
+            rgba(255,255,255,0.96),
+            rgba(237,241,247,0.98)
+        );
+
+    opacity: 0;
+
+    transition:
+        opacity 0.9s ease;
 
 }
 
 
-.qr-box {
+.final-scene.final-scene-visible {
 
-    width: 105px;
+    opacity: 1;
 
-    height: 105px;
+}
 
-    display: grid;
 
-    place-items: center;
+.final-scene::before {
+
+    content: "";
+
+    position: absolute;
+
+    width: 650px;
+
+    height: 650px;
+
+    border-radius: 50%;
+
+    background:
+        radial-gradient(
+            circle,
+            rgba(90, 120, 190, 0.12),
+            transparent 65%
+        );
+
+    filter: blur(10px);
+
+}
+
+
+.final-vision-label {
+
+    position: absolute;
+
+    top: 54px;
+
+    left: 50%;
+
+    transform:
+        translateX(-50%);
+
+    font-size: 12px;
+
+    font-weight: 900;
+
+    letter-spacing: 0.22em;
+
+    opacity: 0.38;
+
+}
+
+
+/* ==========================================================
+   KEYWORD CLOUD
+   ========================================================== */
+
+.keyword-cloud {
+
+    position: absolute;
+
+    inset: 0;
+
+}
+
+
+.floating-keyword {
+
+    position: absolute;
+
+    transform:
+        translate(
+            -50%,
+            -50%
+        )
+        scale(0.7);
+
+    opacity: 0;
+
+    white-space: nowrap;
+
+    padding:
+        14px
+        22px;
+
+    border-radius: 999px;
 
     border:
-        2px dashed
+        1px solid
         rgba(
             23,
             32,
             51,
-            0.24
+            0.08
         );
-
-    border-radius: 18px;
 
     background:
         rgba(
             255,
             255,
             255,
-            0.58
+            0.74
         );
 
+    box-shadow:
+        0
+        15px
+        50px
+        rgba(
+            30,
+            45,
+            80,
+            0.08
+        );
+
+    backdrop-filter:
+        blur(10px);
+
+    font-size:
+        clamp(
+            24px,
+            2.6vw,
+            44px
+        );
+
+    font-weight: 700;
+
+    letter-spacing: -0.035em;
+
+    transition:
+        left 1.2s
+            cubic-bezier(
+                0.2,
+                0.8,
+                0.2,
+                1
+            ),
+        top 1.2s
+            cubic-bezier(
+                0.2,
+                0.8,
+                0.2,
+                1
+            ),
+        transform 1.2s
+            cubic-bezier(
+                0.2,
+                0.8,
+                0.2,
+                1
+            ),
+        opacity 0.6s ease;
+
 }
 
 
-.qr-box span {
+.floating-keyword.keyword-visible {
 
-    font-size: 17px;
+    opacity: 1;
 
-    font-weight: 900;
+    transform:
+        translate(
+            -50%,
+            -50%
+        )
+        scale(1);
 
-    letter-spacing: 0.1em;
-
-    opacity: 0.35;
+    animation:
+        keywordFloat
+        3.1s
+        ease-in-out
+        var(--delay)
+        infinite
+        alternate;
 
 }
 
 
-.qr-caption {
+@keyframes keywordFloat {
 
-    font-size: 10px;
+    from {
 
-    opacity: 0.45;
+        margin-left: 0;
+
+        margin-top: 0;
+
+    }
+
+    to {
+
+        margin-left:
+            var(--float-x);
+
+        margin-top:
+            var(--float-y);
+
+    }
+
+}
+
+
+.floating-keyword.keyword-assemble {
+
+    animation: none;
+
+    left: 50% !important;
+
+    top: 48% !important;
+
+    margin: 0;
+
+    transform:
+        translate(
+            -50%,
+            -50%
+        )
+        scale(0.82);
+
+}
+
+
+.floating-keyword.keyword-disappear {
+
+    opacity: 0;
+
+    transform:
+        translate(
+            -50%,
+            -50%
+        )
+        scale(0.55);
 
 }
 
 
 
 /* ==========================================================
-   RESPONSIVE PHONE
+   MISSION RESULT
+   ========================================================== */
+
+.mission-result {
+
+    position: relative;
+
+    z-index: 10;
+
+    width:
+        min(
+            1080px,
+            calc(100vw - 120px)
+        );
+
+    text-align: center;
+
+    opacity: 0;
+
+    transform:
+        translateY(28px)
+        scale(0.98);
+
+    transition:
+        opacity 1.1s ease,
+        transform 1.1s ease;
+
+    pointer-events: none;
+
+}
+
+
+.mission-result.mission-visible {
+
+    opacity: 1;
+
+    transform:
+        translateY(0)
+        scale(1);
+
+}
+
+
+.mission-eyebrow {
+
+    margin-bottom: 24px;
+
+    font-size: 14px;
+
+    font-weight: 900;
+
+    letter-spacing: 0.26em;
+
+    opacity: 0.4;
+
+}
+
+
+.final-mission-text {
+
+    font-size:
+        clamp(
+            38px,
+            5vw,
+            78px
+        );
+
+    line-height: 1.08;
+
+    font-weight: 800;
+
+    letter-spacing: -0.045em;
+
+}
+
+
+.mission-slogan {
+
+    margin-top: 34px;
+
+    font-size:
+        clamp(
+            16px,
+            1.4vw,
+            22px
+        );
+
+    font-style: italic;
+
+    opacity: 0.48;
+
+}
+
+
+
+/* ==========================================================
+   TIE / CUSTOM
+   ========================================================== */
+
+.tie-result,
+.custom-winner-result {
+
+    position: relative;
+
+    z-index: 10;
+
+    width:
+        min(
+            900px,
+            calc(100vw - 100px)
+        );
+
+    text-align: center;
+
+    opacity: 0;
+
+    transform:
+        translateY(24px);
+
+    transition:
+        opacity 0.8s ease,
+        transform 0.8s ease;
+
+}
+
+
+.tie-result.tie-visible,
+.custom-winner-result.custom-winner-visible {
+
+    opacity: 1;
+
+    transform:
+        translateY(0);
+
+}
+
+
+.tie-title,
+.custom-winner-title {
+
+    font-size:
+        clamp(
+            46px,
+            6vw,
+            84px
+        );
+
+    font-weight: 800;
+
+    letter-spacing: -0.05em;
+
+}
+
+
+.tie-description,
+.custom-winner-description {
+
+    max-width: 760px;
+
+    margin:
+        22px
+        auto
+        0;
+
+    font-size: 20px;
+
+    line-height: 1.5;
+
+    opacity: 0.6;
+
+}
+
+
+
+/* ==========================================================
+   MOBILE
    ========================================================== */
 
 @media (max-width: 520px) {
@@ -1255,19 +1475,9 @@ button {
     .vote-container {
 
         width:
-            min(
-                calc(100% - 22px),
-                760px
-            );
+            calc(100% - 22px);
 
         padding-top: 26px;
-
-    }
-
-
-    .vote-header {
-
-        margin-bottom: 22px;
 
     }
 
@@ -1283,11 +1493,11 @@ button {
 
     .vision-number {
 
-        flex-basis: 42px;
-
         width: 42px;
 
         height: 42px;
+
+        flex-basis: 42px;
 
     }
 
@@ -1304,184 +1514,5 @@ button {
         font-size: 14px;
 
     }
-
-}
-
-
-
-/* ==========================================================
-   RESPONSIVE PRESENTER
-   ========================================================== */
-
-@media (max-width: 1100px) {
-
-    .presenter-page {
-
-        overflow-y: auto;
-
-    }
-
-
-    .presenter-screen {
-
-        padding:
-            24px
-            28px;
-
-    }
-
-
-    .presenter-grid {
-
-        grid-template-columns:
-            repeat(2, minmax(0, 1fr));
-
-        grid-template-rows: auto;
-
-    }
-
-
-    .custom-presenter-card {
-
-        grid-column:
-            1 / 3;
-
-    }
-
-}
-
-
-@media (max-width: 700px) {
-
-    .presenter-grid {
-
-        grid-template-columns:
-            1fr;
-
-    }
-
-
-    .custom-presenter-card {
-
-        grid-column:
-            auto;
-
-    }
-
-
-    .presenter-footer {
-
-        grid-template-columns:
-            1fr;
-
-        justify-items: center;
-
-    }
-
-
-    .live-statistics {
-
-        justify-self: center;
-
-    }
-
-
-    .qr-placeholder {
-
-        justify-self: center;
-
-    }
-
-
-    .presenter-header {
-
-        flex-direction: column;
-
-    }
-
-}
-.qr-image {
-
-    width: 88px;
-
-    height: 88px;
-
-    display: block;
-
-    object-fit: contain;
-
-}
-/* ==========================================================
-   LARGE QR CARD
-   ========================================================== */
-
-.presenter-qr-card {
-
-    grid-column: 3;
-
-    display: flex;
-
-    flex-direction: column;
-
-    align-items: center;
-
-    justify-content: center;
-
-    gap: 12px;
-
-    min-height: 170px;
-
-    padding: 18px;
-
-    border:
-        1px solid
-        rgba(23, 32, 51, 0.08);
-
-    border-radius: 26px;
-
-    background:
-        rgba(
-            255,
-            255,
-            255,
-            0.84
-        );
-
-    box-shadow:
-        0
-        18px
-        55px
-        rgba(
-            30,
-            45,
-            80,
-            0.06
-        );
-
-}
-
-
-.presenter-qr-image {
-
-    width: 140px;
-
-    height: 140px;
-
-    object-fit: contain;
-
-    display: block;
-
-}
-
-
-.presenter-qr-text {
-
-    font-size: 14px;
-
-    font-weight: 800;
-
-    text-align: center;
-
-    letter-spacing: 0.02em;
 
 }
