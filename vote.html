@@ -1,1 +1,346 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
 
+    <meta
+        name="viewport"
+        content="width=device-width, initial-scale=1.0"
+    >
+
+    <title>International Future School — Vision</title>
+
+    <link
+        rel="stylesheet"
+        href="css/style.css"
+    >
+</head>
+
+<body class="vote-page">
+
+    <main class="vote-container">
+
+        <!-- ============================= -->
+        <!-- ЗАГОЛОВОК -->
+        <!-- ============================= -->
+
+        <header class="vote-header">
+
+            <div
+                id="schoolName"
+                class="school-name"
+            >
+                International Future School
+            </div>
+
+            <div
+                id="schoolSlogan"
+                class="school-slogan"
+            >
+                Your future starts here
+            </div>
+
+            <h1>
+                Какое видение школы вам ближе?
+            </h1>
+
+            <p class="vote-description">
+                Выберите один вариант или предложите своё видение.
+            </p>
+
+        </header>
+
+
+        <!-- ============================= -->
+        <!-- СОСТОЯНИЕ ЗАГРУЗКИ -->
+        <!-- ============================= -->
+
+        <div
+            id="loadingBlock"
+            class="loading-block"
+        >
+            Подключаемся к голосованию...
+        </div>
+
+
+        <!-- ============================= -->
+        <!-- ГОЛОСОВАНИЕ -->
+        <!-- ============================= -->
+
+        <section
+            id="votingBlock"
+            class="voting-block hidden"
+        >
+
+            <div class="vision-list">
+
+
+                <!-- ВИДЕНИЕ 1 -->
+
+                <label
+                    class="vision-card"
+                    data-choice="vision_1"
+                >
+
+                    <input
+                        type="radio"
+                        name="vision"
+                        value="vision_1"
+                    >
+
+                    <div class="vision-number">
+                        01
+                    </div>
+
+                    <div class="vision-content">
+
+                        <div class="vision-title">
+                            Видение 1
+                        </div>
+
+                        <div
+                            id="vision1Text"
+                            class="vision-text"
+                        ></div>
+
+                    </div>
+
+                </label>
+
+
+                <!-- ВИДЕНИЕ 2 -->
+
+                <label
+                    class="vision-card"
+                    data-choice="vision_2"
+                >
+
+                    <input
+                        type="radio"
+                        name="vision"
+                        value="vision_2"
+                    >
+
+                    <div class="vision-number">
+                        02
+                    </div>
+
+                    <div class="vision-content">
+
+                        <div class="vision-title">
+                            Видение 2
+                        </div>
+
+                        <div
+                            id="vision2Text"
+                            class="vision-text"
+                        ></div>
+
+                    </div>
+
+                </label>
+
+
+                <!-- ВИДЕНИЕ 3 -->
+
+                <label
+                    class="vision-card"
+                    data-choice="vision_3"
+                >
+
+                    <input
+                        type="radio"
+                        name="vision"
+                        value="vision_3"
+                    >
+
+                    <div class="vision-number">
+                        03
+                    </div>
+
+                    <div class="vision-content">
+
+                        <div class="vision-title">
+                            Видение 3
+                        </div>
+
+                        <div
+                            id="vision3Text"
+                            class="vision-text"
+                        ></div>
+
+                    </div>
+
+                </label>
+
+
+                <!-- СВОЁ ВИДЕНИЕ -->
+
+                <label
+                    class="vision-card custom-card"
+                    data-choice="custom"
+                >
+
+                    <input
+                        type="radio"
+                        name="vision"
+                        value="custom"
+                    >
+
+                    <div class="vision-number">
+                        +
+                    </div>
+
+                    <div class="vision-content">
+
+                        <div
+                            id="customTitle"
+                            class="vision-title"
+                        >
+                            Своё видение
+                        </div>
+
+                        <div class="vision-text">
+                            Если ни один вариант не отражает
+                            ваше мнение, предложите свой.
+                        </div>
+
+                        <textarea
+                            id="customVision"
+                            class="custom-input"
+                            rows="4"
+                            maxlength="500"
+                            placeholder="Напишите ваше видение школы..."
+                        ></textarea>
+
+                        <div
+                            id="customCounter"
+                            class="character-counter"
+                        >
+                            0 / 500
+                        </div>
+
+                    </div>
+
+                </label>
+
+            </div>
+
+
+            <!-- ОШИБКА -->
+
+            <div
+                id="formError"
+                class="form-error hidden"
+            ></div>
+
+
+            <!-- КНОПКА -->
+
+            <button
+                id="submitVote"
+                class="submit-button"
+                type="button"
+            >
+                Отправить
+            </button>
+
+
+            <!-- НЕБОЛЬШАЯ ИНФОРМАЦИЯ -->
+
+            <div class="vote-footer">
+
+                <span>
+                    Осталось времени:
+                </span>
+
+                <strong id="participantTimer">
+                    05:00
+                </strong>
+
+            </div>
+
+        </section>
+
+
+        <!-- ============================= -->
+        <!-- СПАСИБО -->
+        <!-- ============================= -->
+
+        <section
+            id="successBlock"
+            class="success-block hidden"
+        >
+
+            <div class="success-icon">
+                ✓
+            </div>
+
+            <h2>
+                Ваш голос принят
+            </h2>
+
+            <p>
+                Спасибо, что создаёте будущее школы вместе с нами.
+            </p>
+
+        </section>
+
+
+        <!-- ============================= -->
+        <!-- ГОЛОСОВАНИЕ ЗАВЕРШЕНО -->
+        <!-- ============================= -->
+
+        <section
+            id="closedBlock"
+            class="success-block hidden"
+        >
+
+            <div class="closed-icon">
+                00:00
+            </div>
+
+            <h2>
+                Голосование завершено
+            </h2>
+
+            <p>
+                Спасибо за участие.
+            </p>
+
+        </section>
+
+
+        <!-- ============================= -->
+        <!-- ТЕХНИЧЕСКАЯ ОШИБКА -->
+        <!-- ============================= -->
+
+        <section
+            id="technicalError"
+            class="technical-error hidden"
+        >
+
+            <h2>
+                Не удалось подключиться
+            </h2>
+
+            <p id="technicalErrorText">
+                Попробуйте обновить страницу.
+            </p>
+
+        </section>
+
+    </main>
+
+
+    <!-- SUPABASE -->
+
+    <script
+        src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"
+    ></script>
+
+    <script src="js/config.js"></script>
+    <script src="js/vote.js"></script>
+
+</body>
+</html>
