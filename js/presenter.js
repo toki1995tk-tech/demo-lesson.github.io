@@ -1,17 +1,15 @@
 // ==========================================================
 // INTERNATIONAL FUTURE SCHOOL
-// PRESENTER + FINAL ANIMATION
+// PRESENTER + FINAL ANIMATION + AI CUSTOM MISSION
 // ==========================================================
 
 
 let currentEvent = null;
-
 let currentVotes = [];
 
 let timerInterval = null;
 
 let soundPlayed = false;
-
 let finalStarted = false;
 
 
@@ -114,7 +112,6 @@ const finishSound =
 const resetVotingButton =
     document.getElementById('resetVotingButton');
 
-
 const testFinalButton =
     document.getElementById('testFinalButton');
 
@@ -173,14 +170,7 @@ async function loadEvent() {
 
 
     if (error) {
-
-        console.error(
-            'Load event error:',
-            error
-        );
-
         throw error;
-
     }
 
 
@@ -205,26 +195,20 @@ function renderEvent() {
     schoolName.textContent =
         currentEvent.school_name;
 
-
     schoolSlogan.textContent =
         currentEvent.slogan;
-
 
     pageTitle.textContent =
         currentEvent.page_title;
 
-
     vision1Text.textContent =
         currentEvent.vision_1;
-
 
     vision2Text.textContent =
         currentEvent.vision_2;
 
-
     vision3Text.textContent =
         currentEvent.vision_3;
-
 
     customTitle.textContent =
         currentEvent.custom_title;
@@ -233,7 +217,7 @@ function renderEvent() {
 
 
 // ==========================================================
-// LOAD STATISTICS
+// LOAD STATS
 // ==========================================================
 
 async function loadStats() {
@@ -262,31 +246,13 @@ async function loadStats() {
     const votesResult =
         await supabaseClient
             .from('vision_votes')
-            .select('choice, custom_text')
+            .select(
+                'choice, custom_text'
+            )
             .eq(
                 'event_id',
                 currentEvent.id
             );
-
-
-    if (sessionsResult.error) {
-
-        console.error(
-            'Sessions error:',
-            sessionsResult.error
-        );
-
-    }
-
-
-    if (votesResult.error) {
-
-        console.error(
-            'Votes error:',
-            votesResult.error
-        );
-
-    }
 
 
     joinedCount.textContent =
@@ -304,6 +270,45 @@ async function loadStats() {
     calculatePercentages(
         currentVotes
     );
+
+}
+
+
+// ==========================================================
+// VOTE COUNTS
+// ==========================================================
+
+function getVoteCounts(votes) {
+
+    const counts = {
+
+        vision_1: 0,
+        vision_2: 0,
+        vision_3: 0,
+        custom: 0
+
+    };
+
+
+    votes.forEach(
+        vote => {
+
+            if (
+                Object.prototype.hasOwnProperty.call(
+                    counts,
+                    vote.choice
+                )
+            ) {
+
+                counts[vote.choice]++;
+
+            }
+
+        }
+    );
+
+
+    return counts;
 
 }
 
@@ -400,43 +405,6 @@ function calculatePercentages(votes) {
 
 
 // ==========================================================
-// COUNTS
-// ==========================================================
-
-function getVoteCounts(votes) {
-
-    const counts = {
-        vision_1: 0,
-        vision_2: 0,
-        vision_3: 0,
-        custom: 0
-    };
-
-
-    votes.forEach(
-        vote => {
-
-            if (
-                Object.prototype.hasOwnProperty.call(
-                    counts,
-                    vote.choice
-                )
-            ) {
-
-                counts[vote.choice]++;
-
-            }
-
-        }
-    );
-
-
-    return counts;
-
-}
-
-
-// ==========================================================
 // UPDATE PERCENTAGE
 // ==========================================================
 
@@ -471,7 +439,7 @@ function updatePercentage(
 
 
 // ==========================================================
-// NUMBER ANIMATION
+// ANIMATE NUMBER
 // ==========================================================
 
 function animateNumber(
@@ -555,10 +523,6 @@ function startTimer() {
 }
 
 
-// ==========================================================
-// UPDATE TIMER
-// ==========================================================
-
 function updateTimer() {
 
     if (!currentEvent) {
@@ -577,11 +541,6 @@ function updateTimer() {
 
         timerLabel.textContent =
             'Ожидаем первого участника';
-
-
-        presenterTimer.classList.remove(
-            'timer-warning'
-        );
 
 
         return;
@@ -617,18 +576,10 @@ function updateTimer() {
         );
 
 
-    if (remaining > 0) {
-
-        timerLabel.textContent =
-            'До завершения голосования';
-
-    }
-    else {
-
-        timerLabel.textContent =
-            'Голосование завершено';
-
-    }
+    timerLabel.textContent =
+        remaining > 0
+            ? 'До завершения голосования'
+            : 'Голосование завершено';
 
 
     if (
@@ -649,12 +600,6 @@ function updateTimer() {
 
     }
 
-
-    /*
-        00:00
-
-        Проигрываем звук и запускаем финал.
-    */
 
     if (
         remaining <= 0 &&
@@ -677,7 +622,9 @@ function updateTimer() {
 
         setTimeout(
             () => {
+
                 startFinalSequence();
+
             },
             900
         );
@@ -775,10 +722,6 @@ function determineWinner() {
         );
 
 
-    /*
-        Голосов вообще нет.
-    */
-
     if (highest === 0) {
 
         return {
@@ -795,26 +738,24 @@ function determineWinner() {
         );
 
 
-    /*
-        Ничья.
-    */
-
-    if (winners.length > 1) {
+    if (
+        winners.length > 1
+    ) {
 
         return {
-            type: 'tie',
-            winners: winners.map(
-                item => item[0]
-            )
+            type: 'tie'
         };
 
     }
 
 
     return {
+
         type: 'winner',
-        winner: winners[0][0],
-        count: highest
+
+        winner:
+            winners[0][0]
+
     };
 
 }
@@ -832,10 +773,6 @@ async function startFinalSequence() {
     const result =
         determineWinner();
 
-
-    /*
-        Плавно убираем весь экран голосования.
-    */
 
     votingScreen.classList.add(
         'voting-screen-exit'
@@ -866,10 +803,6 @@ async function startFinalSequence() {
     );
 
 
-    /*
-        Ничья.
-    */
-
     if (
         result.type === 'tie' ||
         result.type === 'none'
@@ -883,15 +816,16 @@ async function startFinalSequence() {
 
 
     /*
-        Победило Своё видение.
-        Полную AI-сцену сделаем следующим этапом.
+        СВОЁ ВИДЕНИЕ
+        Теперь здесь НЕ заглушка.
+        Запускаем AI-сцену.
     */
 
     if (
         result.winner === 'custom'
     ) {
 
-        showCustomWinner();
+        await runCustomMissionAnimation();
 
         return;
 
@@ -899,10 +833,10 @@ async function startFinalSequence() {
 
 
     /*
-        Готовое видение.
+        Обычные три видения
     */
 
-    runVisionMissionAnimation(
+    await runVisionMissionAnimation(
         result.winner
     );
 
@@ -917,6 +851,9 @@ async function runVisionMissionAnimation(
     winner
 ) {
 
+    resetFinalElements();
+
+
     const data =
         getWinnerData(
             winner
@@ -927,19 +864,414 @@ async function runVisionMissionAnimation(
         data.label;
 
 
-    /*
-        Получаем ключевые слова из Supabase.
-    */
-
     const keywords =
         parseKeywords(
             data.keywords
         );
 
 
+    await animateKeywordsToMission(
+        keywords,
+        data.mission
+    );
+
+}
+
+
+// ==========================================================
+// CUSTOM VISION → AI → MISSION
+// ==========================================================
+
+async function runCustomMissionAnimation() {
+
+    resetFinalElements();
+
+
+    finalVisionLabel.textContent =
+        'СВОЁ ВИДЕНИЕ';
+
+
     /*
-        Очищаем предыдущий тест.
+        Берём реальные предложения участников.
     */
+
+    const customIdeas =
+        currentVotes
+            .filter(
+                vote =>
+                    vote.choice ===
+                    'custom'
+            )
+            .map(
+                vote =>
+                    String(
+                        vote.custom_text || ''
+                    ).trim()
+            )
+            .filter(Boolean);
+
+
+    if (
+        customIdeas.length === 0
+    ) {
+
+        showAIError(
+            'Не найдено предложений участников.'
+        );
+
+        return;
+
+    }
+
+
+    /*
+        ВАЖНО:
+
+        Сразу запускаем AI в фоне.
+
+        Пока люди смотрят на плавающие идеи,
+        OpenAI уже формирует миссию.
+    */
+
+    const aiPromise =
+        generateCustomMission();
+
+
+    /*
+        ШАГ 1
+        Показываем реальные идеи участников.
+    */
+
+    await showParticipantIdeas(
+        customIdeas
+    );
+
+
+    /*
+        Даём им немного попарить.
+    */
+
+    await wait(3500);
+
+
+    /*
+        К этому моменту AI обычно уже ответил.
+    */
+
+    let aiResult;
+
+
+    try {
+
+        aiResult =
+            await aiPromise;
+
+    }
+    catch (error) {
+
+        console.error(
+            'AI mission failed:',
+            error
+        );
+
+
+        showAIError(
+            'Не удалось сформулировать миссию.'
+        );
+
+        return;
+
+    }
+
+
+    /*
+        Убираем пользовательские фразы.
+    */
+
+    const ideaElements =
+        Array.from(
+            document.querySelectorAll(
+                '.floating-keyword'
+            )
+        );
+
+
+    ideaElements.forEach(
+        element => {
+
+            element.classList.add(
+                'keyword-disappear'
+            );
+
+        }
+    );
+
+
+    await wait(800);
+
+
+    keywordCloud.innerHTML =
+        '';
+
+
+    /*
+        Теперь появляются именно ключевые смыслы,
+        которые выделил AI.
+    */
+
+    await animateKeywordsToMission(
+        aiResult.keywords,
+        aiResult.mission
+    );
+
+}
+
+
+// ==========================================================
+// CALL SUPABASE EDGE FUNCTION
+// ==========================================================
+
+async function generateCustomMission() {
+
+    console.log(
+        'Calling generate-custom-mission...'
+    );
+
+
+    const {
+        data,
+        error
+    } =
+        await supabaseClient.functions.invoke(
+            'generate-custom-mission',
+            {
+
+                body: {
+
+                    event_key:
+                        EVENT_KEY
+
+                }
+
+            }
+        );
+
+
+    if (error) {
+
+        console.error(
+            'Edge Function error:',
+            error
+        );
+
+
+        throw error;
+
+    }
+
+
+    if (
+        !data ||
+        data.ok !== true
+    ) {
+
+        console.error(
+            'AI result:',
+            data
+        );
+
+
+        throw new Error(
+            data?.error ||
+            'AI returned invalid result'
+        );
+
+    }
+
+
+    console.log(
+        'AI mission:',
+        data
+    );
+
+
+    return data;
+
+}
+
+
+// ==========================================================
+// SHOW REAL PARTICIPANT IDEAS
+// ==========================================================
+
+async function showParticipantIdeas(
+    ideas
+) {
+
+    keywordCloud.innerHTML =
+        '';
+
+
+    /*
+        Чтобы экран не перегрузился,
+        одновременно показываем максимум 12 идей.
+    */
+
+    const visibleIdeas =
+        ideas.slice(
+            0,
+            12
+        );
+
+
+    const positions =
+        createPositions(
+            visibleIdeas.length
+        );
+
+
+    visibleIdeas.forEach(
+        (idea, index) => {
+
+            const element =
+                document.createElement(
+                    'div'
+                );
+
+
+            element.className =
+                'floating-keyword';
+
+
+            /*
+                Если предложение очень длинное,
+                визуально немного сокращаем его.
+
+                В AI всё равно уходит ПОЛНЫЙ текст.
+            */
+
+            element.textContent =
+                shortenIdea(
+                    idea
+                );
+
+
+            element.style.left =
+                `${positions[index].x}%`;
+
+
+            element.style.top =
+                `${positions[index].y}%`;
+
+
+            element.style.setProperty(
+                '--delay',
+                `${index * 0.11}s`
+            );
+
+
+            element.style.setProperty(
+                '--float-x',
+                `${positions[index].dx}px`
+            );
+
+
+            element.style.setProperty(
+                '--float-y',
+                `${positions[index].dy}px`
+            );
+
+
+            /*
+                Для предложений участников
+                делаем текст чуть меньше.
+            */
+
+            element.style.fontSize =
+                'clamp(17px, 1.5vw, 25px)';
+
+
+            element.style.maxWidth =
+                '360px';
+
+
+            element.style.whiteSpace =
+                'normal';
+
+
+            element.style.textAlign =
+                'center';
+
+
+            keywordCloud.appendChild(
+                element
+            );
+
+        }
+    );
+
+
+    await wait(120);
+
+
+    document
+        .querySelectorAll(
+            '.floating-keyword'
+        )
+        .forEach(
+            element => {
+
+                element.classList.add(
+                    'keyword-visible'
+                );
+
+            }
+        );
+
+}
+
+
+// ==========================================================
+// SHORTEN IDEA ONLY FOR SCREEN
+// ==========================================================
+
+function shortenIdea(
+    text
+) {
+
+    const limit =
+        90;
+
+
+    if (
+        text.length <= limit
+    ) {
+
+        return text;
+
+    }
+
+
+    return (
+        text.slice(
+            0,
+            limit
+        ).trim()
+        +
+        '…'
+    );
+
+}
+
+
+// ==========================================================
+// KEYWORDS → MISSION
+// ==========================================================
+
+async function animateKeywordsToMission(
+    keywords,
+    mission
+) {
 
     keywordCloud.innerHTML =
         '';
@@ -949,10 +1281,6 @@ async function runVisionMissionAnimation(
         'mission-visible'
     );
 
-
-    /*
-        Создаём слова.
-    */
 
     const positions =
         createPositions(
@@ -1012,7 +1340,6 @@ async function runVisionMissionAnimation(
 
 
     /*
-        ШАГ 1
         Слова появляются.
     */
 
@@ -1035,17 +1362,14 @@ async function runVisionMissionAnimation(
 
 
     /*
-        ШАГ 2
-        Они немного парят.
+        Немного парят.
     */
 
-    await wait(3300);
+    await wait(3000);
 
 
     /*
-        ШАГ 3
-        Каждое слово начинает находить
-        своё место в центре.
+        Собираются в центр.
     */
 
     const elements =
@@ -1075,14 +1399,14 @@ async function runVisionMissionAnimation(
 
 
     await wait(
-        1400 +
-        elements.length * 140
+        1300 +
+        elements.length *
+        140
     );
 
 
     /*
-        ШАГ 4
-        Ключевые смыслы растворяются.
+        Растворяются.
     */
 
     elements.forEach(
@@ -1100,12 +1424,11 @@ async function runVisionMissionAnimation(
 
 
     /*
-        ШАГ 5
-        Появляется миссия.
+        И появляется итоговая миссия.
     */
 
     finalMissionText.textContent =
-        data.mission;
+        mission;
 
 
     missionResult.classList.add(
@@ -1119,9 +1442,13 @@ async function runVisionMissionAnimation(
 // WINNER DATA
 // ==========================================================
 
-function getWinnerData(winner) {
+function getWinnerData(
+    winner
+) {
 
-    if (winner === 'vision_1') {
+    if (
+        winner === 'vision_1'
+    ) {
 
         return {
 
@@ -1139,7 +1466,9 @@ function getWinnerData(winner) {
     }
 
 
-    if (winner === 'vision_2') {
+    if (
+        winner === 'vision_2'
+    ) {
 
         return {
 
@@ -1177,7 +1506,9 @@ function getWinnerData(winner) {
 // PARSE KEYWORDS
 // ==========================================================
 
-function parseKeywords(value) {
+function parseKeywords(
+    value
+) {
 
     if (!value) {
         return [];
@@ -1196,67 +1527,97 @@ function parseKeywords(value) {
 
 
 // ==========================================================
-// KEYWORD POSITIONS
+// POSITIONS
 // ==========================================================
 
-function createPositions(count) {
+function createPositions(
+    count
+) {
 
     const basePositions = [
 
         {
-            x: 22,
-            y: 28,
-            dx: 18,
-            dy: -14
-        },
-
-        {
-            x: 51,
-            y: 21,
-            dx: -15,
-            dy: 12
-        },
-
-        {
-            x: 76,
-            y: 31,
-            dx: 14,
-            dy: 16
-        },
-
-        {
-            x: 31,
-            y: 51,
-            dx: -19,
-            dy: -10
-        },
-
-        {
-            x: 64,
-            y: 48,
-            dx: 18,
-            dy: -13
-        },
-
-        {
             x: 18,
-            y: 69,
-            dx: 15,
+            y: 26,
+            dx: 18,
+            dy: -12
+        },
+
+        {
+            x: 43,
+            y: 20,
+            dx: -14,
+            dy: 13
+        },
+
+        {
+            x: 70,
+            y: 25,
+            dx: 17,
             dy: 14
         },
 
         {
-            x: 50,
-            y: 70,
-            dx: -16,
+            x: 85,
+            y: 42,
+            dx: -17,
+            dy: -11
+        },
+
+        {
+            x: 25,
+            y: 48,
+            dx: -18,
             dy: 12
         },
 
         {
-            x: 79,
-            y: 66,
+            x: 56,
+            y: 45,
+            dx: 16,
+            dy: -14
+        },
+
+        {
+            x: 14,
+            y: 70,
+            dx: 17,
+            dy: 13
+        },
+
+        {
+            x: 38,
+            y: 72,
+            dx: -15,
+            dy: -12
+        },
+
+        {
+            x: 65,
+            y: 69,
+            dx: 18,
+            dy: 11
+        },
+
+        {
+            x: 84,
+            y: 68,
+            dx: -16,
+            dy: -13
+        },
+
+        {
+            x: 47,
+            y: 58,
+            dx: 13,
+            dy: 16
+        },
+
+        {
+            x: 74,
+            y: 53,
             dx: -14,
-            dy: -16
+            dy: 14
         }
 
     ];
@@ -1276,6 +1637,46 @@ function createPositions(count) {
             );
 
         }
+    );
+
+}
+
+
+// ==========================================================
+// RESET FINAL ELEMENTS
+// ==========================================================
+
+function resetFinalElements() {
+
+    keywordCloud.innerHTML =
+        '';
+
+
+    keywordCloud.classList.remove(
+        'hidden'
+    );
+
+
+    missionResult.classList.remove(
+        'hidden'
+    );
+
+
+    missionResult.classList.remove(
+        'mission-visible'
+    );
+
+
+    tieResult.className =
+        'tie-result hidden';
+
+
+    customWinnerResult.className =
+        'custom-winner-result hidden';
+
+
+    finalVisionLabel.classList.remove(
+        'hidden'
     );
 
 }
@@ -1326,34 +1727,40 @@ function showTieResult() {
 
 
 // ==========================================================
-// CUSTOM WINNER
+// AI ERROR
 // ==========================================================
 
-function showCustomWinner() {
+function showAIError(
+    message
+) {
 
-    finalVisionLabel.classList.add(
-        'hidden'
-    );
-
-
-    keywordCloud.classList.add(
-        'hidden'
-    );
+    keywordCloud.innerHTML =
+        '';
 
 
-    missionResult.classList.add(
-        'hidden'
-    );
-
-
-    tieResult.classList.add(
-        'hidden'
-    );
+    finalVisionLabel.textContent =
+        'СВОЁ ВИДЕНИЕ';
 
 
     customWinnerResult.classList.remove(
         'hidden'
     );
+
+
+    customWinnerResult.innerHTML = `
+
+        <div class="mission-eyebrow">
+            НЕ УДАЛОСЬ СФОРМУЛИРОВАТЬ МИССИЮ
+        </div>
+
+        <div
+            class="custom-winner-title"
+            style="font-size: 38px;"
+        >
+            ${escapeHtml(message)}
+        </div>
+
+    `;
 
 
     requestAnimationFrame(
@@ -1370,7 +1777,30 @@ function showCustomWinner() {
 
 
 // ==========================================================
-// TEST FINAL BUTTON
+// ESCAPE HTML
+// ==========================================================
+
+function escapeHtml(
+    text
+) {
+
+    const div =
+        document.createElement(
+            'div'
+        );
+
+
+    div.textContent =
+        text;
+
+
+    return div.innerHTML;
+
+}
+
+
+// ==========================================================
+// TEST FINAL
 // ==========================================================
 
 function setupTestFinalButton() {
@@ -1646,7 +2076,6 @@ function subscribeToRealtime() {
 
                 currentEvent =
                     payload.new;
-
 
                 renderEvent();
 
