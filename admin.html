@@ -132,6 +132,7 @@
       padding: clamp(26px, 3vw, 42px);
       display: flex;
       flex-direction: column;
+      min-height: 620px;
     }
 
     .stats {
@@ -248,6 +249,87 @@
       margin-top: 18px;
     }
 
+    .timer-panel {
+      margin-top: 24px;
+      border-top: 1px solid var(--line);
+      padding-top: 24px;
+      display: grid;
+      grid-template-columns: 1fr auto;
+      gap: 18px;
+      align-items: center;
+    }
+
+    .timer-box {
+      border: 1px solid var(--line);
+      border-radius: 24px;
+      background: #fbfcfe;
+      padding: 20px 24px;
+      min-height: 150px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 20px;
+    }
+
+    .timer-copy {
+      min-width: 0;
+    }
+
+    .timer-label {
+      color: var(--muted);
+      font-size: 15px;
+      font-weight: 800;
+      margin-bottom: 8px;
+    }
+
+    .timer-hint {
+      color: #8692a3;
+      font-size: 14px;
+      line-height: 1.4;
+      max-width: 280px;
+    }
+
+    .timer-value {
+      min-width: 160px;
+      text-align: center;
+      font-size: clamp(68px, 7vw, 104px);
+      line-height: .9;
+      font-weight: 950;
+      letter-spacing: -.07em;
+      color: var(--blue2);
+      font-variant-numeric: tabular-nums;
+    }
+
+    .timer-value.finished {
+      font-size: clamp(34px, 4vw, 54px);
+      letter-spacing: -.03em;
+      color: #b42318;
+      line-height: 1;
+    }
+
+    .timer-button {
+      min-width: 220px;
+      min-height: 150px;
+      color: white;
+      background: linear-gradient(135deg, #16a879, #0f7f61);
+      box-shadow: 0 14px 30px rgba(22,168,121,.22);
+      font-size: 20px;
+      padding: 20px 26px;
+    }
+
+    .timer-button.running {
+      background: #eef2f7;
+      color: #748196;
+      box-shadow: none;
+    }
+
+    @media (max-width: 760px) {
+      .timer-panel { grid-template-columns: 1fr; }
+      .timer-button { min-height: 72px; width: 100%; }
+      .timer-box { min-height: 130px; }
+      .timer-value { min-width: 125px; }
+    }
+
     .pill {
       padding: 9px 12px;
       border-radius: 999px;
@@ -323,6 +405,17 @@
         </div>
 
         <div id="message" class="message">Ожидаем подключения участников…</div>
+
+        <div class="timer-panel">
+          <div class="timer-box">
+            <div class="timer-copy">
+              <div class="timer-label">Таймер перехода по группам</div>
+              <div class="timer-hint">15 секунд на перемещение. После окончания можно сразу запустить снова.</div>
+            </div>
+            <div id="timerValue" class="timer-value">15</div>
+          </div>
+          <button id="timerBtn" class="timer-button">Запустить таймер</button>
+        </div>
       </div>
     </section>
   </main>
@@ -344,6 +437,8 @@
     const resetBtn = document.getElementById("resetBtn");
     const messageEl = document.getElementById("message");
     const groupsPreview = document.getElementById("groupsPreview");
+    const timerValueEl = document.getElementById("timerValue");
+    const timerBtn = document.getElementById("timerBtn");
 
     let currentSession = null;
     let currentParticipantCount = 0;
@@ -603,9 +698,46 @@
       }
     }
 
+    let timerInterval = null;
+    let timerSeconds = 15;
+
+    function renderTimer() {
+      if (timerSeconds <= 0) {
+        timerValueEl.textContent = "Время вышло";
+        timerValueEl.classList.add("finished");
+      } else {
+        timerValueEl.textContent = timerSeconds;
+        timerValueEl.classList.remove("finished");
+      }
+    }
+
+    function startTimer() {
+      if (timerInterval) return;
+
+      timerSeconds = 15;
+      renderTimer();
+      timerBtn.disabled = true;
+      timerBtn.classList.add("running");
+      timerBtn.textContent = "Таймер идёт…";
+
+      timerInterval = setInterval(() => {
+        timerSeconds -= 1;
+        renderTimer();
+
+        if (timerSeconds <= 0) {
+          clearInterval(timerInterval);
+          timerInterval = null;
+          timerBtn.disabled = false;
+          timerBtn.classList.remove("running");
+          timerBtn.textContent = "Запустить снова";
+        }
+      }, 1000);
+    }
+
     teamCountSelect.addEventListener("change", updateTeamDisplay);
     generateBtn.addEventListener("click", generateTeams);
     resetBtn.addEventListener("click", newSession);
+    timerBtn.addEventListener("click", startTimer);
 
     async function init() {
       try {
