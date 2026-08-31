@@ -1,0 +1,128 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Голосование — решения педсовета</title>
+  <link rel="stylesheet" href="styles11111.css" />
+</head>
+<body>
+  <main class="vote-shell">
+    <header class="vote-header">
+      <h1>Голосование</h1>
+      <p>По каждому пункту выберите один вариант: <b>За</b>, <b>Воздержаться</b> или <b>Против</b>.</p>
+    </header>
+
+    <section id="voteList" class="vote-list"></section>
+    <div id="completeBox" class="complete">Спасибо! Ваши голоса сохранены.</div>
+  </main>
+
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script src="config11111.js"></script>
+  <script>
+    const { createClient } = supabase;
+    const db = createClient(window.SUPABASE_URL, window.SUPABASE_ANON_KEY);
+
+    const DECISIONS = [
+      { id: 1, title: "Стратегические ориентиры", text: "Утвердить приоритеты года: ГОСО, качество образования, AI, ценности, безопасность и Cambridge.", accent: "blue" },
+      { id: 2, title: "Единое видение школы", text: "Использовать видение Astana Future School как основу для всех образовательных решений.", accent: "teal" },
+      { id: 3, title: "AI в 1–7 классах", text: "Разработать и внедрить школьную модель использования искусственного интеллекта для учеников и педагогов.", accent: "blue" },
+      { id: 4, title: "Ценности и безопасность", text: "Интегрировать «Основы Конституции», «Закон и порядок» и «Личную безопасность» в повседневную школьную жизнь.", accent: "orange" }
+    ];
+
+    function getVoterId() {
+      let id = localStorage.getItem("pedsovet_voter_id");
+      if (!id) {
+        id = crypto.randomUUID();
+        localStorage.setItem("pedsovet_voter_id", id);
+      }
+      return id;
+    }
+    const voterId = getVoterId();
+
+    function render() {
+      document.getElementById("voteList").innerHTML = DECISIONS.map(d => `
+        <article class="vote-card" data-id="${d.id}">
+          <div class="vote-card-head">
+            <div class="num">${d.id}</div>
+            <div>
+              <h2>${d.title}</h2>
+              <p>${d.text}</p>
+            </div>
+          </div>
+          <div class="vote-buttons">
+            <button class="vote-btn" data-choice="for" onclick="castVote(${d.id}, 'for')">✓ За</button>
+            <button class="vote-btn" data-choice="abstain" onclick="castVote(${d.id}, 'abstain')">○ Воздержаться</button>
+            <button class="vote-btn" data-choice="against" onclick="castVote(${d.id}, 'against')">✕ Против</button>
+          </div>
+          <div class="vote-status"></div>
+        </article>
+      `).join("");
+    }
+
+    async function loadMyVotes() {
+      const { data, error } = await db
+        .from("pedsovet_votes")
+        .select("decision_id, choice")
+        .eq("voter_id", voterId);
+
+      if (error) {
+        console.error(error);
+        return;
+      }
+
+      for (const row of data || []) {
+        markSelected(row.decision_id, row.choice);
+      }
+      updateComplete();
+    }
+
+    function markSelected(decisionId, choice) {
+      const card = document.querySelector(`.vote-card[data-id="${decisionId}"]`);
+      if (!card) return;
+      card.querySelectorAll(".vote-btn").forEach(btn => {
+        btn.classList.toggle("selected", btn.dataset.choice === choice);
+      });
+      card.querySelector(".vote-status").textContent = "Ваш выбор сохранён. При необходимости его можно изменить.";
+    }
+
+    async function castVote(decisionId, choice) {
+      const card = document.querySelector(`.vote-card[data-id="${decisionId}"]`);
+      const buttons = card.querySelectorAll(".vote-btn");
+      buttons.forEach(b => b.disabled = true);
+      card.querySelector(".vote-status").textContent = "Сохраняем голос…";
+
+      const { error } = await db
+        .from("pedsovet_votes")
+        .upsert(
+          { voter_id: voterId, decision_id: decisionId, choice },
+          { onConflict: "voter_id,decision_id" }
+        );
+
+      buttons.forEach(b => b.disabled = false);
+
+      if (error) {
+        console.error(error);
+        card.querySelector(".vote-status").textContent = "Не удалось сохранить голос. Попробуйте ещё раз.";
+        return;
+      }
+
+      markSelected(decisionId, choice);
+      updateComplete();
+    }
+
+    async function updateComplete() {
+      const { data } = await db
+        .from("pedsovet_votes")
+        .select("decision_id")
+        .eq("voter_id", voterId);
+
+      const unique = new Set((data || []).map(x => x.decision_id));
+      document.getElementById("completeBox").classList.toggle("show", unique.size === 4);
+    }
+
+    render();
+    loadMyVotes();
+  </script>
+</body>
+</html>

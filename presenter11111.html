@@ -1,0 +1,141 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Итоги голосования — педсовет</title>
+  <link rel="stylesheet" href="styles11111.css" />
+</head>
+<body class="page">
+  <header class="topbar">
+    <div class="brand">
+      <div>
+        <h1>Итоги голосования по решениям педсовета</h1>
+        <p>Результаты обновляются в реальном времени</p>
+      </div>
+      <div class="live"><span class="live-dot"></span> LIVE</div>
+    </div>
+  </header>
+
+  <main class="container">
+    <section id="presenterGrid" class="presenter-grid"></section>
+
+    <div class="presenter-actions">
+      <button class="btn btn-secondary" onclick="loadResults()">Обновить вручную</button>
+      <button class="btn btn-danger" onclick="resetVotes()">Сбросить голоса</button>
+    </div>
+    <div class="footer-note">Кнопка «Сбросить голоса» предназначена только для тестирования/нового голосования.</div>
+  </main>
+
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script src="config11111.js"></script>
+  <script>
+    const { createClient } = supabase;
+    const db = createClient(window.SUPABASE_URL, window.SUPABASE_ANON_KEY);
+
+    const DECISIONS = [
+      { id: 1, title: "Стратегические ориентиры", text: "Утвердить приоритеты года: ГОСО, качество образования, AI, ценности, безопасность и Cambridge.", accent: "blue" },
+      { id: 2, title: "Единое видение школы", text: "Использовать видение Astana Future School как основу для всех образовательных решений.", accent: "teal" },
+      { id: 3, title: "AI в 1–7 классах", text: "Разработать и внедрить школьную модель использования искусственного интеллекта для учеников и педагогов.", accent: "blue" },
+      { id: 4, title: "Ценности и безопасность", text: "Интегрировать «Основы Конституции», «Закон и порядок» и «Личную безопасность» в повседневную школьную жизнь.", accent: "orange" }
+    ];
+
+    function renderShell() {
+      document.getElementById("presenterGrid").innerHTML = DECISIONS.map(d => `
+        <article class="decision-row" data-id="${d.id}">
+          <section class="decision-card" data-accent="${d.accent}">
+            <div class="num">${d.id}</div>
+            <div class="decision-copy">
+              <h2>${d.title}</h2>
+              <p>${d.text}</p>
+            </div>
+          </section>
+
+          <section>
+            <div class="stats-card">
+              <div class="stat for">
+                <div class="count" data-count="for">0</div>
+                <div class="label">ЗА</div>
+                <div class="pct" data-pct="for">0%</div>
+              </div>
+              <div class="stat abstain">
+                <div class="count" data-count="abstain">0</div>
+                <div class="label">ВОЗДЕРЖАЛИСЬ</div>
+                <div class="pct" data-pct="abstain">0%</div>
+              </div>
+              <div class="stat against">
+                <div class="count" data-count="against">0</div>
+                <div class="label">ПРОТИВ</div>
+                <div class="pct" data-pct="against">0%</div>
+              </div>
+            </div>
+            <div class="total-line">Всего голосов: <span data-total>0</span></div>
+          </section>
+        </article>
+      `).join("");
+    }
+
+    async function loadResults() {
+      const { data, error } = await db
+        .from("pedsovet_votes")
+        .select("decision_id, choice");
+
+      if (error) {
+        console.error(error);
+        return;
+      }
+
+      const counts = {};
+      for (const d of DECISIONS) {
+        counts[d.id] = { for: 0, abstain: 0, against: 0 };
+      }
+
+      for (const row of data || []) {
+        if (counts[row.decision_id] && counts[row.decision_id][row.choice] !== undefined) {
+          counts[row.decision_id][row.choice]++;
+        }
+      }
+
+      for (const d of DECISIONS) {
+        const row = document.querySelector(`.decision-row[data-id="${d.id}"]`);
+        const c = counts[d.id];
+        const total = c.for + c.abstain + c.against;
+
+        for (const choice of ["for","abstain","against"]) {
+          row.querySelector(`[data-count="${choice}"]`).textContent = c[choice];
+          const pct = total ? Math.round((c[choice] / total) * 100) : 0;
+          row.querySelector(`[data-pct="${choice}"]`).textContent = `${pct}%`;
+        }
+        row.querySelector("[data-total]").textContent = total;
+      }
+    }
+
+    async function resetVotes() {
+      if (!confirm("Удалить все голоса и начать новое голосование?")) return;
+
+      const { error } = await db
+        .from("pedsovet_votes")
+        .delete()
+        .gte("created_at", "1900-01-01");
+
+      if (error) {
+        alert("Не удалось сбросить голоса. Проверьте DELETE policy в Supabase.");
+        console.error(error);
+        return;
+      }
+      await loadResults();
+    }
+
+    renderShell();
+    loadResults();
+
+    db.channel("pedsovet-votes-live")
+      .on(
+        "postgres_changes",
+        { event: "*", schema: "public", table: "pedsovet_votes" },
+        () => loadResults()
+      )
+      .subscribe();
+  </script>
+</body>
+</html>
