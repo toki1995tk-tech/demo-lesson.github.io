@@ -1,0 +1,250 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Цифровая парковка вопросов</title>
+
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+
+  <style>
+    * { box-sizing: border-box; }
+
+    body {
+      margin: 0;
+      min-height: 100vh;
+      font-family: Inter, Arial, sans-serif;
+      color: #152238;
+      background:
+        radial-gradient(circle at 15% 15%, rgba(47,111,237,.15), transparent 32%),
+        radial-gradient(circle at 88% 82%, rgba(22,187,145,.12), transparent 30%),
+        #f6f8fb;
+      padding: 22px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .card {
+      width: min(720px, 100%);
+      background: rgba(255,255,255,.96);
+      border: 1px solid rgba(21,34,56,.07);
+      border-radius: 30px;
+      box-shadow: 0 22px 65px rgba(31,50,85,.12);
+      padding: clamp(28px, 6vw, 48px);
+    }
+
+    .badge {
+      display: inline-flex;
+      padding: 9px 14px;
+      border-radius: 999px;
+      background: #eef4ff;
+      color: #2b65d9;
+      font-size: 13px;
+      font-weight: 900;
+      letter-spacing: .05em;
+      margin-bottom: 20px;
+    }
+
+    h1 {
+      font-size: clamp(34px, 9vw, 54px);
+      line-height: .98;
+      letter-spacing: -.04em;
+      margin: 0 0 14px;
+    }
+
+    .intro {
+      color: #5d6c81;
+      font-size: 18px;
+      line-height: 1.5;
+      margin: 0 0 28px;
+    }
+
+    label {
+      display: block;
+      font-size: 18px;
+      font-weight: 900;
+      margin-bottom: 10px;
+    }
+
+    textarea {
+      width: 100%;
+      min-height: 190px;
+      resize: vertical;
+      border: 1px solid #dce3ec;
+      border-radius: 20px;
+      padding: 18px;
+      font: inherit;
+      font-size: 18px;
+      line-height: 1.45;
+      color: #152238;
+      outline: none;
+      background: #fbfcfe;
+      transition: .15s ease;
+    }
+
+    textarea:focus {
+      border-color: #5d8cf2;
+      box-shadow: 0 0 0 4px rgba(47,111,237,.10);
+      background: white;
+    }
+
+    .counter {
+      text-align: right;
+      font-size: 13px;
+      color: #9aa5b5;
+      margin: 7px 3px 17px;
+    }
+
+    button {
+      width: 100%;
+      border: 0;
+      border-radius: 18px;
+      padding: 19px 22px;
+      font-size: 20px;
+      font-weight: 900;
+      color: white;
+      cursor: pointer;
+      background: linear-gradient(135deg, #2f6fed, #1f53bd);
+      box-shadow: 0 14px 30px rgba(47,111,237,.23);
+      transition: .15s ease;
+    }
+
+    button:hover { transform: translateY(-1px); }
+    button:disabled { opacity: .55; cursor: not-allowed; transform: none; }
+
+    .message {
+      min-height: 54px;
+      margin-top: 18px;
+      border-radius: 16px;
+      padding: 14px 16px;
+      font-size: 16px;
+      line-height: 1.4;
+      display: none;
+    }
+
+    .message.success {
+      display: block;
+      background: #ebfaf4;
+      color: #117859;
+    }
+
+    .message.error {
+      display: block;
+      background: #fff0ee;
+      color: #b42318;
+    }
+
+    .again {
+      margin-top: 18px;
+      text-align: center;
+      color: #708096;
+      font-size: 14px;
+      line-height: 1.45;
+    }
+  </style>
+</head>
+<body>
+  <main class="card">
+    <div class="badge">ЦИФРОВАЯ ОБРАТНАЯ СВЯЗЬ</div>
+
+    <h1>Цифровая «Парковка вопросов»</h1>
+    <p class="intro">
+      Напишите свой вопрос. После отправки форма очистится, и вы сможете сразу отправить следующий.
+    </p>
+
+    <label for="question">Ваш вопрос</label>
+    <textarea
+      id="question"
+      maxlength="1000"
+      placeholder="Напишите вопрос здесь…"
+    ></textarea>
+
+    <div class="counter"><span id="charCount">0</span>/1000</div>
+
+    <button id="sendBtn">Припарковать вопрос</button>
+
+    <div id="message" class="message"></div>
+
+    <div class="again">
+      Количество вопросов не ограничено — отправляйте столько, сколько нужно.
+    </div>
+  </main>
+
+  <script>
+    // =========================================================
+    // ВСТАВЬ СВОИ ДАННЫЕ SUPABASE
+    // =========================================================
+    const SUPABASE_URL = "PASTE_SUPABASE_URL_HERE";
+    const SUPABASE_KEY = "PASTE_PUBLISHABLE_OR_ANON_KEY_HERE";
+    // =========================================================
+
+    const db = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+
+    const textarea = document.getElementById("question");
+    const sendBtn = document.getElementById("sendBtn");
+    const message = document.getElementById("message");
+    const charCount = document.getElementById("charCount");
+
+    textarea.addEventListener("input", () => {
+      charCount.textContent = textarea.value.length;
+      message.className = "message";
+      message.textContent = "";
+    });
+
+    function showMessage(text, type) {
+      message.textContent = text;
+      message.className = "message " + type;
+    }
+
+    async function submitQuestion() {
+      const value = textarea.value.trim();
+
+      if (!value) {
+        showMessage("Сначала напишите вопрос.", "error");
+        textarea.focus();
+        return;
+      }
+
+      if (
+        SUPABASE_URL.includes("PASTE_") ||
+        SUPABASE_KEY.includes("PASTE_")
+      ) {
+        showMessage("На странице ещё не настроено подключение к Supabase.", "error");
+        return;
+      }
+
+      sendBtn.disabled = true;
+      sendBtn.textContent = "Отправляем…";
+
+      try {
+        const { error } = await db
+          .from("question_parking")
+          .insert({ question: value });
+
+        if (error) throw error;
+
+        textarea.value = "";
+        charCount.textContent = "0";
+        showMessage("✅ Вопрос припаркован! Можно отправить следующий.", "success");
+        textarea.focus();
+      } catch (e) {
+        console.error(e);
+        showMessage("Не удалось отправить вопрос. Попробуйте ещё раз.", "error");
+      } finally {
+        sendBtn.disabled = false;
+        sendBtn.textContent = "Припарковать вопрос";
+      }
+    }
+
+    sendBtn.addEventListener("click", submitQuestion);
+
+    // Ctrl+Enter / Cmd+Enter тоже отправляет вопрос.
+    textarea.addEventListener("keydown", (e) => {
+      if ((e.ctrlKey || e.metaKey) && e.key === "Enter") {
+        submitQuestion();
+      }
+    });
+  </script>
+</body>
+</html>
