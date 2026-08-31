@@ -1,0 +1,635 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Распределение по группам — экран организатора</title>
+
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script src="https://cdn.jsdelivr.net/npm/qrcodejs@1.0.0/qrcode.min.js"></script>
+
+  <style>
+    * { box-sizing: border-box; }
+
+    :root {
+      --ink: #152238;
+      --muted: #65748a;
+      --blue: #2f6fed;
+      --blue2: #1f53bd;
+      --line: #e7ebf1;
+      --panel: rgba(255,255,255,.94);
+    }
+
+    body {
+      margin: 0;
+      min-height: 100vh;
+      font-family: Inter, Arial, sans-serif;
+      color: var(--ink);
+      background:
+        radial-gradient(circle at 15% 15%, rgba(47,111,237,.13), transparent 32%),
+        radial-gradient(circle at 85% 82%, rgba(23,187,147,.12), transparent 30%),
+        #f6f8fb;
+      padding: 28px;
+    }
+
+    .page {
+      width: min(1500px, 100%);
+      min-height: calc(100vh - 56px);
+      margin: 0 auto;
+      background: var(--panel);
+      border: 1px solid rgba(21,34,56,.07);
+      border-radius: 30px;
+      box-shadow: 0 24px 70px rgba(32,52,86,.10);
+      padding: clamp(24px, 3vw, 46px);
+    }
+
+    .header {
+      display: flex;
+      align-items: end;
+      justify-content: space-between;
+      gap: 24px;
+      margin-bottom: 28px;
+    }
+
+    .eyebrow {
+      font-size: 14px;
+      font-weight: 900;
+      letter-spacing: .13em;
+      color: var(--blue);
+      margin-bottom: 8px;
+    }
+
+    h1 {
+      font-size: clamp(34px, 4vw, 64px);
+      line-height: 1;
+      letter-spacing: -.04em;
+      margin: 0;
+    }
+
+    .sub {
+      color: var(--muted);
+      font-size: 18px;
+      margin-top: 11px;
+    }
+
+    .layout {
+      display: grid;
+      grid-template-columns: minmax(420px, .95fr) minmax(520px, 1.05fr);
+      gap: clamp(26px, 4vw, 56px);
+      align-items: stretch;
+    }
+
+    .qr-panel, .control-panel {
+      border: 1px solid var(--line);
+      border-radius: 28px;
+      background: #fff;
+    }
+
+    .qr-panel {
+      padding: 28px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      min-height: 620px;
+    }
+
+    .qr-title {
+      text-align: center;
+      font-size: clamp(23px, 2.3vw, 34px);
+      font-weight: 900;
+      margin: 0 0 24px;
+      max-width: 530px;
+      line-height: 1.18;
+    }
+
+    #qrcode {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 18px;
+      border-radius: 24px;
+      border: 1px solid var(--line);
+      box-shadow: 0 12px 35px rgba(20,40,80,.08);
+      background: white;
+    }
+
+    #qrcode img, #qrcode canvas {
+      width: min(36vw, 420px) !important;
+      height: min(36vw, 420px) !important;
+    }
+
+    .participant-url {
+      margin-top: 20px;
+      color: #8a96a8;
+      font-size: 13px;
+      max-width: 560px;
+      word-break: break-all;
+      text-align: center;
+    }
+
+    .control-panel {
+      padding: clamp(26px, 3vw, 42px);
+      display: flex;
+      flex-direction: column;
+    }
+
+    .stats {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 18px;
+      margin-bottom: 28px;
+    }
+
+    .stat {
+      border: 1px solid var(--line);
+      border-radius: 24px;
+      padding: 24px;
+      background: #fbfcfe;
+    }
+
+    .stat-label {
+      color: var(--muted);
+      font-size: 15px;
+      font-weight: 800;
+      margin-bottom: 10px;
+    }
+
+    .stat-value {
+      font-size: clamp(55px, 7vw, 92px);
+      line-height: .9;
+      font-weight: 950;
+      letter-spacing: -.06em;
+    }
+
+    .settings {
+      border-top: 1px solid var(--line);
+      padding-top: 28px;
+    }
+
+    label {
+      display: block;
+      font-size: 18px;
+      font-weight: 900;
+      margin-bottom: 11px;
+    }
+
+    select {
+      width: 100%;
+      height: 68px;
+      padding: 0 18px;
+      font-size: 23px;
+      font-weight: 900;
+      color: var(--ink);
+      border: 1px solid #dce3ec;
+      border-radius: 18px;
+      background: #fff;
+      outline: none;
+      margin-bottom: 20px;
+    }
+
+    .buttons {
+      display: grid;
+      grid-template-columns: 1fr;
+      gap: 14px;
+      margin-top: auto;
+      padding-top: 24px;
+    }
+
+    button {
+      border: 0;
+      border-radius: 18px;
+      padding: 20px 22px;
+      font-size: 20px;
+      font-weight: 900;
+      cursor: pointer;
+      transition: .18s ease;
+    }
+
+    button:hover { transform: translateY(-2px); }
+    button:disabled { opacity: .45; cursor: not-allowed; transform: none; }
+
+    .primary {
+      color: white;
+      background: linear-gradient(135deg, var(--blue), var(--blue2));
+      box-shadow: 0 14px 30px rgba(47,111,237,.24);
+    }
+
+    .secondary {
+      color: #32435b;
+      background: #eef2f7;
+    }
+
+    .message {
+      margin-top: 18px;
+      min-height: 44px;
+      border-radius: 14px;
+      padding: 12px 14px;
+      font-size: 15px;
+      line-height: 1.35;
+      color: #5c6a7d;
+      background: #f7f9fc;
+    }
+
+    .message.ok {
+      color: #117a59;
+      background: #ecfbf5;
+    }
+
+    .message.error {
+      color: #b42318;
+      background: #fff0ee;
+    }
+
+    .groups-preview {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+      margin-top: 18px;
+    }
+
+    .pill {
+      padding: 9px 12px;
+      border-radius: 999px;
+      background: #eef4ff;
+      color: #2b65d9;
+      font-size: 14px;
+      font-weight: 900;
+    }
+
+    @media (max-width: 980px) {
+      .layout { grid-template-columns: 1fr; }
+      .qr-panel { min-height: auto; }
+      #qrcode img, #qrcode canvas {
+        width: min(72vw, 380px) !important;
+        height: min(72vw, 380px) !important;
+      }
+    }
+  </style>
+</head>
+
+<body>
+  <main class="page">
+    <div class="header">
+      <div>
+        <div class="eyebrow">ПЕДСОВЕТ • КОМАНДЫ</div>
+        <h1>Распределение по группам</h1>
+        <div class="sub">Отсканируйте QR-код и дождитесь номера своей группы.</div>
+      </div>
+    </div>
+
+    <section class="layout">
+      <div class="qr-panel">
+        <h2 class="qr-title">Отсканируйте QR, чтобы узнать вашу группу</h2>
+        <div id="qrcode"></div>
+        <div id="participantUrl" class="participant-url"></div>
+      </div>
+
+      <div class="control-panel">
+        <div class="stats">
+          <div class="stat">
+            <div class="stat-label">Количество участников</div>
+            <div id="participantCount" class="stat-value">0</div>
+          </div>
+
+          <div class="stat">
+            <div class="stat-label">Количество групп</div>
+            <div id="teamCountDisplay" class="stat-value">4</div>
+          </div>
+        </div>
+
+        <div class="settings">
+          <label for="teamCount">Сколько будет групп?</label>
+          <select id="teamCount">
+            <option value="2">2 группы</option>
+            <option value="3">3 группы</option>
+            <option value="4" selected>4 группы</option>
+            <option value="5">5 групп</option>
+            <option value="6">6 групп</option>
+            <option value="7">7 групп</option>
+            <option value="8">8 групп</option>
+            <option value="9">9 групп</option>
+            <option value="10">10 групп</option>
+            <option value="11">11 групп</option>
+            <option value="12">12 групп</option>
+          </select>
+
+          <div id="groupsPreview" class="groups-preview"></div>
+        </div>
+
+        <div class="buttons">
+          <button id="generateBtn" class="primary">Сгенерировать команды</button>
+          <button id="resetBtn" class="secondary">Новая сессия / начать заново</button>
+        </div>
+
+        <div id="message" class="message">Ожидаем подключения участников…</div>
+      </div>
+    </section>
+  </main>
+
+  <script>
+    // =========================================================
+    // ВСТАВЬ СВОИ ДАННЫЕ SUPABASE В ДВЕ СТРОКИ НИЖЕ
+    // =========================================================
+    const SUPABASE_URL = "https://wbvvhlrrutmjawrwzwhk.supabase.co";
+    const SUPABASE_KEY = "sb_publishable_QJsp3Dn1V4bxHP1DmPLlLA_coWw9tDX";
+    // =========================================================
+
+    const db = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+
+    const countEl = document.getElementById("participantCount");
+    const teamCountSelect = document.getElementById("teamCount");
+    const teamCountDisplay = document.getElementById("teamCountDisplay");
+    const generateBtn = document.getElementById("generateBtn");
+    const resetBtn = document.getElementById("resetBtn");
+    const messageEl = document.getElementById("message");
+    const groupsPreview = document.getElementById("groupsPreview");
+
+    let currentSession = null;
+    let currentParticipantCount = 0;
+    let participantChannel = null;
+    let eventChannel = null;
+
+    function setMessage(text, type = "") {
+      messageEl.className = "message" + (type ? " " + type : "");
+      messageEl.textContent = text;
+    }
+
+    function participantPageUrl() {
+      // admin.html и participant.html лежат рядом в одной папке.
+      const url = new URL(window.location.href);
+      const pathParts = url.pathname.split("/");
+      pathParts[pathParts.length - 1] = "participant.html";
+      url.pathname = pathParts.join("/");
+      url.search = "";
+      url.hash = "";
+      return url.toString();
+    }
+
+    function makeQr() {
+      const url = participantPageUrl();
+      document.getElementById("participantUrl").textContent = url;
+
+      new QRCode(document.getElementById("qrcode"), {
+        text: url,
+        width: 420,
+        height: 420,
+        correctLevel: QRCode.CorrectLevel.H
+      });
+    }
+
+    function updateTeamDisplay() {
+      const n = Number(teamCountSelect.value);
+      teamCountDisplay.textContent = n;
+      renderExpectedSizes();
+    }
+
+    function renderExpectedSizes() {
+      const teams = Number(teamCountSelect.value);
+      const people = currentParticipantCount;
+
+      groupsPreview.innerHTML = "";
+
+      if (!people) return;
+
+      const base = Math.floor(people / teams);
+      const extra = people % teams;
+
+      for (let i = 1; i <= teams; i++) {
+        const size = base + (i <= extra ? 1 : 0);
+        const el = document.createElement("div");
+        el.className = "pill";
+        el.textContent = `Группа ${i}: ${size}`;
+        groupsPreview.appendChild(el);
+      }
+    }
+
+    async function loadEvent() {
+      const { data, error } = await db
+        .from("team_event")
+        .select("*")
+        .eq("id", 1)
+        .single();
+
+      if (error) throw error;
+
+      currentSession = data.session_code;
+      teamCountSelect.value = String(data.team_count || 4);
+      updateTeamDisplay();
+    }
+
+    async function loadParticipantCount() {
+      if (!currentSession) return;
+
+      const { count, error } = await db
+        .from("team_participants")
+        .select("*", { count: "exact", head: true })
+        .eq("session_code", currentSession);
+
+      if (error) throw error;
+
+      currentParticipantCount = count || 0;
+      countEl.textContent = currentParticipantCount;
+      renderExpectedSizes();
+
+      generateBtn.disabled = currentParticipantCount === 0;
+    }
+
+    function subscribeParticipants() {
+      if (participantChannel) db.removeChannel(participantChannel);
+
+      participantChannel = db
+        .channel("participants-board-" + currentSession)
+        .on(
+          "postgres_changes",
+          {
+            event: "*",
+            schema: "public",
+            table: "team_participants"
+          },
+          async (payload) => {
+            // Фильтрацию считаем здесь, чтобы корректно реагировать на INSERT/UPDATE.
+            const row = payload.new && Object.keys(payload.new).length ? payload.new : payload.old;
+            if (row && row.session_code === currentSession) {
+              await loadParticipantCount();
+            }
+          }
+        )
+        .subscribe();
+    }
+
+    function subscribeEvent() {
+      eventChannel = db
+        .channel("team-event-board")
+        .on(
+          "postgres_changes",
+          {
+            event: "UPDATE",
+            schema: "public",
+            table: "team_event",
+            filter: "id=eq.1"
+          },
+          async (payload) => {
+            if (payload.new.session_code !== currentSession) {
+              currentSession = payload.new.session_code;
+              teamCountSelect.value = String(payload.new.team_count || 4);
+              updateTeamDisplay();
+              subscribeParticipants();
+              await loadParticipantCount();
+            }
+          }
+        )
+        .subscribe();
+    }
+
+    // Fisher–Yates shuffle — настоящее перемешивание массива.
+    function shuffle(array) {
+      const a = [...array];
+      for (let i = a.length - 1; i > 0; i--) {
+        const j = Math.floor(Math.random() * (i + 1));
+        [a[i], a[j]] = [a[j], a[i]];
+      }
+      return a;
+    }
+
+    async function generateTeams() {
+      try {
+        generateBtn.disabled = true;
+        resetBtn.disabled = true;
+        setMessage("Распределяем участников…");
+
+        const teamCount = Number(teamCountSelect.value);
+
+        const { data: participants, error } = await db
+          .from("team_participants")
+          .select("id")
+          .eq("session_code", currentSession)
+          .order("joined_at", { ascending: true });
+
+        if (error) throw error;
+
+        if (!participants || participants.length === 0) {
+          setMessage("Пока нет ни одного участника.", "error");
+          return;
+        }
+
+        if (teamCount > participants.length) {
+          setMessage(
+            `Участников ${participants.length}, а групп выбрано ${teamCount}. Уменьшите количество групп.`,
+            "error"
+          );
+          return;
+        }
+
+        const shuffled = shuffle(participants);
+
+        // Равномерное распределение:
+        // после перемешивания даём номера 1,2,3...N,1,2,3...N.
+        // Разница между самой большой и маленькой группой максимум 1 человек.
+        const updates = shuffled.map((p, index) => ({
+          id: p.id,
+          team_number: (index % teamCount) + 1
+        }));
+
+        for (const item of updates) {
+          const { error: updateError } = await db
+            .from("team_participants")
+            .update({ team_number: item.team_number })
+            .eq("id", item.id);
+
+          if (updateError) throw updateError;
+        }
+
+        const { error: eventError } = await db
+          .from("team_event")
+          .update({
+            team_count: teamCount,
+            distributed: true,
+            updated_at: new Date().toISOString()
+          })
+          .eq("id", 1);
+
+        if (eventError) throw eventError;
+
+        setMessage(
+          `Готово! ${participants.length} участников распределены на ${teamCount} групп.`,
+          "ok"
+        );
+      } catch (e) {
+        console.error(e);
+        setMessage("Ошибка: " + e.message, "error");
+      } finally {
+        resetBtn.disabled = false;
+        generateBtn.disabled = currentParticipantCount === 0;
+      }
+    }
+
+    async function newSession() {
+      try {
+        if (!confirm("Начать новую сессию? Счётчик участников станет 0.")) return;
+
+        generateBtn.disabled = true;
+        resetBtn.disabled = true;
+        setMessage("Создаём новую сессию…");
+
+        const newCode = crypto.randomUUID();
+        const teamCount = Number(teamCountSelect.value);
+
+        const { error } = await db
+          .from("team_event")
+          .update({
+            session_code: newCode,
+            team_count: teamCount,
+            distributed: false,
+            updated_at: new Date().toISOString()
+          })
+          .eq("id", 1);
+
+        if (error) throw error;
+
+        currentSession = newCode;
+        currentParticipantCount = 0;
+        countEl.textContent = "0";
+        groupsPreview.innerHTML = "";
+        subscribeParticipants();
+
+        setMessage("Новая сессия создана. Участники могут сканировать QR.", "ok");
+      } catch (e) {
+        console.error(e);
+        setMessage("Ошибка: " + e.message, "error");
+      } finally {
+        resetBtn.disabled = false;
+        generateBtn.disabled = currentParticipantCount === 0;
+      }
+    }
+
+    teamCountSelect.addEventListener("change", updateTeamDisplay);
+    generateBtn.addEventListener("click", generateTeams);
+    resetBtn.addEventListener("click", newSession);
+
+    async function init() {
+      try {
+        if (
+          SUPABASE_URL.includes("PASTE_") ||
+          SUPABASE_KEY.includes("PASTE_")
+        ) {
+          throw new Error("Сначала вставьте SUPABASE_URL и Publishable/anon key в admin.html.");
+        }
+
+        makeQr();
+        await loadEvent();
+        await loadParticipantCount();
+        subscribeParticipants();
+        subscribeEvent();
+
+        setMessage("Готово. Ожидаем подключения участников…");
+      } catch (e) {
+        console.error(e);
+        setMessage("Ошибка запуска: " + e.message, "error");
+      }
+    }
+
+    init();
+  </script>
+</body>
+</html>

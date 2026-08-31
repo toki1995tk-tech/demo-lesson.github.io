@@ -1,0 +1,354 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Ваша группа</title>
+
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+
+  <style>
+    * { box-sizing: border-box; }
+
+    body {
+      margin: 0;
+      min-height: 100vh;
+      font-family: Inter, Arial, sans-serif;
+      background:
+        radial-gradient(circle at 15% 15%, rgba(41, 121, 255, .17), transparent 32%),
+        radial-gradient(circle at 85% 80%, rgba(0, 200, 160, .14), transparent 30%),
+        #f7f9fc;
+      color: #152238;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 22px;
+    }
+
+    .card {
+      width: min(720px, 100%);
+      min-height: 78vh;
+      background: rgba(255,255,255,.92);
+      border: 1px solid rgba(21,34,56,.08);
+      border-radius: 30px;
+      box-shadow: 0 20px 60px rgba(22, 45, 85, .12);
+      padding: 34px 26px 30px;
+      display: flex;
+      flex-direction: column;
+      text-align: center;
+    }
+
+    .badge {
+      display: inline-flex;
+      align-self: center;
+      align-items: center;
+      gap: 8px;
+      padding: 9px 15px;
+      border-radius: 999px;
+      background: #eef4ff;
+      color: #2b65d9;
+      font-size: 14px;
+      font-weight: 800;
+      letter-spacing: .02em;
+      margin-bottom: 24px;
+    }
+
+    h1 {
+      font-size: clamp(26px, 6vw, 44px);
+      margin: 0 0 14px;
+      line-height: 1.08;
+    }
+
+    .instruction {
+      margin: 0 auto;
+      max-width: 570px;
+      font-size: clamp(17px, 3.7vw, 22px);
+      line-height: 1.5;
+      color: #56647a;
+    }
+
+    .result {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      min-height: 330px;
+    }
+
+    .waiting-ring {
+      width: 92px;
+      height: 92px;
+      border: 8px solid #e5ebf3;
+      border-top-color: #3978f6;
+      border-radius: 50%;
+      animation: spin 1s linear infinite;
+      margin-bottom: 28px;
+    }
+
+    @keyframes spin { to { transform: rotate(360deg); } }
+
+    .waiting-text {
+      font-size: 22px;
+      font-weight: 800;
+      color: #34445c;
+    }
+
+    .team-label {
+      font-size: clamp(21px, 4vw, 30px);
+      font-weight: 800;
+      color: #506078;
+      margin-bottom: 6px;
+    }
+
+    .team-number {
+      font-size: clamp(150px, 43vw, 290px);
+      line-height: .9;
+      font-weight: 950;
+      letter-spacing: -.06em;
+      color: #2157c7;
+      text-shadow: 0 12px 35px rgba(33,87,199,.16);
+    }
+
+    .done {
+      margin-top: 24px;
+      font-size: 18px;
+      line-height: 1.45;
+      color: #4f6078;
+      font-weight: 700;
+    }
+
+    .status {
+      font-size: 13px;
+      color: #9aa6b6;
+      margin-top: 8px;
+    }
+
+    .error {
+      color: #b42318;
+      background: #fff0ee;
+      padding: 15px 16px;
+      border-radius: 16px;
+      max-width: 580px;
+      margin: 24px auto 0;
+      font-size: 15px;
+      line-height: 1.45;
+    }
+
+    .hidden { display: none !important; }
+  </style>
+</head>
+
+<body>
+  <main class="card">
+    <div class="badge">РАЗДЕЛЕНИЕ НА ГРУППЫ</div>
+
+    <h1>Не закрывайте эту страницу</h1>
+    <p class="instruction">
+      До окончания разделения на группы оставьте страницу открытой.
+      Здесь появится номер вашей группы.
+    </p>
+
+    <section class="result">
+      <div id="waiting">
+        <div class="waiting-ring"></div>
+        <div class="waiting-text">Ожидаем распределение…</div>
+      </div>
+
+      <div id="assigned" class="hidden">
+        <div class="team-label">Ваша группа</div>
+        <div id="teamNumber" class="team-number">—</div>
+        <div class="done">Готово! Теперь эту страницу можно закрыть.</div>
+      </div>
+
+      <div id="errorBox" class="error hidden"></div>
+    </section>
+
+    <div id="status" class="status">Подключение…</div>
+  </main>
+
+  <script>
+    // =========================================================
+    // ВСТАВЬ СВОИ ДАННЫЕ SUPABASE В ДВЕ СТРОКИ НИЖЕ
+    // =========================================================
+    const SUPABASE_URL = "https://wbvvhlrrutmjawrwzwhk.supabase.co";
+    const SUPABASE_KEY = "sb_publishable_QJsp3Dn1V4bxHP1DmPLlLA_coWw9tDX";
+    // =========================================================
+
+    const db = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+
+    const waitingEl = document.getElementById("waiting");
+    const assignedEl = document.getElementById("assigned");
+    const teamNumberEl = document.getElementById("teamNumber");
+    const statusEl = document.getElementById("status");
+    const errorBox = document.getElementById("errorBox");
+
+    let currentSession = null;
+    let participantId = null;
+    let participantChannel = null;
+    let eventChannel = null;
+
+    // Один и тот же телефон не считается повторно после обновления страницы.
+    function getClientId() {
+      let id = localStorage.getItem("team-divider-client-id");
+      if (!id) {
+        id = crypto.randomUUID();
+        localStorage.setItem("team-divider-client-id", id);
+      }
+      return id;
+    }
+
+    const clientId = getClientId();
+
+    function showError(message) {
+      errorBox.textContent = message;
+      errorBox.classList.remove("hidden");
+      statusEl.textContent = "Ошибка подключения";
+      console.error(message);
+    }
+
+    function showWaiting() {
+      waitingEl.classList.remove("hidden");
+      assignedEl.classList.add("hidden");
+      teamNumberEl.textContent = "—";
+    }
+
+    function showTeam(teamNumber) {
+      waitingEl.classList.add("hidden");
+      assignedEl.classList.remove("hidden");
+      teamNumberEl.textContent = teamNumber;
+      statusEl.textContent = "Распределение завершено";
+    }
+
+    async function getEvent() {
+      const { data, error } = await db
+        .from("team_event")
+        .select("*")
+        .eq("id", 1)
+        .single();
+
+      if (error) throw error;
+      return data;
+    }
+
+    async function registerInSession(sessionCode) {
+      currentSession = sessionCode;
+      showWaiting();
+      statusEl.textContent = "Вы зарегистрированы. Ожидаем распределение…";
+
+      // upsert по session_code + client_id: повторное открытие не создаёт дубль.
+      const { data, error } = await db
+        .from("team_participants")
+        .upsert(
+          {
+            session_code: sessionCode,
+            client_id: clientId
+          },
+          {
+            onConflict: "session_code,client_id",
+            ignoreDuplicates: true
+          }
+        )
+        .select()
+        .single();
+
+      if (error && error.code !== "PGRST116") throw error;
+
+      // Если ignoreDuplicates не вернул существующую строку — получаем её отдельно.
+      let row = data;
+
+      if (!row) {
+        const existing = await db
+          .from("team_participants")
+          .select("*")
+          .eq("session_code", sessionCode)
+          .eq("client_id", clientId)
+          .single();
+
+        if (existing.error) throw existing.error;
+        row = existing.data;
+      }
+
+      participantId = row.id;
+
+      if (row.team_number) {
+        showTeam(row.team_number);
+      }
+
+      subscribeToParticipant();
+    }
+
+    function subscribeToParticipant() {
+      if (participantChannel) {
+        db.removeChannel(participantChannel);
+      }
+
+      participantChannel = db
+        .channel("participant-" + participantId)
+        .on(
+          "postgres_changes",
+          {
+            event: "UPDATE",
+            schema: "public",
+            table: "team_participants",
+            filter: `id=eq.${participantId}`
+          },
+          (payload) => {
+            const team = payload.new.team_number;
+            if (team) showTeam(team);
+          }
+        )
+        .subscribe((state) => {
+          if (state === "SUBSCRIBED" && !teamNumberEl.textContent.match(/\d/)) {
+            statusEl.textContent = "Подключено. Ожидаем распределение…";
+          }
+        });
+    }
+
+    function subscribeToEvent() {
+      eventChannel = db
+        .channel("team-event-phone")
+        .on(
+          "postgres_changes",
+          {
+            event: "UPDATE",
+            schema: "public",
+            table: "team_event",
+            filter: "id=eq.1"
+          },
+          async (payload) => {
+            // Если организатор нажал "Новая сессия", телефон автоматически
+            // регистрируется уже в новой сессии.
+            if (payload.new.session_code !== currentSession) {
+              try {
+                await registerInSession(payload.new.session_code);
+              } catch (e) {
+                showError("Не удалось зарегистрироваться в новой сессии: " + e.message);
+              }
+            }
+          }
+        )
+        .subscribe();
+    }
+
+    async function init() {
+      try {
+        if (
+          SUPABASE_URL.includes("PASTE_") ||
+          SUPABASE_KEY.includes("PASTE_")
+        ) {
+          throw new Error("Сначала вставьте SUPABASE_URL и Publishable/anon key в participant.html.");
+        }
+
+        const event = await getEvent();
+        await registerInSession(event.session_code);
+        subscribeToEvent();
+      } catch (e) {
+        showError(e.message);
+      }
+    }
+
+    init();
+  </script>
+</body>
+</html>
