@@ -763,6 +763,365 @@
         }
 
 
+
+        /* =================================================
+           УВЕЛИЧЕННЫЙ QR-КОД
+           ================================================= */
+
+        .qr-open-button {
+
+            padding: 0;
+
+            border: 0;
+
+            background: transparent;
+
+            cursor: pointer;
+
+            border-radius: 20px;
+
+            transition:
+                transform 0.22s ease,
+                box-shadow 0.22s ease;
+
+        }
+
+
+        .qr-open-button:hover {
+
+            transform:
+                scale(1.045);
+
+            box-shadow:
+                0
+                14px
+                38px
+                rgba(
+                    30,
+                    45,
+                    80,
+                    0.14
+                );
+
+        }
+
+
+        .presenter-qr-hint {
+
+            margin-top: 2px;
+
+            font-size: 10px;
+
+            opacity: 0.38;
+
+        }
+
+
+        .qr-modal {
+
+            position: fixed;
+
+            inset: 0;
+
+            z-index: 30000;
+
+            display: flex;
+
+            align-items: center;
+
+            justify-content: center;
+
+            padding: 28px;
+
+            opacity: 0;
+
+            visibility: hidden;
+
+            pointer-events: none;
+
+            transition:
+                opacity 0.32s ease,
+                visibility 0.32s ease;
+
+        }
+
+
+        .qr-modal.qr-modal-visible {
+
+            opacity: 1;
+
+            visibility: visible;
+
+            pointer-events: auto;
+
+        }
+
+
+        .qr-modal-backdrop {
+
+            position: absolute;
+
+            inset: 0;
+
+            background:
+                rgba(
+                    15,
+                    24,
+                    42,
+                    0.74
+                );
+
+            backdrop-filter:
+                blur(10px);
+
+        }
+
+
+        .qr-modal-window {
+
+            position: relative;
+
+            z-index: 2;
+
+            width:
+                min(
+                    680px,
+                    calc(100vw - 56px)
+                );
+
+            max-height:
+                calc(100vh - 56px);
+
+            overflow: auto;
+
+            padding:
+                42px
+                44px
+                36px;
+
+            border-radius: 34px;
+
+            background:
+                rgba(
+                    255,
+                    255,
+                    255,
+                    0.98
+                );
+
+            box-shadow:
+                0
+                36px
+                110px
+                rgba(
+                    0,
+                    0,
+                    0,
+                    0.32
+                );
+
+            text-align: center;
+
+            transform:
+                scale(0.86)
+                translateY(18px);
+
+            transition:
+                transform
+                0.38s
+                cubic-bezier(
+                    0.22,
+                    1,
+                    0.36,
+                    1
+                );
+
+        }
+
+
+        .qr-modal.qr-modal-visible
+        .qr-modal-window {
+
+            transform:
+                scale(1)
+                translateY(0);
+
+        }
+
+
+        .qr-modal-close {
+
+            position: absolute;
+
+            top: 18px;
+
+            right: 18px;
+
+            width: 46px;
+
+            height: 46px;
+
+            display: grid;
+
+            place-items: center;
+
+            padding: 0;
+
+            border: 0;
+
+            border-radius: 50%;
+
+            background:
+                rgba(
+                    23,
+                    32,
+                    51,
+                    0.07
+                );
+
+            color: #172033;
+
+            font-size: 30px;
+
+            line-height: 1;
+
+            cursor: pointer;
+
+            transition:
+                transform 0.2s ease,
+                background 0.2s ease;
+
+        }
+
+
+        .qr-modal-close:hover {
+
+            transform:
+                scale(1.08);
+
+            background:
+                rgba(
+                    23,
+                    32,
+                    51,
+                    0.12
+                );
+
+        }
+
+
+        .qr-modal-title {
+
+            margin:
+                0
+                56px
+                22px;
+
+            font-size:
+                clamp(
+                    30px,
+                    3vw,
+                    44px
+                );
+
+            line-height: 1.05;
+
+            font-weight: 850;
+
+            letter-spacing: -0.04em;
+
+        }
+
+
+        .qr-modal-image {
+
+            width:
+                min(
+                    470px,
+                    68vw,
+                    58vh
+                );
+
+            height: auto;
+
+            display: block;
+
+            margin:
+                0
+                auto;
+
+            padding: 14px;
+
+            border-radius: 24px;
+
+            background: white;
+
+        }
+
+
+        .qr-modal-subtitle {
+
+            margin-top: 18px;
+
+            font-size: 16px;
+
+            line-height: 1.4;
+
+            opacity: 0.55;
+
+        }
+
+
+        body.qr-modal-open {
+
+            overflow: hidden;
+
+        }
+
+
+        @media (max-width: 620px) {
+
+            .qr-modal-window {
+
+                width:
+                    calc(
+                        100vw - 28px
+                    );
+
+                padding:
+                    36px
+                    18px
+                    26px;
+
+                border-radius: 26px;
+
+            }
+
+
+            .qr-modal-title {
+
+                margin:
+                    8px
+                    44px
+                    18px;
+
+                font-size: 28px;
+
+            }
+
+
+            .qr-modal-image {
+
+                width:
+                    min(
+                        82vw,
+                        430px
+                    );
+
+            }
+
+        }
+
     </style>
 
 </head>
@@ -1035,14 +1394,27 @@
 
             <div class="presenter-qr-card">
 
-                <img
-                    src="future-school-vote-qr.png"
-                    alt="QR-код для голосования"
-                    class="presenter-qr-image"
+                <button
+                    id="openQrButton"
+                    class="qr-open-button"
+                    type="button"
+                    aria-label="Увеличить QR-код"
                 >
+
+                    <img
+                        src="future-school-vote-qr.png"
+                        alt="QR-код для голосования"
+                        class="presenter-qr-image"
+                    >
+
+                </button>
 
                 <div class="presenter-qr-text">
                     Сканируйте и голосуйте
+                </div>
+
+                <div class="presenter-qr-hint">
+                    Нажмите, чтобы увеличить
                 </div>
 
             </div>
@@ -1201,6 +1573,64 @@
 
 
 
+
+    <!-- =====================================================
+         УВЕЛИЧЕННЫЙ QR
+         ===================================================== -->
+
+    <div
+        id="qrModal"
+        class="qr-modal"
+        aria-hidden="true"
+    >
+
+        <div
+            id="qrModalBackdrop"
+            class="qr-modal-backdrop"
+        ></div>
+
+
+        <div
+            class="qr-modal-window"
+            role="dialog"
+            aria-modal="true"
+            aria-labelledby="qrModalTitle"
+        >
+
+            <button
+                id="closeQrButton"
+                class="qr-modal-close"
+                type="button"
+                aria-label="Закрыть QR-код"
+            >
+                ×
+            </button>
+
+
+            <div
+                id="qrModalTitle"
+                class="qr-modal-title"
+            >
+                Сканируйте и голосуйте
+            </div>
+
+
+            <img
+                src="future-school-vote-qr.png"
+                alt="QR-код для голосования"
+                class="qr-modal-image"
+            >
+
+
+            <div class="qr-modal-subtitle">
+                Наведите камеру телефона на QR-код
+            </div>
+
+        </div>
+
+    </div>
+
+
     <audio
         id="finishSound"
         src="voting-finish-chime.wav"
@@ -1215,6 +1645,136 @@
     <script src="js/config.js"></script>
 
     <script src="js/presenter.js"></script>
+
+
+    <script>
+        (() => {
+
+            const openQrButton =
+                document.getElementById(
+                    'openQrButton'
+                );
+
+
+            const closeQrButton =
+                document.getElementById(
+                    'closeQrButton'
+                );
+
+
+            const qrModal =
+                document.getElementById(
+                    'qrModal'
+                );
+
+
+            const qrModalBackdrop =
+                document.getElementById(
+                    'qrModalBackdrop'
+                );
+
+
+            if (
+                !openQrButton ||
+                !closeQrButton ||
+                !qrModal
+            ) {
+
+                return;
+
+            }
+
+
+            function openQrModal() {
+
+                qrModal.classList.add(
+                    'qr-modal-visible'
+                );
+
+
+                qrModal.setAttribute(
+                    'aria-hidden',
+                    'false'
+                );
+
+
+                document.body.classList.add(
+                    'qr-modal-open'
+                );
+
+
+                closeQrButton.focus();
+
+            }
+
+
+            function closeQrModal() {
+
+                qrModal.classList.remove(
+                    'qr-modal-visible'
+                );
+
+
+                qrModal.setAttribute(
+                    'aria-hidden',
+                    'true'
+                );
+
+
+                document.body.classList.remove(
+                    'qr-modal-open'
+                );
+
+
+                openQrButton.focus();
+
+            }
+
+
+            openQrButton.addEventListener(
+                'click',
+                openQrModal
+            );
+
+
+            closeQrButton.addEventListener(
+                'click',
+                closeQrModal
+            );
+
+
+            if (qrModalBackdrop) {
+
+                qrModalBackdrop.addEventListener(
+                    'click',
+                    closeQrModal
+                );
+
+            }
+
+
+            document.addEventListener(
+                'keydown',
+                event => {
+
+                    if (
+                        event.key ===
+                            'Escape' &&
+                        qrModal.classList.contains(
+                            'qr-modal-visible'
+                        )
+                    ) {
+
+                        closeQrModal();
+
+                    }
+
+                }
+            );
+
+        })();
+    </script>
+
 
 
 </body>
