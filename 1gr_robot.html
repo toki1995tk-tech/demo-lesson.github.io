@@ -1,0 +1,455 @@
+<!doctype html>
+<html lang="ru">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Робототехника 1 класс — Урок 1</title>
+<style>
+  :root{
+    --bg1:#eef7ff;
+    --bg2:#fff5dc;
+    --ink:#19324d;
+    --blue:#4da3ff;
+    --blue2:#2b78e4;
+    --yellow:#ffd75e;
+    --green:#59c889;
+    --red:#ff6b6b;
+    --orange:#ff9f43;
+    --purple:#9b7bff;
+    --card:#ffffff;
+    --shadow:0 18px 45px rgba(38,76,115,.16);
+  }
+  *{box-sizing:border-box}
+  html,body{margin:0;height:100%;font-family:Inter,Arial,Helvetica,sans-serif;color:var(--ink);background:linear-gradient(135deg,var(--bg1),var(--bg2));overflow:hidden}
+  button{font:inherit}
+  .app{height:100%;position:relative}
+  .scene{
+    position:absolute; inset:0; padding:28px;
+    display:none; align-items:center; justify-content:center;
+  }
+  .scene.active{display:flex}
+  .panel{
+    width:min(1180px,94vw); height:min(680px,88vh);
+    background:rgba(255,255,255,.9); border-radius:34px;
+    box-shadow:var(--shadow); padding:34px 42px; position:relative; overflow:hidden;
+    border:4px solid rgba(255,255,255,.75);
+  }
+  .panel::before,.panel::after{
+    content:"";position:absolute;border-radius:50%;filter:blur(1px);opacity:.18;pointer-events:none
+  }
+  .panel::before{width:220px;height:220px;background:var(--blue);right:-80px;top:-70px}
+  .panel::after{width:180px;height:180px;background:var(--yellow);left:-70px;bottom:-70px}
+  h1{font-size:clamp(40px,5.5vw,78px);line-height:1.02;margin:0 0 16px}
+  h2{font-size:clamp(30px,4vw,54px);margin:0 0 18px}
+  p{font-size:clamp(20px,2.2vw,30px);line-height:1.35}
+  .eyebrow{font-weight:900;letter-spacing:.12em;text-transform:uppercase;color:var(--blue2);font-size:18px}
+  .hero{display:grid;grid-template-columns:1.2fr .8fr;gap:28px;align-items:center;height:100%}
+  .robotBig{
+    font-size:160px; filter:drop-shadow(0 16px 12px rgba(0,0,0,.13));
+    animation:floaty 2.5s ease-in-out infinite;
+  }
+  @keyframes floaty{50%{transform:translateY(-10px)}}
+  .cta,.next,.smallBtn{
+    border:0;border-radius:18px;padding:16px 24px;font-weight:900;cursor:pointer;
+    box-shadow:0 10px 22px rgba(43,120,228,.2);transition:.15s transform,.15s filter;
+  }
+  .cta,.next{background:var(--blue2);color:#fff;font-size:22px}
+  .cta:hover,.next:hover,.smallBtn:hover{transform:translateY(-2px);filter:brightness(1.03)}
+  .next{position:absolute;right:28px;bottom:24px;z-index:10}
+  .back{position:absolute;left:28px;bottom:24px;border:0;background:#eaf2fb;color:var(--ink);border-radius:16px;padding:12px 18px;font-weight:800;cursor:pointer}
+  .teacher-note{position:absolute;top:20px;right:24px;background:#fff7cf;border:2px solid #ffe17d;padding:10px 14px;border-radius:14px;font-size:15px;font-weight:700}
+  .definition{
+    margin-top:22px;background:#f7fbff;border:4px solid var(--blue);border-radius:24px;padding:24px;
+    font-size:28px;font-weight:800;display:none
+  }
+  .definition.show{display:block;animation:pop .22s ease-out}
+  @keyframes pop{from{transform:scale(.96);opacity:0}to{transform:scale(1);opacity:1}}
+  .bigWord{font-size:clamp(60px,9vw,120px);font-weight:1000;color:var(--blue2);text-align:center;margin-top:70px}
+  .controlsLayout{display:grid;grid-template-columns:1fr 300px;gap:28px;height:100%;align-items:center}
+  .grid{
+    width:min(620px,60vw);aspect-ratio:1.35/1;display:grid;grid-template-columns:repeat(5,1fr);grid-template-rows:repeat(4,1fr);
+    gap:10px;padding:12px;background:#d9ecff;border-radius:26px;border:5px solid #89c2ff;margin:auto
+  }
+  .cell{
+    background:#fff;border-radius:18px;display:flex;align-items:center;justify-content:center;font-size:54px;position:relative
+  }
+  .cell.wall{background:repeating-linear-gradient(135deg,#ffb1b1,#ffb1b1 12px,#ff8f8f 12px,#ff8f8f 24px)}
+  .bot{transition:all .25s ease;font-size:58px}
+  .controlPanel{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;align-content:center}
+  .cmd{
+    border:0;border-radius:22px;background:#fff;box-shadow:0 8px 18px rgba(29,80,120,.14);
+    min-height:86px;font-size:42px;font-weight:900;cursor:pointer
+  }
+  .cmd.up{grid-column:2}
+  .cmd.left{grid-column:1}
+  .cmd.stop{grid-column:2;background:#ffe1e1}
+  .cmd.right{grid-column:3}
+  .status{
+    grid-column:1/4;background:#eef8ff;border-radius:18px;padding:14px;font-size:18px;font-weight:800;text-align:center
+  }
+  .success{color:#118a4b}
+  .error{color:#d83d3d}
+  .program{
+    display:flex;gap:12px;flex-wrap:wrap;align-items:center;justify-content:center;margin:24px 0
+  }
+  .token{
+    width:74px;height:74px;border-radius:18px;background:#fff;display:flex;align-items:center;justify-content:center;
+    font-size:34px;font-weight:900;box-shadow:0 8px 16px rgba(0,0,0,.09);border:4px solid transparent
+  }
+  .token.active{border-color:var(--yellow);transform:scale(1.08)}
+  .token.bad{border-color:var(--red);background:#fff1f1}
+  .token.good{border-color:var(--green);background:#f0fff6}
+  .rowBtns{display:flex;gap:12px;justify-content:center;flex-wrap:wrap}
+  .smallBtn{background:#eef5ff;color:var(--ink);font-size:19px}
+  .smallBtn.primary{background:var(--blue2);color:white}
+  .smallBtn.green{background:var(--green);color:#073b25}
+  .missionHead{display:flex;align-items:center;justify-content:space-between;gap:20px;margin-bottom:10px}
+  .badge{display:inline-flex;padding:10px 16px;border-radius:999px;background:#e9f4ff;color:var(--blue2);font-weight:900}
+  .builder{display:grid;grid-template-columns:1fr 340px;gap:26px;align-items:center;height:78%}
+  .slots{display:flex;gap:9px;flex-wrap:wrap;justify-content:center;margin:12px 0 18px}
+  .slot{width:66px;height:66px;border:3px dashed #a8bdd0;border-radius:16px;display:flex;align-items:center;justify-content:center;font-size:30px;background:#fbfdff}
+  .palette{display:grid;grid-template-columns:repeat(2,1fr);gap:12px}
+  .palette button{font-size:34px;min-height:74px;border:0;border-radius:18px;background:#fff;box-shadow:0 8px 16px rgba(0,0,0,.09);cursor:pointer}
+  .summaryCards{display:grid;grid-template-columns:repeat(3,1fr);gap:18px;margin-top:30px}
+  .sumCard{background:#fff;border-radius:24px;padding:24px;text-align:center;box-shadow:0 10px 22px rgba(0,0,0,.08)}
+  .sumCard b{display:block;font-size:28px;margin-top:10px}
+  .final{display:flex;flex-direction:column;align-items:center;justify-content:center;height:100%;text-align:center}
+  .stars{font-size:64px}
+  .hint{font-size:18px;color:#5b7188}
+  @media(max-width:850px){
+    .hero,.controlsLayout,.builder{grid-template-columns:1fr}
+    .panel{height:92vh;padding:26px 24px}
+    .robotBig{font-size:110px;text-align:center}
+    .controlPanel{grid-template-columns:repeat(4,1fr)}
+    .cmd.up,.cmd.left,.cmd.stop,.cmd.right,.status{grid-column:auto}
+    .summaryCards{grid-template-columns:1fr}
+    .grid{width:100%}
+  }
+</style>
+</head>
+<body>
+<div class="app">
+
+  <!-- 1 -->
+  <section class="scene active">
+    <div class="panel">
+      <div class="hero">
+        <div>
+          <div class="eyebrow">Робототехника • 1 класс</div>
+          <h1>Миссия №1:<br>Оживи робота!</h1>
+          <p>Сегодня мы узнаем главный секрет роботов и сами будем ими управлять.</p>
+          <button class="cta" onclick="go(1)">Начать миссию 🚀</button>
+        </div>
+        <div class="robotBig">🤖</div>
+      </div>
+      <div class="teacher-note">Учитель: приветствие и ввод в тему</div>
+    </div>
+  </section>
+
+  <!-- 2 -->
+  <section class="scene">
+    <div class="panel">
+      <div class="eyebrow">Проблемная ситуация</div>
+      <h2>Почему робот ничего не делает?</h2>
+      <div style="text-align:center;font-size:150px;margin-top:35px">🤖</div>
+      <p style="text-align:center">Спросите детей: «Почему он не слушается? Что ему нужно?»</p>
+      <button class="smallBtn primary" style="display:block;margin:18px auto" onclick="document.getElementById('defCommand').classList.add('show')">Показать ответ</button>
+      <div class="definition" id="defCommand">
+        <div style="font-size:52px;color:var(--blue2);margin-bottom:8px">КОМАНДА</div>
+        Команда — это указание, что нужно сделать.
+      </div>
+      <button class="back" onclick="go(-1)">← Назад</button>
+      <button class="next" onclick="go(1)">Дальше →</button>
+    </div>
+  </section>
+
+  <!-- 3 -->
+  <section class="scene">
+    <div class="panel">
+      <div class="missionHead">
+        <div>
+          <div class="badge">Интерактив</div>
+          <h2>Управляй роботом</h2>
+        </div>
+        <div class="hint">Дети называют команды хором</div>
+      </div>
+      <div class="controlsLayout">
+        <div class="grid" id="gridA"></div>
+        <div class="controlPanel">
+          <button class="cmd up" onclick="moveA('up')">⬆️</button>
+          <button class="cmd left" onclick="moveA('left')">⬅️</button>
+          <button class="cmd stop" onclick="moveA('stop')">⏹</button>
+          <button class="cmd right" onclick="moveA('right')">➡️</button>
+          <div class="status" id="statusA">Доведите робота до батарейки 🔋</div>
+          <button class="smallBtn" onclick="resetA()" style="grid-column:1/4">Начать заново</button>
+        </div>
+      </div>
+      <button class="back" onclick="go(-1)">← Назад</button>
+      <button class="next" onclick="go(1)">Дальше →</button>
+    </div>
+  </section>
+
+  <!-- 4 -->
+  <section class="scene">
+    <div class="panel">
+      <div class="eyebrow">Ловушка программиста</div>
+      <h2>Кто ошибся: робот или человек?</h2>
+      <div class="program" id="progWrong"></div>
+      <div class="rowBtns">
+        <button class="smallBtn primary" onclick="playWrong()">▶ Запустить</button>
+        <button class="smallBtn" onclick="showWrongStep()">🔍 Показать ошибку</button>
+        <button class="smallBtn green" onclick="fixWrong()">🛠 Исправить</button>
+      </div>
+      <div style="text-align:center;font-size:100px;margin-top:20px" id="wrongRobot">🤖</div>
+      <p style="text-align:center;font-weight:800" id="wrongText">Сначала спросите детей, куда поедет робот.</p>
+      <button class="back" onclick="go(-1)">← Назад</button>
+      <button class="next" onclick="go(1)">Дальше →</button>
+    </div>
+  </section>
+
+  <!-- 5 -->
+  <section class="scene">
+    <div class="panel">
+      <div class="bigWord">АЛГОРИТМ</div>
+      <div class="definition show" style="max-width:850px;margin:30px auto 0;text-align:center">
+        Алгоритм — это команды, которые выполняются по порядку.
+      </div>
+      <div class="program" id="algoProg"></div>
+      <div class="rowBtns">
+        <button class="smallBtn" onclick="shuffleAlgo()">🔀 Перемешать команды</button>
+        <button class="smallBtn primary" onclick="restoreAlgo()">↩ Вернуть порядок</button>
+      </div>
+      <p style="text-align:center">Вопрос детям: «Команды те же. Почему результат может измениться?»</p>
+      <button class="back" onclick="go(-1)">← Назад</button>
+      <button class="next" onclick="go(1)">Дальше →</button>
+    </div>
+  </section>
+
+  <!-- 6 -->
+  <section class="scene">
+    <div class="panel">
+      <div class="missionHead">
+        <div>
+          <div class="badge">Миссия №3</div>
+          <h2>Доставь робота к батарейке</h2>
+        </div>
+        <div class="hint">Составьте программу вместе</div>
+      </div>
+      <div class="builder">
+        <div>
+          <div class="grid" id="gridB"></div>
+          <div class="slots" id="slotsB"></div>
+          <div class="rowBtns">
+            <button class="smallBtn primary" onclick="runB()">▶ Проверить программу</button>
+            <button class="smallBtn" onclick="undoB()">↶ Убрать последнюю</button>
+            <button class="smallBtn" onclick="resetB()">Сброс</button>
+          </div>
+          <p id="statusB" style="text-align:center;font-weight:900">Составьте маршрут из стрелок.</p>
+        </div>
+        <div>
+          <h3 style="font-size:28px;margin-top:0">Команды</h3>
+          <div class="palette">
+            <button onclick="addB('up')">⬆️</button>
+            <button onclick="addB('right')">➡️</button>
+            <button onclick="addB('left')">⬅️</button>
+            <button onclick="addB('down')">⬇️</button>
+          </div>
+          <p class="hint">Препятствия нельзя пересекать.</p>
+        </div>
+      </div>
+      <button class="back" onclick="go(-1)">← Назад</button>
+      <button class="next" onclick="go(1)">Дальше →</button>
+    </div>
+  </section>
+
+  <!-- 7 -->
+  <section class="scene">
+    <div class="panel">
+      <div class="hero">
+        <div>
+          <div class="eyebrow">А теперь — настоящий робот</div>
+          <h1>Проверим всё на LEGO EV3</h1>
+          <p>Сначала дети предполагают, что произойдёт. Только потом учитель запускает настоящего робота.</p>
+          <div class="definition show">
+            Работа инженера: <b>предположить → проверить → найти ошибку → исправить → проверить снова.</b>
+          </div>
+        </div>
+        <div style="font-size:150px;text-align:center">🧱🤖⚙️</div>
+      </div>
+      <button class="back" onclick="go(-1)">← Назад</button>
+      <button class="next" onclick="go(1)">Дальше →</button>
+    </div>
+  </section>
+
+  <!-- 8 -->
+  <section class="scene">
+    <div class="panel">
+      <div class="eyebrow">Итог урока</div>
+      <h2>Что мы сегодня узнали?</h2>
+      <div class="summaryCards">
+        <div class="sumCard">
+          <div style="font-size:64px">📣</div>
+          <b>КОМАНДА</b>
+          <span>Указание, что нужно сделать.</span>
+        </div>
+        <div class="sumCard">
+          <div style="font-size:64px">🧩</div>
+          <b>АЛГОРИТМ</b>
+          <span>Команды, которые идут по порядку.</span>
+        </div>
+        <div class="sumCard">
+          <div style="font-size:64px">🧠</div>
+          <b>ПРОГРАММИСТ</b>
+          <span>Проверяет команды и исправляет ошибки.</span>
+        </div>
+      </div>
+      <button class="back" onclick="go(-1)">← Назад</button>
+      <button class="next" onclick="go(1)">Финал →</button>
+    </div>
+  </section>
+
+  <!-- 9 -->
+  <section class="scene">
+    <div class="panel">
+      <div class="final">
+        <div class="stars">⭐ 🤖 ⭐</div>
+        <h1>МИССИЯ ВЫПОЛНЕНА!</h1>
+        <p><b>Ты сделал первый шаг в робототехнике.</b></p>
+        <p>На следующем уроке узнаем, из чего состоит настоящий робот.</p>
+        <button class="cta" onclick="restart()">Начать урок заново</button>
+      </div>
+    </div>
+  </section>
+
+</div>
+
+<script>
+const scenes=[...document.querySelectorAll('.scene')];
+let sceneIndex=0;
+function go(delta){
+  sceneIndex=Math.max(0,Math.min(scenes.length-1,sceneIndex+delta));
+  scenes.forEach((s,i)=>s.classList.toggle('active',i===sceneIndex));
+}
+function restart(){ sceneIndex=0; scenes.forEach((s,i)=>s.classList.toggle('active',i===0)); resetA(); resetB(); restoreAlgo(); resetWrong(); }
+
+// Grid A
+const GA={cols:5,rows:4,start:{x:0,y:3},goal:{x:4,y:0},pos:{x:0,y:3},dir:0};
+function buildGridA(){
+  const g=document.getElementById('gridA'); g.innerHTML='';
+  for(let y=0;y<GA.rows;y++){
+    for(let x=0;x<GA.cols;x++){
+      const c=document.createElement('div'); c.className='cell'; c.dataset.x=x;c.dataset.y=y;
+      if(x===GA.goal.x&&y===GA.goal.y)c.textContent='🔋';
+      if(x===GA.pos.x&&y===GA.pos.y){const b=document.createElement('div');b.className='bot';b.textContent='🤖';c.appendChild(b)}
+      g.appendChild(c);
+    }
+  }
+}
+function moveA(cmd){
+  if(cmd==='stop'){document.getElementById('statusA').textContent='Стоп! Робот остановился.';return}
+  if(cmd==='left'){GA.dir=(GA.dir+3)%4; document.getElementById('statusA').textContent='Робот повернул налево.';return}
+  if(cmd==='right'){GA.dir=(GA.dir+1)%4; document.getElementById('statusA').textContent='Робот повернул направо.';return}
+  const dirs=[[0,-1],[1,0],[0,1],[-1,0]];
+  const [dx,dy]=dirs[GA.dir]; const nx=GA.pos.x+dx, ny=GA.pos.y+dy;
+  if(nx<0||ny<0||nx>=GA.cols||ny>=GA.rows){document.getElementById('statusA').innerHTML='<span class="error">Упс! Там край поля.</span>';return}
+  GA.pos={x:nx,y:ny}; buildGridA();
+  if(nx===GA.goal.x&&ny===GA.goal.y) document.getElementById('statusA').innerHTML='<span class="success">✨ Миссия выполнена! Батарейка найдена.</span>';
+  else document.getElementById('statusA').textContent='Отлично. Какая команда следующая?';
+}
+function resetA(){GA.pos={...GA.start};GA.dir=0;buildGridA();document.getElementById('statusA').textContent='Доведите робота до батарейки 🔋';}
+
+// Wrong program
+let wrong=['⬆️','⬆️','⬅️','⬆️','⏹'];
+let fixed=false;
+function drawWrong(){
+  const el=document.getElementById('progWrong');el.innerHTML='';
+  wrong.forEach((t,i)=>{const d=document.createElement('div');d.className='token';d.textContent=t;d.dataset.i=i;el.appendChild(d)})
+}
+function resetWrong(){wrong=['⬆️','⬆️','⬅️','⬆️','⏹'];fixed=false;drawWrong();document.getElementById('wrongRobot').textContent='🤖';document.getElementById('wrongText').textContent='Сначала спросите детей, куда поедет робот.'}
+function playWrong(){
+  document.querySelectorAll('#progWrong .token').forEach(x=>x.classList.remove('active','bad','good'));
+  let i=0;
+  document.getElementById('wrongRobot').textContent='🤖';
+  document.getElementById('wrongText').textContent='Робот выполняет команды по порядку...';
+  const timer=setInterval(()=>{
+    const toks=[...document.querySelectorAll('#progWrong .token')];
+    toks.forEach(x=>x.classList.remove('active'));
+    if(i>=toks.length){clearInterval(timer);document.getElementById('wrongText').textContent=fixed?'✨ Теперь программа правильная!':'Ой! Робот ушёл не туда.';return}
+    toks[i].classList.add('active');
+    i++;
+  },650);
+}
+function showWrongStep(){
+  const toks=[...document.querySelectorAll('#progWrong .token')];
+  toks.forEach(x=>x.classList.remove('bad','good'));
+  toks[2].classList.add('bad');
+  document.getElementById('wrongText').textContent='Ошибка в третьей команде. Робот просто послушался человека.';
+}
+function fixWrong(){
+  wrong[2]='➡️';fixed=true;drawWrong();
+  const toks=[...document.querySelectorAll('#progWrong .token')];toks[2].classList.add('good');
+  document.getElementById('wrongText').textContent='Исправили! Теперь проверим ещё раз.';
+}
+
+// Algo
+const algoCorrect=['⬆️','⬆️','➡️','⬆️','⏹'];
+function drawAlgo(arr){
+  const el=document.getElementById('algoProg');el.innerHTML='';
+  arr.forEach((t,i)=>{const d=document.createElement('div');d.className='token';d.textContent=t;el.appendChild(d)})
+}
+function shuffleAlgo(){
+  let a=[...algoCorrect];
+  do{a.sort(()=>Math.random()-.5)}while(a.join()==algoCorrect.join());
+  drawAlgo(a);
+}
+function restoreAlgo(){drawAlgo(algoCorrect)}
+
+// Grid B
+const GB={cols:5,rows:4,start:{x:0,y:0},goal:{x:4,y:3},walls:new Set(['1,1','2,1','3,2']),pos:{x:0,y:0}};
+let progB=[];
+function buildGridB(){
+  const g=document.getElementById('gridB');g.innerHTML='';
+  for(let y=0;y<GB.rows;y++){
+    for(let x=0;x<GB.cols;x++){
+      const c=document.createElement('div');c.className='cell';
+      if(GB.walls.has(`${x},${y}`)) c.classList.add('wall');
+      if(x===GB.goal.x&&y===GB.goal.y)c.textContent='🔋';
+      if(x===GB.pos.x&&y===GB.pos.y){const b=document.createElement('div');b.className='bot';b.textContent='🤖';c.appendChild(b)}
+      g.appendChild(c)
+    }
+  }
+}
+function renderSlots(){
+  const el=document.getElementById('slotsB');el.innerHTML='';
+  const count=Math.max(8,progB.length);
+  for(let i=0;i<count;i++){
+    const s=document.createElement('div');s.className='slot';s.textContent=progB[i]?({up:'⬆️',down:'⬇️',left:'⬅️',right:'➡️'}[progB[i]]):'';
+    el.appendChild(s)
+  }
+}
+function addB(c){if(progB.length<12){progB.push(c);renderSlots()}}
+function undoB(){progB.pop();renderSlots()}
+function resetB(){progB=[];GB.pos={...GB.start};buildGridB();renderSlots();document.getElementById('statusB').textContent='Составьте маршрут из стрелок.'}
+function runB(){
+  GB.pos={...GB.start};buildGridB();
+  let i=0; const map={up:[0,-1],down:[0,1],left:[-1,0],right:[1,0]};
+  if(!progB.length){document.getElementById('statusB').innerHTML='<span class="error">Сначала добавьте команды.</span>';return}
+  const timer=setInterval(()=>{
+    if(i>=progB.length){clearInterval(timer);finishB();return}
+    const [dx,dy]=map[progB[i++]]; const nx=GB.pos.x+dx,ny=GB.pos.y+dy;
+    if(nx<0||ny<0||nx>=GB.cols||ny>=GB.rows||GB.walls.has(`${nx},${ny}`)){
+      clearInterval(timer);document.getElementById('statusB').innerHTML='<span class="error">Робот встретил препятствие. Найдём ошибку?</span>';return
+    }
+    GB.pos={x:nx,y:ny};buildGridB();
+    if(nx===GB.goal.x&&ny===GB.goal.y){clearInterval(timer);document.getElementById('statusB').innerHTML='<span class="success">✨ Миссия выполнена! Робот нашёл батарейку.</span>'}
+  },420)
+}
+function finishB(){
+  const ok=GB.pos.x===GB.goal.x&&GB.pos.y===GB.goal.y;
+  document.getElementById('statusB').innerHTML=ok?'<span class="success">✨ Миссия выполнена!</span>':'<span class="error">Робот не дошёл до батарейки. Что исправим?</span>';
+}
+
+buildGridA(); drawWrong(); drawAlgo(algoCorrect); buildGridB(); renderSlots();
+</script>
+</body>
+</html>
