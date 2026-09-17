@@ -29,9 +29,9 @@
   }
   .scene.active{display:flex}
   .panel{
-    width:min(1180px,94vw); height:min(680px,88vh);
+    width:min(1320px,96vw); height:min(800px,94vh);
     background:rgba(255,255,255,.9); border-radius:34px;
-    box-shadow:var(--shadow); padding:34px 42px; position:relative; overflow:hidden;
+    box-shadow:var(--shadow); padding:28px 36px 108px; position:relative; overflow:auto;
     border:4px solid rgba(255,255,255,.75);
   }
   .panel::before,.panel::after{
@@ -39,13 +39,13 @@
   }
   .panel::before{width:220px;height:220px;background:var(--blue);right:-80px;top:-70px}
   .panel::after{width:180px;height:180px;background:var(--yellow);left:-70px;bottom:-70px}
-  h1{font-size:clamp(40px,5.5vw,78px);line-height:1.02;margin:0 0 16px}
-  h2{font-size:clamp(30px,4vw,54px);margin:0 0 18px}
-  p{font-size:clamp(20px,2.2vw,30px);line-height:1.35}
+  h1{font-size:clamp(36px,4.8vw,70px);line-height:1.06;margin:0 0 14px}
+  h2{font-size:clamp(28px,3.6vw,48px);margin:0 0 16px}
+  p{font-size:clamp(18px,2vw,28px);line-height:1.35}
   .eyebrow{font-weight:900;letter-spacing:.12em;text-transform:uppercase;color:var(--blue2);font-size:18px}
   .hero{display:grid;grid-template-columns:1.2fr .8fr;gap:28px;align-items:center;height:100%}
   .robotBig{
-    font-size:160px; filter:drop-shadow(0 16px 12px rgba(0,0,0,.13));
+    font-size:140px; filter:drop-shadow(0 16px 12px rgba(0,0,0,.13));
     animation:floaty 2.5s ease-in-out infinite;
   }
   @keyframes floaty{50%{transform:translateY(-10px)}}
@@ -60,11 +60,11 @@
   .teacher-note{position:absolute;top:20px;right:24px;background:#fff7cf;border:2px solid #ffe17d;padding:10px 14px;border-radius:14px;font-size:15px;font-weight:700}
   .definition{
     margin-top:22px;background:#f7fbff;border:4px solid var(--blue);border-radius:24px;padding:24px;
-    font-size:28px;font-weight:800;display:none
+    font-size:24px;font-weight:800;display:none
   }
   .definition.show{display:block;animation:pop .22s ease-out}
   @keyframes pop{from{transform:scale(.96);opacity:0}to{transform:scale(1);opacity:1}}
-  .bigWord{font-size:clamp(60px,9vw,120px);font-weight:1000;color:var(--blue2);text-align:center;margin-top:70px}
+  .bigWord{font-size:clamp(48px,7.5vw,100px);font-weight:1000;color:var(--blue2);text-align:center;margin-top:70px}
   .controlsLayout{display:grid;grid-template-columns:1fr 300px;gap:28px;height:100%;align-items:center}
   .grid{
     width:min(620px,60vw);aspect-ratio:1.35/1;display:grid;grid-template-columns:repeat(5,1fr);grid-template-rows:repeat(4,1fr);
@@ -118,7 +118,7 @@
   .hint{font-size:18px;color:#5b7188}
   @media(max-width:850px){
     .hero,.controlsLayout,.builder{grid-template-columns:1fr}
-    .panel{height:92vh;padding:26px 24px}
+    .panel{height:95vh;padding:22px 18px 100px}
     .robotBig{font-size:110px;text-align:center}
     .controlPanel{grid-template-columns:repeat(4,1fr)}
     .cmd.up,.cmd.left,.cmd.stop,.cmd.right,.status{grid-column:auto}
@@ -151,11 +151,11 @@
     <div class="panel">
       <div class="eyebrow">Проблемная ситуация</div>
       <h2>Почему робот ничего не делает?</h2>
-      <div style="text-align:center;font-size:150px;margin-top:35px">🤖</div>
+      <div style="text-align:center;font-size:130px;margin-top:35px">🤖</div>
       <p style="text-align:center">Спросите детей: «Почему он не слушается? Что ему нужно?»</p>
       <button class="smallBtn primary" style="display:block;margin:18px auto" onclick="document.getElementById('defCommand').classList.add('show')">Показать ответ</button>
       <div class="definition" id="defCommand">
-        <div style="font-size:52px;color:var(--blue2);margin-bottom:8px">КОМАНДА</div>
+        <div style="font-size:46px;color:var(--blue2);margin-bottom:8px">КОМАНДА</div>
         Команда — это указание, что нужно сделать.
       </div>
       <button class="back" onclick="go(-1)">← Назад</button>
@@ -200,7 +200,7 @@
         <button class="smallBtn" onclick="showWrongStep()">🔍 Показать ошибку</button>
         <button class="smallBtn green" onclick="fixWrong()">🛠 Исправить</button>
       </div>
-      <div style="text-align:center;font-size:100px;margin-top:20px" id="wrongRobot">🤖</div>
+      <div style="text-align:center;font-size:88px;margin-top:20px" id="wrongRobot">🤖</div>
       <p style="text-align:center;font-weight:800" id="wrongText">Сначала спросите детей, куда поедет робот.</p>
       <button class="back" onclick="go(-1)">← Назад</button>
       <button class="next" onclick="go(1)">Дальше →</button>
@@ -274,7 +274,7 @@
             Работа инженера: <b>предположить → проверить → найти ошибку → исправить → проверить снова.</b>
           </div>
         </div>
-        <div style="font-size:150px;text-align:center">🧱🤖⚙️</div>
+        <div style="font-size:130px;text-align:center">🧱🤖⚙️</div>
       </div>
       <button class="back" onclick="go(-1)">← Назад</button>
       <button class="next" onclick="go(1)">Дальше →</button>
