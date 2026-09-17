@@ -105,6 +105,8 @@
   .smallBtn.green{background:var(--green);color:#073b25}
   .missionHead{display:flex;align-items:center;justify-content:space-between;gap:20px;margin-bottom:10px}
   .badge{display:inline-flex;padding:10px 16px;border-radius:999px;background:#e9f4ff;color:var(--blue2);font-weight:900}
+  .wrongLayout{display:grid;grid-template-columns:1fr 1fr;gap:24px;align-items:center;margin-top:10px}
+  .wrongLayout .grid{width:min(500px,42vw);aspect-ratio:1/1;grid-template-columns:repeat(4,1fr);grid-template-rows:repeat(4,1fr)}
   .builder{display:grid;grid-template-columns:1fr 340px;gap:26px;align-items:center;height:78%}
   .slots{display:flex;gap:9px;flex-wrap:wrap;justify-content:center;margin:12px 0 18px}
   .slot{width:66px;height:66px;border:3px dashed #a8bdd0;border-radius:16px;display:flex;align-items:center;justify-content:center;font-size:30px;background:#fbfdff}
@@ -117,7 +119,7 @@
   .stars{font-size:64px}
   .hint{font-size:18px;color:#5b7188}
   @media(max-width:850px){
-    .hero,.controlsLayout,.builder{grid-template-columns:1fr}
+    .hero,.controlsLayout,.builder,.wrongLayout{grid-template-columns:1fr}
     .panel{height:95vh;padding:22px 18px 100px}
     .robotBig{font-size:110px;text-align:center}
     .controlPanel{grid-template-columns:repeat(4,1fr)}
@@ -194,14 +196,19 @@
     <div class="panel">
       <div class="eyebrow">Ловушка программиста</div>
       <h2>Кто ошибся: робот или человек?</h2>
-      <div class="program" id="progWrong"></div>
-      <div class="rowBtns">
-        <button class="smallBtn primary" onclick="playWrong()">▶ Запустить</button>
-        <button class="smallBtn" onclick="showWrongStep()">🔍 Показать ошибку</button>
-        <button class="smallBtn green" onclick="fixWrong()">🛠 Исправить</button>
+      <div class="wrongLayout">
+        <div class="grid" id="gridWrong"></div>
+        <div>
+          <div class="program" id="progWrong"></div>
+          <div class="rowBtns">
+            <button class="smallBtn primary" onclick="playWrong()">▶ Запустить</button>
+            <button class="smallBtn" onclick="showWrongStep()">🔍 Показать ошибку</button>
+            <button class="smallBtn green" onclick="fixWrong()">🛠 Исправить</button>
+          </div>
+          <p style="text-align:center;font-weight:800;margin-top:22px" id="wrongText">Сначала спросите детей, куда поедет робот.</p>
+          <p class="hint" style="text-align:center">На этом поле робот двигается по клеткам по стрелкам программы.</p>
+        </div>
       </div>
-      <div style="text-align:center;font-size:88px;margin-top:20px" id="wrongRobot">🤖</div>
-      <p style="text-align:center;font-weight:800" id="wrongText">Сначала спросите детей, куда поедет робот.</p>
       <button class="back" onclick="go(-1)">← Назад</button>
       <button class="next" onclick="go(1)">Дальше →</button>
     </div>
@@ -359,23 +366,58 @@ function moveA(cmd){
 function resetA(){GA.pos={...GA.start};GA.dir=0;buildGridA();document.getElementById('statusA').textContent='Доведите робота до батарейки 🔋';}
 
 // Wrong program
+const GW={cols:4,rows:4,start:{x:1,y:3},goal:{x:2,y:0},pos:{x:1,y:3}};
 let wrong=['⬆️','⬆️','⬅️','⬆️','⏹'];
 let fixed=false;
+function buildGridWrong(){
+  const g=document.getElementById('gridWrong');g.innerHTML='';
+  for(let y=0;y<GW.rows;y++){
+    for(let x=0;x<GW.cols;x++){
+      const c=document.createElement('div');c.className='cell';
+      if(x===GW.goal.x&&y===GW.goal.y)c.textContent='🔋';
+      if(x===GW.pos.x&&y===GW.pos.y){const b=document.createElement('div');b.className='bot';b.textContent='🤖';c.appendChild(b)}
+      g.appendChild(c);
+    }
+  }
+}
 function drawWrong(){
   const el=document.getElementById('progWrong');el.innerHTML='';
-  wrong.forEach((t,i)=>{const d=document.createElement('div');d.className='token';d.textContent=t;d.dataset.i=i;el.appendChild(d)})
+  wrong.forEach((t,i)=>{const d=document.createElement('div');d.className='token';d.textContent=t;d.dataset.i=i;el.appendChild(d)});
+  buildGridWrong();
 }
-function resetWrong(){wrong=['⬆️','⬆️','⬅️','⬆️','⏹'];fixed=false;drawWrong();document.getElementById('wrongRobot').textContent='🤖';document.getElementById('wrongText').textContent='Сначала спросите детей, куда поедет робот.'}
+function resetWrong(){
+  wrong=['⬆️','⬆️','⬅️','⬆️','⏹'];
+  fixed=false;
+  GW.pos={...GW.start};
+  drawWrong();
+  document.getElementById('wrongText').textContent='Сначала спросите детей, куда поедет робот.';
+}
 function playWrong(){
   document.querySelectorAll('#progWrong .token').forEach(x=>x.classList.remove('active','bad','good'));
+  GW.pos={...GW.start};
+  buildGridWrong();
   let i=0;
-  document.getElementById('wrongRobot').textContent='🤖';
+  const moveMap={'⬆️':[0,-1],'⬇️':[0,1],'⬅️':[-1,0],'➡️':[1,0]};
   document.getElementById('wrongText').textContent='Робот выполняет команды по порядку...';
   const timer=setInterval(()=>{
     const toks=[...document.querySelectorAll('#progWrong .token')];
     toks.forEach(x=>x.classList.remove('active'));
-    if(i>=toks.length){clearInterval(timer);document.getElementById('wrongText').textContent=fixed?'✨ Теперь программа правильная!':'Ой! Робот ушёл не туда.';return}
-    toks[i].classList.add('active');
+    if(i>=toks.length){
+      clearInterval(timer);
+      const atGoal=GW.pos.x===GW.goal.x&&GW.pos.y===GW.goal.y;
+      document.getElementById('wrongText').textContent=atGoal?'✨ Теперь программа правильная!':'Ой! Робот ушёл не туда.';
+      return;
+    }
+    const tok=toks[i];
+    tok.classList.add('active');
+    const cmd=wrong[i];
+    if(moveMap[cmd]){
+      const [dx,dy]=moveMap[cmd];
+      const nx=Math.max(0,Math.min(GW.cols-1,GW.pos.x+dx));
+      const ny=Math.max(0,Math.min(GW.rows-1,GW.pos.y+dy));
+      GW.pos={x:nx,y:ny};
+      buildGridWrong();
+    }
     i++;
   },650);
 }
@@ -383,12 +425,15 @@ function showWrongStep(){
   const toks=[...document.querySelectorAll('#progWrong .token')];
   toks.forEach(x=>x.classList.remove('bad','good'));
   toks[2].classList.add('bad');
-  document.getElementById('wrongText').textContent='Ошибка в третьей команде. Робот просто послушался человека.';
+  document.getElementById('wrongText').textContent='Ошибка в третьей команде: робот повернул не туда, куда нужно.';
 }
 function fixWrong(){
-  wrong[2]='➡️';fixed=true;drawWrong();
-  const toks=[...document.querySelectorAll('#progWrong .token')];toks[2].classList.add('good');
-  document.getElementById('wrongText').textContent='Исправили! Теперь проверим ещё раз.';
+  wrong[2]='➡️';fixed=true;
+  GW.pos={...GW.start};
+  drawWrong();
+  const toks=[...document.querySelectorAll('#progWrong .token')];
+  toks[2].classList.add('good');
+  document.getElementById('wrongText').textContent='Исправили! Теперь робот должен дойти до батарейки.';
 }
 
 // Algo
